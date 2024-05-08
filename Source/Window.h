@@ -2,11 +2,8 @@
 
 #include <string>
 
-// GLFW uses Vulkan by default, so we need to indicate to not use it.
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+struct GLFWwindow;
+typedef struct HWND__* HWND;
 
 struct WindowSize
 {
@@ -22,6 +19,7 @@ public:
 
     bool Initialize();
     void Run();
+    void Terminate();
 
     bool IsVisible() const;
     WindowSize GetSize() const { return m_size; }

@@ -1,6 +1,14 @@
 
 #include "Window.h"
 
+// GLFW uses Vulkan by default, so we need to indicate to not use it.
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
+#include <cstdio>
+
 Window::Window(WindowSize size, std::string title)
     : m_size(std::move(size))
     , m_title(std::move(title))
@@ -9,21 +17,20 @@ Window::Window(WindowSize size, std::string title)
 
 Window::~Window()
 {
-    // Terminate GLFW.
-    printf("Terminating GLFW...\n");
-    if (m_window)
-    {
-        glfwTerminate();
-    }
+    Terminate();
 }
 
 bool Window::Initialize()
 {
-    // Initialize GLFW.
-    printf("Initializing GLFW...\n");
+    if (m_window)
+    {
+        return true; // Already initialized
+    }
+
+    std::printf("Initializing GLFW...\n");
     if (!glfwInit())
     {
-        printf("Failed to initialize GLFW.\n");
+        std::printf("Failed to initialize GLFW.\n");
         return false;
     }
 
@@ -31,12 +38,11 @@ bool Window::Initialize()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    // Create our window
-    printf("Creating window of size %dx%d...\n", m_size.m_width, m_size.m_height);
+    std::printf("Creating window of size %dx%d...\n", m_size.m_width, m_size.m_height);
     m_window = glfwCreateWindow(m_size.m_width, m_size.m_height, m_title.c_str(), nullptr, nullptr);
     if (!m_window)
     {
-        printf("Failed to create GLFW window.\n");
+        std::printf("Failed to create GLFW window.\n");
         glfwTerminate();
         return false;
     }
@@ -49,6 +55,16 @@ void Window::Run()
     if (m_window)
     {
         glfwPollEvents();
+    }
+}
+
+void Window::Terminate()
+{
+    if (m_window)
+    {
+        std::printf("Terminating GLFW...\n");
+        glfwTerminate();
+        m_window = nullptr;
     }
 }
 

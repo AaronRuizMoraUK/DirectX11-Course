@@ -1,13 +1,12 @@
+#include "Window.h"
 
 #include <cstdio>
-
-#include "Window.h"
 
 int main()
 {
     Window window({1280, 720}, "DirectX11 Course");
 
-    if (window.Initialize())
+    if (!window.Initialize())
     {
         return -1;
     }
@@ -17,6 +16,8 @@ int main()
         window.Run();
     }
 
-    printf("Done!\n");
+    window.Terminate();
+
+    std::printf("Done!\n");
     return 0;
 }
