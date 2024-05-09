@@ -147,7 +147,7 @@ void Renderer::ClearColor(const mathfu::Vector4& color)
 void Renderer::Present()
 {
     m_swapChain->Present(
-        0, // Sync interval
-        0 // Flags
+        1, // VSync On
+        0  // Flags
     );
 }
