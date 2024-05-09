@@ -4,7 +4,11 @@
 #include <Window/Window.h>
 
 #include <d3d11.h>
+
 #include <array>
+#include <fstream>
+#include <sstream>
+#include <string_view>
 
 Renderer::Renderer(Window& window)
     : m_window(window)
@@ -43,12 +47,21 @@ bool Renderer::Initialize()
         return false;
     }
 
+    if (!CreateShaders())
+    {
+        Terminate();
+        return false;
+    }
+
     return true;
 }
 
 void Renderer::Terminate()
 {
     std::printf("Terminating DX11 Renderer...\n");
+
+    DestroyShaders();
+
     m_renderTargetView.Reset();
     m_swapChain.Reset();
     m_device.Reset();
@@ -150,4 +163,80 @@ void Renderer::Present()
         1, // VSync On
         0  // Flags
     );
+}
+
+bool Renderer::CreateShaders()
+{
+    std::string vertexShaderCode = ReadAssetFile("Shaders/VertexShader.hlsl");
+    std::string pixelShaderCode = ReadAssetFile("Shaders/PixelShader.hlsl");
+
+    return true;
+}
+
+void Renderer::DestroyShaders()
+{
+    m_vertexShaderBlob.Reset();
+    m_vertexShader.Reset();
+    m_pixelShader.Reset();
+}
+
+std::string Renderer::ReadAssetFile(const std::string& fileName) const
+{
+    auto fileNamePath = GetAssetPath() / fileName;
+    if (!std::filesystem::exists(fileNamePath))
+    {
+        std::printf("Error: filename path %s does not exist.\n", fileNamePath.generic_string().c_str());
+        return {};
+    }
+
+    if (std::ifstream file(fileNamePath);
+        file.is_open())
+    {
+        std::ostringstream stringBuffer;
+        stringBuffer << file.rdbuf();
+
+        file.close();
+        return stringBuffer.str();
+    }
+    else
+    {
+        std::printf("Error: filename path %s failed to open.\n", fileNamePath.generic_string().c_str());
+        return {};
+    }
+}
+
+std::filesystem::path Renderer::GetAssetPath() const
+{
+    auto execPath = GetExecutablePath();
+    execPath /= "Assets";
+    if (std::filesystem::exists(execPath))
+    {
+        return execPath;
+    }
+
+    // If the Assets folder is not in the same location as the executable,
+    // that could be because the executable is being run from a build folder
+    // (for example from Visual Studio). Try to find the 'build' folder to
+    // extract the project path and use that to look for the Assets folder.
+    if (auto it = execPath.generic_string().find("build");
+        it != std::string::npos)
+    {
+        std::filesystem::path projectPath = execPath.generic_string().substr(0, it);
+        projectPath /= "Assets";
+        if (std::filesystem::exists(projectPath))
+        {
+            return projectPath;
+        }
+    }
+
+    std::printf("Error: Assets path not found.\n");
+    return {};
+}
+
+std::filesystem::path Renderer::GetExecutablePath() const
+{
+    char path[MAX_PATH];
+    GetModuleFileName(NULL, path, MAX_PATH);
+    std::filesystem::path execPath(path);
+    return execPath.remove_filename();
 }

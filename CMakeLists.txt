@@ -29,9 +29,23 @@ file(GLOB_RECURSE SOURCE_FILES
 file(GLOB_RECURSE SCRIPT_FILES
     "${CMAKE_SOURCE_DIR}/Scripts/*.*")
 
-source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${SOURCE_FILES} ${SCRIPT_FILES})
+file(GLOB_RECURSE ASSET_FILES
+    "${CMAKE_SOURCE_DIR}/Assets/*.hlsl")
 
-add_executable(main .gitignore README.md ${SOURCE_FILES} ${SCRIPT_FILES})
+# Set the Asset files to be treated as non-compilable files
+foreach(ASSET_FILE ${ASSET_FILES})
+    set_source_files_properties(${ASSET_FILE} PROPERTIES HEADER_FILE_ONLY TRUE)
+endforeach()
+
+source_group(TREE "${CMAKE_SOURCE_DIR}" FILES 
+    ${SOURCE_FILES}
+    ${SCRIPT_FILES}
+    ${ASSET_FILES})
+
+add_executable(main README.md .gitignore
+    ${SOURCE_FILES}
+    ${SCRIPT_FILES}
+    ${ASSET_FILES})
 
 # Includes
 target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/Source")
@@ -40,8 +54,8 @@ target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 target_link_libraries(main PRIVATE glfw)
 target_link_libraries(main PRIVATE mathfu)
 target_link_libraries(main PRIVATE d3d11.lib)
-target_link_libraries(main PRIVATE d3dcompiler.lib)
-target_link_libraries(main PRIVATE dxguid.lib)
+#target_link_libraries(main PRIVATE d3dcompiler.lib)
+#target_link_libraries(main PRIVATE dxguid.lib)
 
 # Set main as the default project in Visual Studio
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
