@@ -1,4 +1,5 @@
-#include "Window/Window.h"
+#include <Window/Window.h>
+#include <Renderer/Renderer.h>
 
 #include <cstdio>
 
@@ -10,6 +11,8 @@ int main()
     {
         return -1;
     }
+
+    Renderer renderer(window);
 
     while (window.IsVisible())
     {
