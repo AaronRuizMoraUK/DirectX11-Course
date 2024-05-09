@@ -4,6 +4,7 @@
 #include <Window/Window.h>
 
 #include <d3d11.h>
+#include <d3dcompiler.h>
 
 #include <array>
 #include <fstream>
@@ -53,6 +54,12 @@ bool Renderer::Initialize()
         return false;
     }
 
+    if (!CreateInputLayout())
+    {
+        Terminate();
+        return false;
+    }
+
     return true;
 }
 
@@ -60,6 +67,7 @@ void Renderer::Terminate()
 {
     std::printf("Terminating DX11 Renderer...\n");
 
+    DestroyInputLayout();
     DestroyShaders();
 
     m_renderTargetView.Reset();
@@ -67,9 +75,19 @@ void Renderer::Terminate()
     m_device.Reset();
 }
 
+ComPtr<ID3D11Device> Renderer::GetDevice()
+{
+    return m_device;
+}
+
+ComPtr<ID3D11DeviceContext> Renderer::GetDeviceContext()
+{
+    return m_deviceContext;
+}
+
 bool Renderer::CreateDevice()
 {
-    std::array<D3D_FEATURE_LEVEL, 1> featureLevels = { D3D_FEATURE_LEVEL_11_1 };
+    const std::array<D3D_FEATURE_LEVEL, 1> featureLevels = { D3D_FEATURE_LEVEL_11_1 };
 
     auto result = D3D11CreateDevice(
         nullptr, // IDXIGAdapter
@@ -165,19 +183,112 @@ void Renderer::Present()
     );
 }
 
+void Renderer::SetPipeline()
+{
+    m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
+    m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+    m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+    m_deviceContext->IASetInputLayout(m_inputLayout.Get());
+    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    D3D11_VIEWPORT viewport = {};
+    viewport.TopLeftX = 0.0f;
+    viewport.TopLeftY = 0.0f;
+    viewport.Width = static_cast<float>(m_window.GetSize().m_width);
+    viewport.Height = static_cast<float>(m_window.GetSize().m_height);
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+
+    m_deviceContext->RSSetViewports(1, &viewport);
+}
+
+void Renderer::Draw(int indexCount)
+{
+    m_deviceContext->DrawIndexed(indexCount, 0, 0);
+}
+
 bool Renderer::CreateShaders()
 {
-    std::string vertexShaderCode = ReadAssetFile("Shaders/VertexShader.hlsl");
-    std::string pixelShaderCode = ReadAssetFile("Shaders/PixelShader.hlsl");
+    const std::string vertexShaderFilename("Shaders/VertexShader.hlsl");
+    m_vertexShaderBlob = CompileShader(vertexShaderFilename, "main", "vs_5_0");
+    if (!m_vertexShaderBlob)
+    {
+        return false;
+    }
+
+    auto resultVS = m_device->CreateVertexShader(
+        m_vertexShaderBlob->GetBufferPointer(),
+        m_vertexShaderBlob->GetBufferSize(),
+        nullptr, // Class linkage
+        m_vertexShader.GetAddressOf());
+
+    if (FAILED(resultVS))
+    {
+        std::printf("Error: Failed to create vertex shader %s.\n", vertexShaderFilename.c_str());
+        return false;
+    }
+
+    const std::string pixelShaderFilename("Shaders/PixelShader.hlsl");
+    m_pixelShaderBlob = CompileShader(pixelShaderFilename, "main", "ps_5_0");
+    if (!m_pixelShaderBlob)
+    {
+        return false;
+    }
+
+    auto resultPS = m_device->CreatePixelShader(
+        m_pixelShaderBlob->GetBufferPointer(),
+        m_pixelShaderBlob->GetBufferSize(),
+        nullptr, // Class linkage
+        m_pixelShader.GetAddressOf());
+
+    if (FAILED(resultPS))
+    {
+        std::printf("Error: Failed to create pixel shader %s.\n", pixelShaderFilename.c_str());
+        return false;
+    }
 
     return true;
 }
 
 void Renderer::DestroyShaders()
 {
-    m_vertexShaderBlob.Reset();
     m_vertexShader.Reset();
     m_pixelShader.Reset();
+    m_vertexShaderBlob.Reset();
+    m_pixelShaderBlob.Reset();
+}
+
+ComPtr<ID3DBlob> Renderer::CompileShader(const std::string& shaderFilename, const std::string& entryPoint, const std::string& shaderModel) const
+{
+    const std::string pixelShaderCode = ReadAssetFile(shaderFilename);
+
+    ComPtr<ID3DBlob> shaderBlob;
+    ComPtr<ID3DBlob> errorBlob;
+
+    auto result = D3DCompile(
+        pixelShaderCode.c_str(),
+        pixelShaderCode.length(),
+        nullptr, // Source name
+        nullptr, // Macros for shader
+        nullptr, // Includes for shader
+        entryPoint.c_str(),
+        shaderModel.c_str(),
+        D3DCOMPILE_ENABLE_STRICTNESS, // Flags 1
+        0, // Flags 2
+        shaderBlob.GetAddressOf(),
+        errorBlob.GetAddressOf());
+
+    if (FAILED(result))
+    {
+        std::printf("Error: Failed to compile shader %s.\n", shaderFilename.c_str());
+        if (errorBlob && errorBlob->GetBufferPointer())
+        {
+            std::printf("Message from shader compiler:\n%s\n", static_cast<char*>(errorBlob->GetBufferPointer()));
+        }
+        return {};
+    }
+
+    return shaderBlob;
 }
 
 std::string Renderer::ReadAssetFile(const std::string& fileName) const
@@ -235,8 +346,39 @@ std::filesystem::path Renderer::GetAssetPath() const
 
 std::filesystem::path Renderer::GetExecutablePath() const
 {
+#ifdef _WIN32
     char path[MAX_PATH];
     GetModuleFileName(NULL, path, MAX_PATH);
     std::filesystem::path execPath(path);
     return execPath.remove_filename();
+#else
+    #error "Unsupported platform."
+#endif
+}
+
+bool Renderer::CreateInputLayout()
+{
+    const std::array<D3D11_INPUT_ELEMENT_DESC, 1> inputLayoutDesc = {
+        { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+
+    auto result = m_device->CreateInputLayout(
+        inputLayoutDesc.data(),
+        inputLayoutDesc.size(),
+        m_vertexShaderBlob->GetBufferPointer(),
+        m_vertexShaderBlob->GetBufferSize(),
+        m_inputLayout.GetAddressOf());
+
+    if (FAILED(result))
+    {
+        std::printf("Error: Failed to create input layout.\n");
+        return false;
+    }
+
+    return true;
+}
+
+void Renderer::DestroyInputLayout()
+{
+    m_inputLayout.Reset();
 }
