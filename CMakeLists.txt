@@ -20,24 +20,26 @@ project ("DirectX11-Course")
 
 include("${CMAKE_SOURCE_DIR}/Scripts/FetchLibraries.cmake")
 
-# GLFW
-FetchContent_MakeAvailable(glfw)
-
 # --------------------------------------
 # Main executable
 
 file(GLOB_RECURSE SOURCE_FILES
-    "${CMAKE_SOURCE_DIR}/Source/*.h"
-    "${CMAKE_SOURCE_DIR}/Source/*.cpp")
+    "${CMAKE_SOURCE_DIR}/Source/*.*"
+    "${CMAKE_SOURCE_DIR}/Scripts/*.*")
 
-source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${SOURCE_FILES})
+file(GLOB_RECURSE SCRIPT_FILES
+    "${CMAKE_SOURCE_DIR}/Scripts/*.*")
 
-add_executable(main .gitignore README.md ${SOURCE_FILES})
+source_group(TREE "${CMAKE_SOURCE_DIR}" FILES ${SOURCE_FILES} ${SCRIPT_FILES})
 
+add_executable(main .gitignore README.md ${SOURCE_FILES} ${SCRIPT_FILES})
+
+# Includes
 target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
 # Libraries
 target_link_libraries(main PRIVATE glfw)
+target_link_libraries(main PRIVATE mathfu)
 target_link_libraries(main PRIVATE d3d11.lib)
 target_link_libraries(main PRIVATE d3dcompiler.lib)
 target_link_libraries(main PRIVATE dxguid.lib)
