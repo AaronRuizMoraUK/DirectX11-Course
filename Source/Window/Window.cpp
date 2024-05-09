@@ -30,7 +30,7 @@ bool Window::Initialize()
     std::printf("Initializing GLFW...\n");
     if (!glfwInit())
     {
-        std::printf("Failed to initialize GLFW.\n");
+        std::printf("Error: Failed to initialize GLFW.\n");
         return false;
     }
 
@@ -42,20 +42,12 @@ bool Window::Initialize()
     m_window = glfwCreateWindow(m_size.m_width, m_size.m_height, m_title.c_str(), nullptr, nullptr);
     if (!m_window)
     {
-        std::printf("Failed to create GLFW window.\n");
+        std::printf("Error: Failed to create GLFW window.\n");
         glfwTerminate();
         return false;
     }
 
     return true;
-}
-
-void Window::Run()
-{
-    if (m_window)
-    {
-        glfwPollEvents();
-    }
 }
 
 void Window::Terminate()
@@ -68,16 +60,17 @@ void Window::Terminate()
     }
 }
 
+void Window::Run()
+{
+    glfwPollEvents();
+}
+
 bool Window::IsVisible() const
 {
-    return m_window && !glfwWindowShouldClose(m_window);
+    return !glfwWindowShouldClose(m_window);
 }
 
 HWND Window::GetWindowNativeHandler()
 {
-    if (m_window)
-    {
-        return glfwGetWin32Window(m_window);
-    }
-    return NULL;
+    return glfwGetWin32Window(m_window);
 }

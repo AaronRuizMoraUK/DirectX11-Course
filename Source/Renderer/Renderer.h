@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Math/Vector4.h>
+
 // For COM objects' smart pointers
 #include <wrl.h>
 
@@ -17,11 +19,16 @@ public:
     Renderer(Window& window);
     ~Renderer();
 
-    void CreateDevice();
-    void CreateSwapChain();
-    void CreateRenderTargetView();
+    bool Initialize();
+    void Terminate();
 
-    void ClearColor();
+    void ClearColor(const mathfu::Vector4& color);
+    void Present();
+
+protected:
+    bool CreateDevice();
+    bool CreateSwapChain();
+    bool CreateRenderTargetView();
 
 private:
     Window& m_window;

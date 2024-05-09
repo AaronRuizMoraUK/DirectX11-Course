@@ -18,8 +18,9 @@ public:
     ~Window();
 
     bool Initialize();
-    void Run();
     void Terminate();
+
+    void Run();
 
     bool IsVisible() const;
     WindowSize GetSize() const { return m_size; }

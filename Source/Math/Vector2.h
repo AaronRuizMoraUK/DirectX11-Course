@@ -5,6 +5,7 @@
 namespace mathfu
 {
     using Vector2 = Vector<float, 2>;
+    using Vector2Packed = VectorPacked<float, 2>;
 
     /// @brief Calculate the dot product of two Vector2.
     ///

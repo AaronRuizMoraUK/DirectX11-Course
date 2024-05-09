@@ -5,6 +5,7 @@
 namespace mathfu
 {
     using Vector3 = Vector<float, 3>;
+    using Vector3Packed = VectorPacked<float, 3>;
 
     /// @brief Calculate the cross product of two Vector3.
     ///
