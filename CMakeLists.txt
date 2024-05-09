@@ -24,8 +24,7 @@ include("${CMAKE_SOURCE_DIR}/Scripts/FetchLibraries.cmake")
 # Main executable
 
 file(GLOB_RECURSE SOURCE_FILES
-    "${CMAKE_SOURCE_DIR}/Source/*.*"
-    "${CMAKE_SOURCE_DIR}/Scripts/*.*")
+    "${CMAKE_SOURCE_DIR}/Source/*.*")
 
 file(GLOB_RECURSE SCRIPT_FILES
     "${CMAKE_SOURCE_DIR}/Scripts/*.*")

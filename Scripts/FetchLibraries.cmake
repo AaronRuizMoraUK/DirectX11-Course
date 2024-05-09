@@ -7,7 +7,7 @@ set(3rdparty_folder "3rdParty")
 # ---------------------------------------------------------------------
 # glfw
 #
-# library to handle the window of the application.
+# Library to handle the window of the application.
 # ---------------------------------------------------------------------
 FetchContent_Declare(
     glfw
@@ -28,13 +28,15 @@ set_target_properties(update_mappings PROPERTIES FOLDER ${glfw_folder})
 # Provides a lightweight and efficient implementation of vectors,
 # matrices and quaternions.
 # ---------------------------------------------------------------------
+set(mathfu_build_benchmarks OFF CACHE INTERNAL "Turn off benchmarks")
+set(mathfu_build_tests OFF CACHE INTERNAL "Turn off tests")
 set(mathfu_patch git apply ${CMAKE_SOURCE_DIR}/Scripts/Patches/mathfu.patch)
 
 FetchContent_Declare(
     mathfu
     GIT_REPOSITORY https://github.com/google/mathfu.git
     GIT_TAG da23a1227bb65fbb7f2f5b6c504fbbdd1dfdab4b # Last commit on master (9th May 2022)
-    PATCH_COMMAND ${mathfu_patch} # Patch to fix vector std::max and std::min usage
+    PATCH_COMMAND ${mathfu_patch} # Patch to fix std::max/min usage and increase cmake min version
     UPDATE_DISCONNECTED 1 # Avoid to apply the patch again once it has been populated
 )
 
@@ -50,27 +52,3 @@ target_include_directories(mathfu INTERFACE "${mathfu_SOURCE_DIR}/include")
 
 set(mathfu_folder "${3rdparty_folder}/mathfu")
 set_target_properties(mathfu PROPERTIES FOLDER ${mathfu_folder})
-
-set(mathfu_tests_folder "${mathfu_folder}/tests")
-set_target_properties(gtest PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(gtest_main PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_no_simd_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_no_simd_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_simd_no_padding_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_simd_no_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_simd_padding_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_simd_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(matrix_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(quaternion_no_simd_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(quaternion_simd_no_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(quaternion_simd_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(quaternion_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_no_simd_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_no_simd_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_simd_no_padding_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_simd_no_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_simd_padding_benchmarks PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_simd_padding_tests PROPERTIES FOLDER ${mathfu_tests_folder})
-set_target_properties(vector_tests PROPERTIES FOLDER ${mathfu_tests_folder})
