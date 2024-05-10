@@ -1,5 +1,7 @@
 #include <Window/Window.h>
 #include <Renderer/Renderer.h>
+#include <Math/Vector3.h>
+#include <Math/Color.h>
 
 #include <cstdio>
 #include <array>
@@ -9,16 +11,16 @@
 
 struct Vertex
 {
-    float x, y, z;
-    float r, g, b, a;
+    mathfu::Vector3Packed position;
+    mathfu::ColorPacked color;
 };
 
 static const std::array<Vertex, 3> VertexData = 
-{{
-    {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},
-    { 0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
-    { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f}
-}};
+{
+    Vertex(mathfu::Vector3Packed(mathfu::Vector3(-0.5f, -0.5f, 0.0f)), mathfu::Colors::RedPacked),
+    Vertex(mathfu::Vector3Packed(mathfu::Vector3(0.0f,   0.5f, 0.0f)), mathfu::Colors::GreenPacked),
+    Vertex(mathfu::Vector3Packed(mathfu::Vector3(0.5f,  -0.5f, 0.0f)), mathfu::Colors::BluePacked)
+};
 
 static const std::array<uint32_t, 3> IndexData = { 0, 1, 2 };
 
@@ -86,7 +88,7 @@ int main()
     {
         window->Run();
 
-        renderer->ClearColor({0.0f, 0.0f, 0.0f, 1.0f});
+        renderer->ClearColor(mathfu::Colors::Black);
 
         renderer->Draw(IndexData.size());
 

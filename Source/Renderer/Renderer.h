@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Vector4.h>
+#include <Math/Color.h>
 
 #include <string>
 #include <filesystem>
@@ -34,7 +34,7 @@ public:
     ComPtr<ID3D11Device> GetDevice();
     ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
-    void ClearColor(const mathfu::Vector4& color);
+    void ClearColor(const mathfu::Color& color);
     void Present();
 
     void SetPipeline();

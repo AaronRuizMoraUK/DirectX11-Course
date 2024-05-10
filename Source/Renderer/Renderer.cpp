@@ -170,9 +170,9 @@ bool Renderer::CreateRenderTargetView()
     return true;
 }
 
-void Renderer::ClearColor(const mathfu::Vector4& color)
+void Renderer::ClearColor(const mathfu::Color& color)
 {
-    m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), mathfu::Vector4Packed(color).data_);
+    m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), mathfu::ColorPacked(color).data_);
 }
 
 void Renderer::Present()
