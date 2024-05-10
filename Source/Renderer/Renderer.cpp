@@ -75,6 +75,11 @@ namespace DX
         m_device.Reset();
     }
 
+    Window* Renderer::GetWindow()
+    {
+        return m_window;
+    }
+
     ComPtr<ID3D11Device> Renderer::GetDevice()
     {
         return m_device;

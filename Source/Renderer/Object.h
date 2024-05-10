@@ -1,7 +1,6 @@
 #pragma once
 
-#include <Math/Vector3.h>
-#include <Math/Color.h>
+#include <Renderer/Vertices.h>
 
 #include <span>
 
@@ -13,12 +12,6 @@ class ID3D11Buffer;
 
 namespace DX
 {
-    struct Vertex
-    {
-        mathfu::Vector3Packed position;
-        mathfu::ColorPacked color;
-    };
-
     class Object
     {
     public:

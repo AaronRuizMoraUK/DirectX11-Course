@@ -31,7 +31,7 @@ namespace DX
         void Terminate();
 
         bool IsVisible() const;
-        WindowSize GetSize() const { return m_size; }
+        const WindowSize& GetSize() const { return m_size; }
 
         WindowId GetId() const { return m_windowId; }
         GLFWwindow* GetWindowHandler() { return m_window; }

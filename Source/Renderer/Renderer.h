@@ -41,6 +41,7 @@ namespace DX
         bool Initialize();
         void Terminate();
 
+        Window* GetWindow();
         ComPtr<ID3D11Device> GetDevice();
         ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
