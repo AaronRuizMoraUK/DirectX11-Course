@@ -358,9 +358,11 @@ std::filesystem::path Renderer::GetExecutablePath() const
 
 bool Renderer::CreateInputLayout()
 {
-    const std::array<D3D11_INPUT_ELEMENT_DESC, 1> inputLayoutDesc = {
-        { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-    };
+    const std::array<D3D11_INPUT_ELEMENT_DESC, 2> inputLayoutDesc =
+    {{
+        { "SV_Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    }};
 
     auto result = m_device->CreateInputLayout(
         inputLayoutDesc.data(),

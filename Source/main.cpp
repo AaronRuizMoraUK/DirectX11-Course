@@ -10,14 +10,15 @@
 struct Vertex
 {
     float x, y, z;
+    float r, g, b, a;
 };
 
-static const std::array<Vertex, 3> VertexData =
-{
-    Vertex{-0.5f, -0.5f, 0.0f},
-    Vertex{ 0.0f,  0.5f, 0.0f},
-    Vertex{ 0.5f, -0.5f, 0.0f}
-};
+static const std::array<Vertex, 3> VertexData = 
+{{
+    {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},
+    { 0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
+    { 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f}
+}};
 
 static const std::array<uint32_t, 3> IndexData = { 0, 1, 2 };
 
@@ -85,7 +86,7 @@ int main()
     {
         window->Run();
 
-        renderer->ClearColor({0.0f, 0.0f, 0.3f, 1.0f});
+        renderer->ClearColor({0.0f, 0.0f, 0.0f, 1.0f});
 
         renderer->Draw(IndexData.size());
 

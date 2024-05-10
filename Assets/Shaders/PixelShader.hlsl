@@ -1,9 +1,17 @@
 struct PixelIn
 {
     float4 position : SV_Position;
+    float4 color : COLOR;
 };
 
-float4 main(PixelIn pixelIn) : SV_Target
+struct PixelOut
 {
-    return float4(1.0, 0.0, 0.0, 1.0f);
+    float4 color : SV_Target;
+};
+
+PixelOut main(PixelIn pixelIn)
+{
+    PixelOut pixelOut;
+    pixelOut.color = pixelIn.color;
+    return pixelOut;
 }
