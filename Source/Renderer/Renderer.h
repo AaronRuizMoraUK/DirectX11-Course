@@ -7,7 +7,6 @@
 
 // For COM objects' smart pointers
 #include <wrl.h>
-
 using Microsoft::WRL::ComPtr;
 
 class ID3D11Device;
