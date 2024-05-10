@@ -10,7 +10,6 @@
 
 using Microsoft::WRL::ComPtr;
 
-class Window;
 class ID3D11Device;
 class ID3D11DeviceContext;
 class IDXGISwapChain;
@@ -22,63 +21,68 @@ class ID3D11VertexShader;
 class ID3D11PixelShader;
 class ID3D11InputLayout;
 
-namespace Internal
+namespace DX
 {
-    template<typename Tag>
-    using RendererIdType = uint32_t;
-}
-using RendererId = Internal::RendererIdType<struct RendererIdTag>;
-static const RendererId InvalidRendererId = 0xFFFFFFFF;
+    class Window;
 
-class Renderer
-{
-public:
-    Renderer(RendererId rendererId, Window* window);
-    ~Renderer();
+    namespace Internal
+    {
+        template<typename Tag>
+        using RendererIdType = uint32_t;
+    }
+    using RendererId = Internal::RendererIdType<struct RendererIdTag>;
+    static const RendererId InvalidRendererId = 0xFFFFFFFF;
 
-    bool Initialize();
-    void Terminate();
+    class Renderer
+    {
+    public:
+        Renderer(RendererId rendererId, Window* window);
+        ~Renderer();
 
-    ComPtr<ID3D11Device> GetDevice();
-    ComPtr<ID3D11DeviceContext> GetDeviceContext();
+        bool Initialize();
+        void Terminate();
 
-    void ClearColor(const mathfu::Color& color);
-    void Present();
+        ComPtr<ID3D11Device> GetDevice();
+        ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
-    void SetPipeline();
+        void ClearColor(const mathfu::Color& color);
+        void Present();
 
-    void Draw(int indexCount);
+        void SetPipeline();
 
-private:
-    bool CreateDevice();
-    bool CreateSwapChain();
-    bool CreateRenderTargetView();
+        void Draw(int indexCount);
 
-    const RendererId m_rendererId = InvalidRendererId;
-    Window* m_window = nullptr;
+    private:
+        bool CreateDevice();
+        bool CreateSwapChain();
+        bool CreateRenderTargetView();
 
-    ComPtr<ID3D11Device> m_device;
-    ComPtr<ID3D11DeviceContext> m_deviceContext;
-    ComPtr<IDXGISwapChain> m_swapChain;
-    ComPtr<ID3D11RenderTargetView> m_renderTargetView;
+        const RendererId m_rendererId = InvalidRendererId;
+        Window* m_window = nullptr;
 
-private:
-    bool CreateShaders();
-    void DestroyShaders();
+        ComPtr<ID3D11Device> m_device;
+        ComPtr<ID3D11DeviceContext> m_deviceContext;
+        ComPtr<IDXGISwapChain> m_swapChain;
+        ComPtr<ID3D11RenderTargetView> m_renderTargetView;
 
-    ComPtr<ID3DBlob> CompileShader(const std::string& shaderFilename, const std::string& entryPoint, const std::string& shaderModel) const;
-    std::string ReadAssetFile(const std::string& fileName) const;
-    std::filesystem::path GetAssetPath() const;
-    std::filesystem::path GetExecutablePath() const;
+    private:
+        bool CreateShaders();
+        void DestroyShaders();
 
-    ComPtr<ID3DBlob> m_vertexShaderBlob;
-    ComPtr<ID3DBlob> m_pixelShaderBlob;
-    ComPtr<ID3D11VertexShader> m_vertexShader;
-    ComPtr<ID3D11PixelShader> m_pixelShader;
+        ComPtr<ID3DBlob> CompileShader(const std::string& shaderFilename, const std::string& entryPoint, const std::string& shaderModel) const;
+        std::string ReadAssetFile(const std::string& fileName) const;
+        std::filesystem::path GetAssetPath() const;
+        std::filesystem::path GetExecutablePath() const;
 
-private:
-    bool CreateInputLayout();
-    void DestroyInputLayout();
+        ComPtr<ID3DBlob> m_vertexShaderBlob;
+        ComPtr<ID3DBlob> m_pixelShaderBlob;
+        ComPtr<ID3D11VertexShader> m_vertexShader;
+        ComPtr<ID3D11PixelShader> m_pixelShader;
 
-    ComPtr<ID3D11InputLayout> m_inputLayout;
-};
+    private:
+        bool CreateInputLayout();
+        void DestroyInputLayout();
+
+        ComPtr<ID3D11InputLayout> m_inputLayout;
+    };
+} // namespace DX

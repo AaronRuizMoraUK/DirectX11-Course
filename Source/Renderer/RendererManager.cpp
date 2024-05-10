@@ -1,54 +1,57 @@
-
 #include <Renderer/RendererManager.h>
+#include <Window/Window.h>
 
 #include <cassert>
 
-std::unique_ptr<RendererManager> RendererManager::Instance;
-
-RendererId RendererManager::NextRendererId = 0;
-
-RendererManager& RendererManager::Get()
+namespace DX
 {
-    if (!Instance)
+    std::unique_ptr<RendererManager> RendererManager::Instance;
+
+    RendererId RendererManager::NextRendererId = 0;
+
+    RendererManager& RendererManager::Get()
     {
-        Instance.reset(new RendererManager());
+        if (!Instance)
+        {
+            Instance.reset(new RendererManager());
+        }
+        return *Instance;
     }
-    return *Instance;
-}
 
-void RendererManager::Destroy()
-{
-    Instance.reset();
-}
-
-Renderer* RendererManager::CreateRenderer(Window* window)
-{
-    auto newRenderer = std::make_unique<Renderer>(NextRendererId, window);
-    if (!newRenderer->Initialize())
+    void RendererManager::Destroy()
     {
+        Instance.reset();
+    }
+
+    Renderer* RendererManager::CreateRenderer(Window* window)
+    {
+        auto newRenderer = std::make_unique<Renderer>(NextRendererId, window);
+        if (!newRenderer->Initialize())
+        {
+            return nullptr;
+        }
+
+        auto result = m_renderers.emplace(NextRendererId, std::move(newRenderer));
+        ++NextRendererId;
+
+        // Result's first is the iterator to the newly inserted element (pair),
+        // its second is the value of the element (unique_ptr<Window>).
+        return result.first->second.get();
+    }
+
+    void RendererManager::DestroyRenderer(RendererId rendererId)
+    {
+        // Removing the renderer from the map will destroy it.
+        m_renderers.erase(rendererId);
+    }
+
+    Renderer* RendererManager::GetRenderer(RendererId rendererId)
+    {
+        if (auto it = m_renderers.find(rendererId);
+            it != m_renderers.end())
+        {
+            return it->second.get();
+        }
         return nullptr;
     }
-
-    auto result = m_renderers.emplace(NextRendererId, std::move(newRenderer));
-    ++NextRendererId;
-
-    // Result's first is the iterator to the newly inserted element (pair),
-    // its second is the value of the element (unique_ptr<Window>).
-    return result.first->second.get();
-}
-
-void RendererManager::DestroyRenderer(RendererId rendererId)
-{
-    // Removing the renderer from the map will destroy it.
-    m_renderers.erase(rendererId);
-}
-
-Renderer* RendererManager::GetRenderer(RendererId rendererId)
-{
-    if (auto it = m_renderers.find(rendererId);
-        it != m_renderers.end())
-    {
-        return it->second.get();
-    }
-    return nullptr;
-}
+} // namespace DX

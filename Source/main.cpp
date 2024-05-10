@@ -24,7 +24,7 @@ static const std::array<Vertex, 3> VertexData =
 
 static const std::array<uint32_t, 3> IndexData = { 0, 1, 2 };
 
-void SetTriangle(Renderer* renderer)
+void SetTriangle(DX::Renderer* renderer)
 {
     ComPtr<ID3D11Buffer> vertexBuffer;
     {
@@ -69,15 +69,15 @@ void SetTriangle(Renderer* renderer)
 
 int main()
 {
-    WindowManager& windowManager = WindowManager::Get();
-    Window* window = windowManager.CreateWindowWithTitle(WindowSize{1280, 720}, "DirectX11 Course");
+    DX::WindowManager& windowManager = DX::WindowManager::Get();
+    DX::Window* window = windowManager.CreateWindowWithTitle(DX::WindowSize{1280, 720}, "DirectX11 Course");
     if (!window)
     {
         return -1;
     }
 
-    RendererManager& rendererManager = RendererManager::Get();
-    Renderer* renderer = rendererManager.CreateRenderer(window);
+    DX::RendererManager& rendererManager = DX::RendererManager::Get();
+    DX::Renderer* renderer = rendererManager.CreateRenderer(window);
     if (!renderer)
     {
         return -1;
@@ -98,8 +98,8 @@ int main()
         renderer->Present();
     }
 
-    RendererManager::Destroy();
-    WindowManager::Destroy();
+    DX::RendererManager::Destroy();
+    DX::WindowManager::Destroy();
 
     std::printf("Done!\n");
     return 0;

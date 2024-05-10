@@ -5,31 +5,34 @@
 #include <memory>
 #include <unordered_map>
 
-class WindowManager
+namespace DX
 {
-public:
-    static WindowManager& Get();
-    static void Destroy();
+    class WindowManager
+    {
+    public:
+        static WindowManager& Get();
+        static void Destroy();
 
-    ~WindowManager();
+        ~WindowManager();
 
-    // Delete copy constructor and assignment operator to prevent copying
-    WindowManager(const WindowManager&) = delete;
-    WindowManager& operator=(const WindowManager&) = delete;
+        // Delete copy constructor and assignment operator to prevent copying
+        WindowManager(const WindowManager&) = delete;
+        WindowManager& operator=(const WindowManager&) = delete;
 
-    Window* CreateWindowWithTitle(const WindowSize& size, std::string title);
-    void DestroyWindow(WindowId windowId);
+        Window* CreateWindowWithTitle(const WindowSize& size, std::string title);
+        void DestroyWindow(WindowId windowId);
 
-    Window* GetWindow(WindowId windowId);
+        Window* GetWindow(WindowId windowId);
 
-    void PollEvents();
+        void PollEvents();
 
-private:
-    WindowManager();
+    private:
+        WindowManager();
 
-    static std::unique_ptr<WindowManager> Instance;
-    static WindowId NextWindowId;
+        static std::unique_ptr<WindowManager> Instance;
+        static WindowId NextWindowId;
 
-    using Windows = std::unordered_map<WindowId, std::unique_ptr<Window>>;
-    Windows m_windows;
-};
+        using Windows = std::unordered_map<WindowId, std::unique_ptr<Window>>;
+        Windows m_windows;
+    };
+} // namespace DX

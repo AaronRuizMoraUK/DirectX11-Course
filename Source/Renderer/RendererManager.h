@@ -5,31 +5,34 @@
 #include <memory>
 #include <unordered_map>
 
-class Window;
-
-class RendererManager
+namespace DX
 {
-public:
-    static RendererManager& Get();
-    static void Destroy();
+    class Window;
 
-    ~RendererManager() = default;
+    class RendererManager
+    {
+    public:
+        static RendererManager& Get();
+        static void Destroy();
 
-    // Delete copy constructor and assignment operator to prevent copying
-    RendererManager(const RendererManager&) = delete;
-    RendererManager& operator=(const RendererManager&) = delete;
+        ~RendererManager() = default;
 
-    Renderer* CreateRenderer(Window* window);
-    void DestroyRenderer(RendererId rendererId);
+        // Delete copy constructor and assignment operator to prevent copying
+        RendererManager(const RendererManager&) = delete;
+        RendererManager& operator=(const RendererManager&) = delete;
 
-    Renderer* GetRenderer(RendererId rendererId);
+        Renderer* CreateRenderer(Window* window);
+        void DestroyRenderer(RendererId rendererId);
 
-private:
-    RendererManager() = default;
+        Renderer* GetRenderer(RendererId rendererId);
 
-    static std::unique_ptr<RendererManager> Instance;
-    static RendererId NextRendererId;
+    private:
+        RendererManager() = default;
 
-    using Renderers = std::unordered_map<RendererId, std::unique_ptr<Renderer>>;
-    Renderers m_renderers;
-};
+        static std::unique_ptr<RendererManager> Instance;
+        static RendererId NextRendererId;
+
+        using Renderers = std::unordered_map<RendererId, std::unique_ptr<Renderer>>;
+        Renderers m_renderers;
+    };
+} // namespace DX
