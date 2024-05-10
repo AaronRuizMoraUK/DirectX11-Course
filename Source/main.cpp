@@ -42,7 +42,7 @@ int main()
 
         triangle.SetBuffers();
 
-        renderer->Draw(IndexData.size());
+        renderer->Draw(triangle.GetIndexCount());
 
         renderer->Present();
     }

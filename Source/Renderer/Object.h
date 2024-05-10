@@ -27,7 +27,11 @@ namespace DX
 
         void SetBuffers();
 
+        uint32_t GetIndexCount() const { return m_indexCount; }
+
     private:
+        const uint32_t m_indexCount = 0;
+
         ComPtr<ID3D11Buffer> m_vertexBuffer;
         ComPtr<ID3D11Buffer> m_indexBuffer;
     };

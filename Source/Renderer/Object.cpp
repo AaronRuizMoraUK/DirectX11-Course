@@ -6,6 +6,7 @@
 namespace DX
 {
     Object::Object(std::span<const Vertex> vertexData, std::span<const uint32_t> indexData)
+        : m_indexCount(indexData.size())
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
