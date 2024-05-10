@@ -1,6 +1,5 @@
 
-#include "Renderer.h"
-
+#include <Renderer/Renderer.h>
 #include <Window/Window.h>
 
 #include <d3d11.h>
@@ -11,8 +10,9 @@
 #include <sstream>
 #include <string_view>
 
-Renderer::Renderer(Window& window)
-    : m_window(window)
+Renderer::Renderer(RendererId rendererId, Window* window)
+    : m_rendererId(rendererId)
+    , m_window(window)
 {
 }
 
@@ -115,8 +115,8 @@ bool Renderer::CreateDevice()
 bool Renderer::CreateSwapChain()
 {
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-    swapChainDesc.BufferDesc.Width = m_window.GetSize().m_width;
-    swapChainDesc.BufferDesc.Height = m_window.GetSize().m_height;
+    swapChainDesc.BufferDesc.Width = m_window->GetSize().m_width;
+    swapChainDesc.BufferDesc.Height = m_window->GetSize().m_height;
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
     swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -124,7 +124,7 @@ bool Renderer::CreateSwapChain()
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.BufferCount = 1;
-    swapChainDesc.OutputWindow = m_window.GetWindowNativeHandler();
+    swapChainDesc.OutputWindow = m_window->GetWindowNativeHandler();
     swapChainDesc.Windowed = true;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
@@ -194,8 +194,8 @@ void Renderer::SetPipeline()
     D3D11_VIEWPORT viewport = {};
     viewport.TopLeftX = 0.0f;
     viewport.TopLeftY = 0.0f;
-    viewport.Width = static_cast<float>(m_window.GetSize().m_width);
-    viewport.Height = static_cast<float>(m_window.GetSize().m_height);
+    viewport.Width = static_cast<float>(m_window->GetSize().m_width);
+    viewport.Height = static_cast<float>(m_window->GetSize().m_height);
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
 
@@ -352,7 +352,8 @@ std::filesystem::path Renderer::GetExecutablePath() const
     std::filesystem::path execPath(path);
     return execPath.remove_filename();
 #else
-    #error "Unsupported platform."
+#error "Renderer::GetExecutablePath: Unsupported platform."
+    return {};
 #endif
 }
 

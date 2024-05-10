@@ -22,10 +22,18 @@ class ID3D11VertexShader;
 class ID3D11PixelShader;
 class ID3D11InputLayout;
 
+namespace Internal
+{
+    template<typename Tag>
+    using RendererIdType = uint32_t;
+}
+using RendererId = Internal::RendererIdType<struct RendererIdTag>;
+static const RendererId InvalidRendererId = 0xFFFFFFFF;
+
 class Renderer
 {
 public:
-    Renderer(Window& window);
+    Renderer(RendererId rendererId, Window* window);
     ~Renderer();
 
     bool Initialize();
@@ -46,7 +54,8 @@ private:
     bool CreateSwapChain();
     bool CreateRenderTargetView();
 
-    Window& m_window;
+    const RendererId m_rendererId = InvalidRendererId;
+    Window* m_window = nullptr;
 
     ComPtr<ID3D11Device> m_device;
     ComPtr<ID3D11DeviceContext> m_deviceContext;

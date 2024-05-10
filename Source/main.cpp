@@ -1,5 +1,5 @@
-#include <Window/Window.h>
-#include <Renderer/Renderer.h>
+#include <Window/WindowManager.h>
+#include <Renderer/RendererManager.h>
 #include <Math/Vector3.h>
 #include <Math/Color.h>
 
@@ -69,34 +69,37 @@ void SetTriangle(Renderer* renderer)
 
 int main()
 {
-    auto window = std::make_unique<Window>(WindowSize{1280, 720}, "DirectX11 Course");
-    if (!window->Initialize())
+    WindowManager& windowManager = WindowManager::Get();
+    Window* window = windowManager.CreateWindowWithTitle(WindowSize{1280, 720}, "DirectX11 Course");
+    if (!window)
     {
         return -1;
     }
 
-    auto renderer = std::make_unique<Renderer>(*window);
-    if (!renderer->Initialize())
+    RendererManager& rendererManager = RendererManager::Get();
+    Renderer* renderer = rendererManager.CreateRenderer(window);
+    if (!renderer)
     {
         return -1;
     }
 
-    SetTriangle(renderer.get());
-    renderer->SetPipeline();
+    SetTriangle(renderer);
 
     while (window->IsVisible())
     {
-        window->Run();
+        windowManager.PollEvents();
 
         renderer->ClearColor(mathfu::Colors::Black);
+
+        renderer->SetPipeline();
 
         renderer->Draw(IndexData.size());
 
         renderer->Present();
     }
 
-    renderer.reset();
-    window.reset();
+    RendererManager::Destroy();
+    WindowManager::Destroy();
 
     std::printf("Done!\n");
     return 0;
