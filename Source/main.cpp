@@ -1,6 +1,7 @@
 #include <Window/WindowManager.h>
 #include <Renderer/RendererManager.h>
 #include <Renderer/Object.h>
+#include <Renderer/Camera.h>
 
 #include <cstdio>
 #include <array>
@@ -40,18 +41,34 @@ int main()
         return -1;
     }
 
+    // Camera
+    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(0.0f, 0.0f, -5.0f));
+
     // Rendering objects initialization
     std::vector<std::unique_ptr<DX::Object>> objects;
     objects.push_back(std::make_unique<DX::Object>(VertexData1, IndexData));
     objects.push_back(std::make_unique<DX::Object>(VertexData2, IndexData));
+    objects[0]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
+    objects[1]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
 
     while (window->IsVisible())
     {
         windowManager.PollEvents();
 
+        // ------
+        // Update
+        // ------
+        constexpr float deltaTime = 1.0f / 60.0f;
+        camera->Update(deltaTime);
+
+        // ------
+        // Render
+        // ------
         renderer->ClearColor(mathfu::Colors::Black);
 
         renderer->SetPipeline();
+
+        camera->SetBuffers();
 
         for (auto& object : objects)
         {
@@ -64,6 +81,7 @@ int main()
     }
 
     objects.clear();
+    camera.reset();
     DX::RendererManager::Destroy();
     DX::WindowManager::Destroy();
 

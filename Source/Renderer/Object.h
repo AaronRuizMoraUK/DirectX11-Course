@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Renderer/Transform.h>
 #include <Renderer/Vertices.h>
 
 #include <span>
@@ -22,10 +23,18 @@ namespace DX
 
         uint32_t GetIndexCount() const { return m_indexCount; }
 
+        Transform GetTransform() const { return m_transform; }
+        void SetTransform(const Transform& transform);
+
     private:
         const uint32_t m_indexCount = 0;
 
         ComPtr<ID3D11Buffer> m_vertexBuffer;
         ComPtr<ID3D11Buffer> m_indexBuffer;
+        ComPtr<ID3D11Buffer> m_worldMatrixConstantBuffer;
+
+        Transform m_transform = Transform::CreateIdentity();
+
+        mathfu::Matrix4x4Packed m_worldMatrix = mathfu::Matrix4x4::Identity();
     };
 } // namespace DX
