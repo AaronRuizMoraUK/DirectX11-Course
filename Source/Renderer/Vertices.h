@@ -6,6 +6,8 @@
 
 namespace DX
 {
+    using Index = uint32_t;
+
     struct VertexPC
     {
         mathfu::Vector3Packed m_position;
