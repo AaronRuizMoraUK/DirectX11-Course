@@ -50,12 +50,15 @@ add_executable(main README.md .gitignore
 # Includes
 target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/Source")
 
+# Compiler definitions
+target_compile_definitions(main PUBLIC STB_IMAGE_IMPLEMENTATION=1) # For stb
+
 # Libraries
 target_link_libraries(main PRIVATE glfw)
+target_link_libraries(main PRIVATE stb)
 target_link_libraries(main PRIVATE mathfu)
 target_link_libraries(main PRIVATE d3d11.lib)
 target_link_libraries(main PRIVATE d3dcompiler.lib)
-#target_link_libraries(main PRIVATE dxguid.lib)
 
 # Set main as the default project in Visual Studio
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)

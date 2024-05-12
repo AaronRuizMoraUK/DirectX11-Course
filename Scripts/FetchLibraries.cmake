@@ -23,6 +23,30 @@ set_target_properties(uninstall PROPERTIES FOLDER ${glfw_folder})
 set_target_properties(update_mappings PROPERTIES FOLDER ${glfw_folder})
 
 # ---------------------------------------------------------------------
+# stb
+#
+# Provides several single-file graphics and audio libraries for C/C++.
+# ---------------------------------------------------------------------
+
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG ae721c50eaf761660b4f90cc590453cdb0c2acd0
+)
+
+FetchContent_MakeAvailable(stb)
+
+file(GLOB STB_SOURCE_FILES # Not using GLOB_RECURSIVE because all the source file are in root folder
+    "${stb_SOURCE_DIR}/*.h"
+    "${stb_SOURCE_DIR}/*.c")
+source_group(TREE "${stb_SOURCE_DIR}" FILES ${STB_SOURCE_FILES})
+add_library(stb INTERFACE ${STB_SOURCE_FILES})
+target_include_directories(stb INTERFACE "${stb_SOURCE_DIR}") 
+
+set(stb_folder "${3rdparty_folder}/stb")
+set_target_properties(stb PROPERTIES FOLDER ${stb_folder})
+
+# ---------------------------------------------------------------------
 # mathfu
 #
 # Provides a lightweight and efficient implementation of vectors,
