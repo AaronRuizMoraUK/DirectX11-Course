@@ -9,14 +9,14 @@
 
 namespace
 {
-    const std::array<DX::Vertex, 3> TriangleVertexData = 
+    const std::array<DX::VertexPC, 3> TriangleVertexData = 
     {{
         { mathfu::Vector3Packed(mathfu::Vector3(-0.5f, -0.5f, 0.0f)), mathfu::Colors::RedPacked },
         { mathfu::Vector3Packed(mathfu::Vector3(0.0f,   0.5f, 0.0f)), mathfu::Colors::GreenPacked },
         { mathfu::Vector3Packed(mathfu::Vector3(0.5f,  -0.5f, 0.0f)), mathfu::Colors::BluePacked }
     }};
 
-    const std::array<DX::Vertex, 3> TriangleVertexData2 =
+    const std::array<DX::VertexPC, 3> TriangleVertexData2 =
     {{
         { mathfu::Vector3Packed(mathfu::Vector3(0.6f, 0.0f, 0.0f)), mathfu::Colors::RedPacked },
         { mathfu::Vector3Packed(mathfu::Vector3(0.8f, 0.7f, 0.0f)), mathfu::Colors::GreenPacked },
@@ -25,7 +25,7 @@ namespace
 
     const std::array<uint32_t, 3> TriangleIndexData = { 0, 1, 2 };
     
-    std::array<DX::Vertex, 8> CubeVertexData(const mathfu::Vector3& extends)
+    std::array<DX::VertexPC, 8> CubeVertexData(const mathfu::Vector3& extends)
     {
         const mathfu::Vector3 half = 0.5f * extends;
         return

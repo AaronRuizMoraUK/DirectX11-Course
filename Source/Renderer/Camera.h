@@ -10,6 +10,7 @@ class ID3D11Buffer;
 
 namespace DX
 {
+    // 3D perspective camera
     class Camera
     {
     public:

@@ -16,7 +16,7 @@ namespace DX
     class Object
     {
     public:
-        Object(std::span<const Vertex> vertexData, std::span<const uint32_t> indexData);
+        Object(std::span<const VertexPC> vertexData, std::span<const uint32_t> indexData);
         ~Object();
 
         void SetBuffers();

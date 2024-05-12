@@ -5,7 +5,7 @@
 
 namespace DX
 {
-    Object::Object(std::span<const Vertex> vertexData, std::span<const uint32_t> indexData)
+    Object::Object(std::span<const VertexPC> vertexData, std::span<const uint32_t> indexData)
         : m_indexCount(indexData.size())
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
@@ -13,7 +13,7 @@ namespace DX
 
         {
             D3D11_BUFFER_DESC vertexBufferDesc = {};
-            vertexBufferDesc.ByteWidth = sizeof(Vertex) * vertexData.size();
+            vertexBufferDesc.ByteWidth = sizeof(VertexPC) * vertexData.size();
             vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
             vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
             vertexBufferDesc.CPUAccessFlags = 0;
@@ -64,7 +64,7 @@ namespace DX
 
     void Object::SetBuffers()
     {
-        const uint32_t vertexBufferStride = sizeof(Vertex);
+        const uint32_t vertexBufferStride = sizeof(VertexPC);
         const uint32_t vertexBufferOffset = 0;
 
         auto* renderer = RendererManager::Get().GetRenderer(0);
