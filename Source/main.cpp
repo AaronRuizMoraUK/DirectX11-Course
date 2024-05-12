@@ -83,7 +83,7 @@ int main()
     }
 
     // Camera
-    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(0.0f, 0.0f, -3.0f));
+    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(0.0f, 0.0f, -3.0f), mathfu::Vector3(0.0f));
 
     // Rendering objects initialization
     std::vector<std::unique_ptr<DX::Object>> objects;

@@ -3,6 +3,7 @@
 #include <Window/WindowManager.h>
 
 #include <Math/Vector2.h>
+#include <Math/Matrix3x3.h>
 #include <mathfu/constants.h>
 
 #include <d3d11.h>
@@ -18,9 +19,20 @@ namespace DX
         CreateBuffers();
     }
 
+    Camera::Camera(const mathfu::Vector3& position, const mathfu::Vector3& lookAtPosition)
+    {
+        m_transform.m_position = position;
+        if (const auto basisZ = (lookAtPosition - position);
+            basisZ.Length() > 1e-5f)
+        {
+            m_transform.m_rotation = mathfu::CreateQuatFromBasisZ(basisZ.Normalized());
+        }
+
+        CreateBuffers();
+    }
+
     Camera::Camera(const mathfu::Transform& transform)
         : m_transform(transform)
-        , m_eulerAngles(transform.m_rotation.ToEulerAngles())
     {
         CreateBuffers();
     }
@@ -132,13 +144,21 @@ namespace DX
                 static_cast<float>(mouseX),
                 static_cast<float>(mouseY));
 
-            const mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
+            mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
 
-            m_eulerAngles.x += delta.y; // Yaw
-            m_eulerAngles.y += delta.x; // Pitch
-            m_eulerAngles.z = 0.0f; // Roll
+            // Clamp pitch to avoid camera looking straight up or down.
+            const float angle = acosf(mathfu::Vector3::DotProduct(m_transform.GetBasisZ(), mathfu::kAxisY3f)) * mathfu::kRadiansToDegrees;
+            const float minAngle = 10.0f;
+            if ((angle < minAngle && delta.y < 0.0f) ||
+                (angle > (180.0f - minAngle) && delta.y > 0.0f))
+            {
+                delta.y = 0.0f;
+            }
 
-            m_transform.m_rotation = mathfu::Quat::FromEulerAngles(m_eulerAngles);
+            m_transform.m_rotation =
+                mathfu::Quat::FromAngleAxis(delta.x, mathfu::kAxisY3f) * // Apply yaw in world space to orbit around up axis
+                m_transform.m_rotation * 
+                mathfu::Quat::FromAngleAxis(delta.y, mathfu::kAxisX3f); // Apply pitch in local space
 
             // Reset cursor position to the center of the window
             glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
