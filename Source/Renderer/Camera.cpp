@@ -56,6 +56,20 @@ namespace DX
 
         auto* windowHandler = window->GetWindowHandler();
 
+        if (glfwGetMouseButton(windowHandler, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+        {
+            // Hide mouse cursor
+            glfwSetInputMode(windowHandler, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        }
+        else if (glfwGetMouseButton(windowHandler, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
+        {
+            // Show mouse cursor
+            glfwSetInputMode(windowHandler, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+            m_firstUpdate = true;
+            return;
+        }
+
         // Speed
         {
             m_moveSpeed = std::clamp(m_moveSpeed + 0.2f * window->GetScrollOffset(), 0.1f, 1000.0f);

@@ -44,9 +44,6 @@ namespace DX
             return false;
         }
 
-        // Hide mouse cursor
-        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
         // Accumulate mouse scroll offset
         glfwSetWindowUserPointer(m_window, this);
         glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset)
