@@ -51,8 +51,10 @@ namespace DX
             constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
             constantBufferDesc.MiscFlags = 0;
 
+            const mathfu::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
+
             D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
-            constantSubresourceData.pSysMem = &m_worldMatrix;
+            constantSubresourceData.pSysMem = &worldMatrix;
             constantSubresourceData.SysMemPitch = 0;
             constantSubresourceData.SysMemSlicePitch = 0;
 
@@ -70,13 +72,13 @@ namespace DX
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
 
-        m_worldMatrix = m_transform.ToMatrix();
-
         // Update constant buffer with the latest world matrix.
         {
+            const mathfu::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
+
             D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
             renderer->GetDeviceContext()->Map(m_worldMatrixConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-            memcpy(mappedSubresource.pData, &m_worldMatrix, sizeof(mathfu::Matrix4x4Packed));
+            memcpy(mappedSubresource.pData, &worldMatrix, sizeof(mathfu::Matrix4x4Packed));
             renderer->GetDeviceContext()->Unmap(m_worldMatrixConstantBuffer.Get(), 0);
         }
 

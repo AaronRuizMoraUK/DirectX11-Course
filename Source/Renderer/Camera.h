@@ -29,21 +29,21 @@ namespace DX
         void SetBuffers();
 
     private:
-        void CreateBuffers();
-
         bool m_firstUpdate = true;
         float m_moveSpeed = 2.0f;
         float m_rotationSensitivity = 3.0f;
 
         mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
 
-        ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;
+    private:
+        void CreateBuffers();
 
         struct ViewProjBuffer
         {
             mathfu::Matrix4x4Packed m_viewMatrix = mathfu::Matrix4x4::Identity();
             mathfu::Matrix4x4Packed m_projMatrix = mathfu::Matrix4x4::Identity();
         };
-        ViewProjBuffer m_viewProjBuffer;
+
+        ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;
     };
 } // namespace DX

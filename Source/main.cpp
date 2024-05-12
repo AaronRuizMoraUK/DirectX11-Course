@@ -111,7 +111,8 @@ int main()
         // ------
         // Render
         // ------
-        renderer->ClearColor(mathfu::Colors::Magenta * 0.3f);
+        const mathfu::Vector4 clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+        renderer->ClearColor(clearColor);
 
         renderer->SetPipeline();
 

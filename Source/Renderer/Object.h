@@ -30,12 +30,11 @@ namespace DX
     private:
         const uint32_t m_indexCount = 0;
 
+        mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
+
+    private:
         ComPtr<ID3D11Buffer> m_vertexBuffer;
         ComPtr<ID3D11Buffer> m_indexBuffer;
         ComPtr<ID3D11Buffer> m_worldMatrixConstantBuffer;
-
-        mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
-
-        mathfu::Matrix4x4Packed m_worldMatrix = mathfu::Matrix4x4::Identity();
     };
 } // namespace DX

@@ -50,8 +50,10 @@ namespace DX
             constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
             constantBufferDesc.MiscFlags = 0;
 
+            const ViewProjBuffer viewProjBuffer;
+
             D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
-            constantSubresourceData.pSysMem = &m_viewProjBuffer;
+            constantSubresourceData.pSysMem = &viewProjBuffer;
             constantSubresourceData.SysMemPitch = 0;
             constantSubresourceData.SysMemSlicePitch = 0;
 
@@ -197,14 +199,13 @@ namespace DX
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
 
-        m_viewProjBuffer.m_viewMatrix = GetViewMatrix();
-        m_viewProjBuffer.m_projMatrix = GetProjectionMatrix();
-
         // Update constant buffer with the latest view and projection matrices.
         {
+            const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
+
             D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
             renderer->GetDeviceContext()->Map(m_viewProjMatrixConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-            memcpy(mappedSubresource.pData, &m_viewProjBuffer, sizeof(ViewProjBuffer));
+            memcpy(mappedSubresource.pData, &viewProjBuffer, sizeof(ViewProjBuffer));
             renderer->GetDeviceContext()->Unmap(m_viewProjMatrixConstantBuffer.Get(), 0);
         }
 
