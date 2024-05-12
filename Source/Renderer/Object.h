@@ -23,8 +23,9 @@ namespace DX
 
         uint32_t GetIndexCount() const { return m_indexCount; }
 
-        mathfu::Transform GetTransform() const { return m_transform; }
-        void SetTransform(const mathfu::Transform& transform);
+        mathfu::Transform& GetTransform() { return m_transform; }
+        const mathfu::Transform& GetTransform() const { return m_transform; }
+        void SetTransform(const mathfu::Transform& transform) { m_transform = transform; }
 
     private:
         const uint32_t m_indexCount = 0;

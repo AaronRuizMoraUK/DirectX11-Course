@@ -70,6 +70,8 @@ namespace DX
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
 
+        m_worldMatrix = m_transform.ToMatrix();
+
         // Update constant buffer with the latest world matrix.
         {
             D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
@@ -81,11 +83,5 @@ namespace DX
         renderer->GetDeviceContext()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &vertexBufferStride, &vertexBufferOffset);
         renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
         renderer->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_worldMatrixConstantBuffer.GetAddressOf());
-    }
-
-    void Object::SetTransform(const mathfu::Transform& transform)
-    {
-        m_transform = transform;
-        m_worldMatrix = m_transform.ToMatrix();
     }
 } // namespace DX
