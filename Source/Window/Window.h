@@ -39,6 +39,7 @@ namespace DX
 
         float GetScrollOffset() const { return m_scrollOffset; }
 
+        // Called by WindowManager::PollEvents
         void PollEvents();
 
     private:
