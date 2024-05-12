@@ -5,6 +5,32 @@
 
 namespace mathfu
 {
+    // Handedness values used in mathfu.
+    struct CoordinateSystem
+    {
+        // Right Hand
+        //      Y
+        //      | 
+        //      | 
+        //      |
+        //      -----> X
+        //     /
+        //    /
+        //   Z 
+        static inline const float RightHand = 1.0f;
+
+        // Left Hand
+        //      Y
+        //      |  Z
+        //      | /
+        //      |/
+        //      -----> X
+        static inline const float LeftHand = -1.0f;
+
+        // Default handedness to use
+        static inline const float Default = LeftHand;
+    };
+
     // Reference Systems and Transformations using Matrix4x4.
     // 
     // mathfu::Matrix4x4 is column major and its helpers will create matrices the following way:

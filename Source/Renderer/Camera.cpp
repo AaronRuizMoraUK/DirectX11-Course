@@ -1,6 +1,7 @@
 #include <Renderer/Camera.h>
 #include <Renderer/RendererManager.h>
 #include <Window/WindowManager.h>
+
 #include <mathfu/constants.h>
 
 #include <d3d11.h>
@@ -11,39 +12,12 @@
 
 namespace DX
 {
-    namespace
-    {
-        struct CoordinateSystem
-        {
-            // Right Hand
-            //      Y
-            //      | 
-            //      | 
-            //      |
-            //      -----> X
-            //     /
-            //    /
-            //   Z 
-            static inline const float RightHand = 1.0f;
-
-            // Left Hand
-            //      Y
-            //      |  Z
-            //      | /
-            //      |/
-            //      -----> X
-            static inline const float LeftHand = -1.0f;
-
-            static inline const float Default = LeftHand;
-        };
-    }
-
     Camera::Camera()
     {
         CreateBuffers();
     }
 
-    Camera::Camera(const Transform& transform)
+    Camera::Camera(const mathfu::Transform& transform)
         : m_transform(transform)
     {
         CreateBuffers();
@@ -123,7 +97,7 @@ namespace DX
             m_transform.GetPosition() + m_transform.GetBasisZ(),
             m_transform.GetPosition(),
             m_transform.GetBasisY(),
-            CoordinateSystem::Default);
+            mathfu::CoordinateSystem::Default);
     }
 
     mathfu::Matrix4x4 Camera::GetProjectionMatrix() const
@@ -141,7 +115,7 @@ namespace DX
             aspectRatio,
             nearPlane,
             farPlane,
-            CoordinateSystem::Default);
+            mathfu::CoordinateSystem::Default);
     }
 
     void Camera::SetBuffers()

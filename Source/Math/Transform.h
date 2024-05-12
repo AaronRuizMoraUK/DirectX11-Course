@@ -4,7 +4,7 @@
 #include <Math/Quat.h>
 #include <Math/Matrix4x4.h>
 
-namespace DX
+namespace mathfu
 {
     class Transform
     {
@@ -68,4 +68,4 @@ namespace DX
     {
         m_scale = scale;
     }
-} // namespace DX
+} // namespace mathfu

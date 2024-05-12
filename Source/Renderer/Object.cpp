@@ -83,7 +83,7 @@ namespace DX
         renderer->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_worldMatrixConstantBuffer.GetAddressOf());
     }
 
-    void Object::SetTransform(const Transform& transform)
+    void Object::SetTransform(const mathfu::Transform& transform)
     {
         m_transform = transform;
         m_worldMatrix = m_transform.ToMatrix();

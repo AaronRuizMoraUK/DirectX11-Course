@@ -1,8 +1,8 @@
-#include <Renderer/Transform.h>
+#include <Math/Transform.h>
 
 #include <mathfu/constants.h>
 
-namespace DX
+namespace mathfu
 {
     Transform Transform::CreateIdentity()
     {
@@ -43,4 +43,4 @@ namespace DX
     {
         return mathfu::Matrix4x4::Transform(m_position, m_rotation.ToMatrix(), m_scale);
     }
-} // namespace DX
+} // namespace mathfu
