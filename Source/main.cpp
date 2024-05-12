@@ -90,8 +90,8 @@ int main()
     objects.push_back(std::make_unique<DX::Object>(TriangleVertexData, TriangleIndexData));
     objects.push_back(std::make_unique<DX::Object>(TriangleVertexData2, TriangleIndexData));
     objects.push_back(std::make_unique<DX::Object>(CubeVertexData(mathfu::Vector3(1.0f)), CubeIndexData));
-    //objects[0]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
-    //objects[1]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
+    objects[0]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
+    objects[1]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
 
     while (window->IsVisible())
     {

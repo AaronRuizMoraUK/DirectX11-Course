@@ -20,6 +20,7 @@ namespace DX
 
     Camera::Camera(const mathfu::Transform& transform)
         : m_transform(transform)
+        , m_eulerAngles(transform.m_rotation.ToEulerAngles())
     {
         CreateBuffers();
     }
@@ -60,34 +61,6 @@ namespace DX
             m_moveSpeed = std::clamp(m_moveSpeed + 0.2f * window->GetScrollOffset(), 0.1f, 1000.0f);
         }
 
-        // Rotation
-        {
-            const mathfu::Vector2 windowSize(
-                static_cast<float>(window->GetSize().m_width),
-                static_cast<float>(window->GetSize().m_height));
-
-            if (m_firstUpdate)
-            {
-                glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
-                m_firstUpdate = false;
-            }
-
-            double mouseX = 0.0f;
-            double mouseY = 0.0f;
-            glfwGetCursorPos(windowHandler, &mouseX, &mouseY);
-
-            const mathfu::Vector2 mousePosition(
-                static_cast<float>(mouseX),
-                static_cast<float>(mouseY));
-
-            const mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
-
-            m_transform.m_rotation = m_transform.m_rotation * mathfu::Quat::FromAngleAxis(delta.y, m_transform.GetBasisX());
-            //m_transform.m_rotation = m_transform.m_rotation * mathfu::Quat::FromAngleAxis(delta.x, m_transform.GetBasisY());
-
-            glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
-        }
-
         // Movement
         {
             mathfu::Vector3 deltaMovement(0.0f);
@@ -123,6 +96,38 @@ namespace DX
             }
 
             m_transform.m_position += deltaMovement * m_moveSpeed * deltaTime;
+        }
+
+        // Rotation
+        {
+            const mathfu::Vector2 windowSize(
+                static_cast<float>(window->GetSize().m_width),
+                static_cast<float>(window->GetSize().m_height));
+
+            if (m_firstUpdate)
+            {
+                glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
+                m_firstUpdate = false;
+            }
+
+            double mouseX = 0.0f;
+            double mouseY = 0.0f;
+            glfwGetCursorPos(windowHandler, &mouseX, &mouseY);
+
+            const mathfu::Vector2 mousePosition(
+                static_cast<float>(mouseX),
+                static_cast<float>(mouseY));
+
+            const mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
+
+            m_eulerAngles.x += delta.y; // Yaw
+            m_eulerAngles.y += delta.x; // Pitch
+            m_eulerAngles.z = 0.0f; // Roll
+
+            m_transform.m_rotation = mathfu::Quat::FromEulerAngles(m_eulerAngles);
+
+            // Reset cursor position to the center of the window
+            glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
         }
     }
 

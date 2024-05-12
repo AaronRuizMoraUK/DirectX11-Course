@@ -32,6 +32,7 @@ namespace DX
         bool m_firstUpdate = true;
         float m_moveSpeed = 2.0f;
         float m_rotationSensitivity = 3.0f;
+        mathfu::Vector3 m_eulerAngles = mathfu::Vector3(0.0f);
 
         mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
 
