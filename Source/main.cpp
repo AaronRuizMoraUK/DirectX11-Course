@@ -63,7 +63,7 @@ int main()
         for (auto& object : objects)
         {
             mathfu::Transform& transform = object->GetTransform();
-            transform.SetRotation(transform.GetRotation() * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.0f, 0.0, 1.0f * deltaTime)));
+            transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.0f, 0.0, 1.0f * deltaTime));
         }
 
         // ------

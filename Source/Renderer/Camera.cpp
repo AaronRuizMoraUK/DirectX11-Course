@@ -88,14 +88,14 @@ namespace DX
 
         constexpr float speed = 10.0f;
 
-        m_transform.SetPosition(m_transform.GetPosition() + deltaMovement * speed * deltaTime);
+        m_transform.m_position += deltaMovement * speed * deltaTime;
     }
 
     mathfu::Matrix4x4 Camera::GetViewMatrix() const
     {
         return mathfu::Matrix4x4::LookAt(
-            m_transform.GetPosition() + m_transform.GetBasisZ(),
-            m_transform.GetPosition(),
+            m_transform.m_position + m_transform.GetBasisZ(),
+            m_transform.m_position,
             m_transform.GetBasisY(),
             mathfu::CoordinateSystem::Default);
     }
