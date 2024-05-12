@@ -37,10 +37,16 @@ namespace DX
         GLFWwindow* GetWindowHandler() { return m_window; }
         HWND GetWindowNativeHandler();
 
+        float GetScrollOffset() const { return m_scrollOffset; }
+
+        void PollEvents();
+
     private:
         const WindowId m_windowId = InvalidWindowId;
         WindowSize m_size;
         std::string m_title;
         GLFWwindow* m_window = nullptr;
+        float m_scrollOffset = 0.0f;
+        float m_scrollOffsetAccumulator = 0.0f;
     };
 } // namespace DX

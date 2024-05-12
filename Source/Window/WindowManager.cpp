@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <cassert>
+#include <ranges>
 
 namespace DX
 {
@@ -80,5 +81,10 @@ namespace DX
     void WindowManager::PollEvents()
     {
         glfwPollEvents();
+
+        for (auto& window : m_windows | std::views::values)
+        {
+            window->PollEvents();
+        }
     }
 } // namespace DX

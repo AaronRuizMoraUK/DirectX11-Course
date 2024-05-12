@@ -29,6 +29,10 @@ namespace DX
     private:
         void CreateBuffers();
 
+        bool m_firstUpdate = true;
+        float m_moveSpeed = 2.0f;
+        float m_rotationSensitivity = 3.0f;
+
         mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
 
         ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;

@@ -44,6 +44,19 @@ namespace DX
             return false;
         }
 
+        // Hide mouse cursor
+        glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+        // Accumulate mouse scroll offset
+        glfwSetWindowUserPointer(m_window, this);
+        glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset)
+            {
+                if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)))
+                {
+                    self->m_scrollOffsetAccumulator += static_cast<float>(yoffset);
+                }
+            });
+
         return true;
     }
 
@@ -70,5 +83,12 @@ namespace DX
 #error "Window::GetWindowNativeHandler: Unsupported platform."
         return NULL;
 #endif
+    }
+
+    void Window::PollEvents()
+    {
+        // Set scroll offset and reset accumulator
+        m_scrollOffset = m_scrollOffsetAccumulator;
+        m_scrollOffsetAccumulator = 0.0f;
     }
 } // namespace DX

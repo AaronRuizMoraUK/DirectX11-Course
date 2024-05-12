@@ -2,6 +2,7 @@
 #include <Renderer/RendererManager.h>
 #include <Window/WindowManager.h>
 
+#include <Math/Vector2.h>
 #include <mathfu/constants.h>
 
 #include <d3d11.h>
@@ -54,41 +55,75 @@ namespace DX
 
         auto* windowHandler = window->GetWindowHandler();
 
-        mathfu::Vector3 deltaMovement(0.0f);
-
-        if (glfwGetKey(windowHandler, GLFW_KEY_W) == GLFW_PRESS)
+        // Speed
         {
-            deltaMovement += m_transform.GetBasisZ();
+            m_moveSpeed = std::clamp(m_moveSpeed + 0.2f * window->GetScrollOffset(), 0.1f, 1000.0f);
         }
 
-        if (glfwGetKey(windowHandler, GLFW_KEY_S) == GLFW_PRESS)
+        // Rotation
         {
-            deltaMovement -= m_transform.GetBasisZ();
+            const mathfu::Vector2 windowSize(
+                static_cast<float>(window->GetSize().m_width),
+                static_cast<float>(window->GetSize().m_height));
+
+            if (m_firstUpdate)
+            {
+                glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
+                m_firstUpdate = false;
+            }
+
+            double mouseX = 0.0f;
+            double mouseY = 0.0f;
+            glfwGetCursorPos(windowHandler, &mouseX, &mouseY);
+
+            const mathfu::Vector2 mousePosition(
+                static_cast<float>(mouseX),
+                static_cast<float>(mouseY));
+
+            const mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
+
+            m_transform.m_rotation = m_transform.m_rotation * mathfu::Quat::FromAngleAxis(delta.y, m_transform.GetBasisX());
+            //m_transform.m_rotation = m_transform.m_rotation * mathfu::Quat::FromAngleAxis(delta.x, m_transform.GetBasisY());
+
+            glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
         }
 
-        if (glfwGetKey(windowHandler, GLFW_KEY_A) == GLFW_PRESS)
+        // Movement
         {
-            deltaMovement -= m_transform.GetBasisX();
+            mathfu::Vector3 deltaMovement(0.0f);
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_W) == GLFW_PRESS)
+            {
+                deltaMovement += m_transform.GetBasisZ();
+            }
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_S) == GLFW_PRESS)
+            {
+                deltaMovement -= m_transform.GetBasisZ();
+            }
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_A) == GLFW_PRESS)
+            {
+                deltaMovement -= m_transform.GetBasisX();
+            }
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_D) == GLFW_PRESS)
+            {
+                deltaMovement += m_transform.GetBasisX();
+            }
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_E) == GLFW_PRESS)
+            {
+                deltaMovement += mathfu::kAxisY3f;
+            }
+
+            if (glfwGetKey(windowHandler, GLFW_KEY_Q) == GLFW_PRESS)
+            {
+                deltaMovement -= mathfu::kAxisY3f;
+            }
+
+            m_transform.m_position += deltaMovement * m_moveSpeed * deltaTime;
         }
-
-        if (glfwGetKey(windowHandler, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            deltaMovement += m_transform.GetBasisX();
-        }
-
-        if (glfwGetKey(windowHandler, GLFW_KEY_E) == GLFW_PRESS)
-        {
-            deltaMovement += m_transform.GetBasisY();
-        }
-
-        if (glfwGetKey(windowHandler, GLFW_KEY_Q) == GLFW_PRESS)
-        {
-            deltaMovement -= m_transform.GetBasisY();
-        }
-
-        constexpr float speed = 10.0f;
-
-        m_transform.m_position += deltaMovement * speed * deltaTime;
     }
 
     mathfu::Matrix4x4 Camera::GetViewMatrix() const
