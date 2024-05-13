@@ -308,6 +308,8 @@ namespace DX
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
         }};
 
+        // Once an input-layout object is created from a vertex shader signature, the input-layout object can be reused
+        // with any other vertex shader that has an identical input signature (semantics included). 
         auto result = m_device->CreateInputLayout(
             inputLayoutDesc.data(),
             inputLayoutDesc.size(),
