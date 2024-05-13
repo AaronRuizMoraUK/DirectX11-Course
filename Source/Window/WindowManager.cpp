@@ -46,7 +46,7 @@ namespace DX
         glfwTerminate();
     }
 
-    Window* WindowManager::CreateWindowWithTitle(const WindowSize& size, std::string title)
+    Window* WindowManager::CreateWindowWithTitle(const mathfu::Vector2Int& size, std::string title)
     {
         auto newWindow = std::make_unique<Window>(NextWindowId, size, std::move(title));
         if (!newWindow->Initialize())

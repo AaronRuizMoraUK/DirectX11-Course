@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Math/Vector2.h>
+
 #include <string>
 
 struct GLFWwindow;
@@ -15,23 +17,17 @@ namespace DX
     using WindowId = Internal::WindowIdType<struct WindowIdTag>;
     static const WindowId InvalidWindowId = 0xFFFFFFFF;
 
-    struct WindowSize
-    {
-        uint32_t m_width = 0;
-        uint32_t m_height = 0;
-    };
-
     class Window
     {
     public:
-        Window(WindowId windowId, const WindowSize& size, std::string title);
+        Window(WindowId windowId, const mathfu::Vector2Int& size, std::string title);
         ~Window();
 
         bool Initialize();
         void Terminate();
 
         bool IsVisible() const;
-        const WindowSize& GetSize() const { return m_size; }
+        const mathfu::Vector2Int& GetSize() const { return m_size; }
 
         WindowId GetId() const { return m_windowId; }
         GLFWwindow* GetWindowHandler() { return m_window; }
@@ -44,7 +40,7 @@ namespace DX
 
     private:
         const WindowId m_windowId = InvalidWindowId;
-        WindowSize m_size;
+        mathfu::Vector2Int m_size;
         std::string m_title;
         GLFWwindow* m_window = nullptr;
         float m_scrollOffset = 0.0f;

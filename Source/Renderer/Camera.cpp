@@ -50,7 +50,7 @@ namespace DX
             constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
             constantBufferDesc.MiscFlags = 0;
 
-            const ViewProjBuffer viewProjBuffer;
+            const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
 
             D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
             constantSubresourceData.pSysMem = &viewProjBuffer;
@@ -128,8 +128,8 @@ namespace DX
         // Rotation
         {
             const mathfu::Vector2 windowSize(
-                static_cast<float>(window->GetSize().m_width),
-                static_cast<float>(window->GetSize().m_height));
+                static_cast<float>(window->GetSize().x),
+                static_cast<float>(window->GetSize().y));
 
             if (m_firstUpdate)
             {
@@ -182,7 +182,7 @@ namespace DX
         assert(window);
 
         const float fovY = 74.0f * mathfu::kDegreesToRadians;
-        const float aspectRatio = static_cast<float>(window->GetSize().m_width) / static_cast<float>(window->GetSize().m_height);
+        const float aspectRatio = static_cast<float>(window->GetSize().x) / static_cast<float>(window->GetSize().y);
         const float nearPlane = 0.1f;
         const float farPlane = 1000.0f;
 

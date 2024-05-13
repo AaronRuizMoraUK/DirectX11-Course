@@ -70,9 +70,6 @@ namespace DX
         void DestroyShaders();
 
         ComPtr<ID3DBlob> CompileShader(const std::string& shaderFilename, const std::string& entryPoint, const std::string& shaderModel) const;
-        std::string ReadAssetFile(const std::string& fileName) const;
-        std::filesystem::path GetAssetPath() const;
-        std::filesystem::path GetExecutablePath() const;
 
         ComPtr<ID3DBlob> m_vertexShaderBlob;
         ComPtr<ID3DBlob> m_pixelShaderBlob;

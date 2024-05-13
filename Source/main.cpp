@@ -11,7 +11,7 @@ int main()
 {
     // Window initialization
     DX::WindowManager& windowManager = DX::WindowManager::Get();
-    DX::Window* window = windowManager.CreateWindowWithTitle(DX::WindowSize{1280, 720}, "DirectX11 Course");
+    DX::Window* window = windowManager.CreateWindowWithTitle({1280, 720}, "DirectX11 Course");
     if (!window)
     {
         return -1;
@@ -43,11 +43,11 @@ int main()
         // ------
         constexpr float deltaTime = 1.0f / 60.0f;
         camera->Update(deltaTime);
-        //for (auto& object : objects)
-        //{
-        //    mathfu::Transform& transform = object->GetTransform();
-        //    transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.0f, 0.0, 1.0f * deltaTime));
-        //}
+        for (auto& object : objects)
+        {
+            mathfu::Transform& transform = object->GetTransform();
+            transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.1f * deltaTime));
+        }
 
         // ------
         // Render

@@ -10,6 +10,9 @@
 using Microsoft::WRL::ComPtr;
 
 class ID3D11Buffer;
+class ID3D11Texture2D;
+class ID3D11ShaderResourceView;
+class ID3D11SamplerState;
 
 namespace DX
 {
@@ -42,6 +45,13 @@ namespace DX
         ComPtr<ID3D11Buffer> m_vertexBuffer;
         ComPtr<ID3D11Buffer> m_indexBuffer;
         ComPtr<ID3D11Buffer> m_worldMatrixConstantBuffer;
+
+        uint8_t* m_textureData = nullptr;
+        mathfu::Vector2Int m_textureSize = mathfu::Vector2Int(0);
+
+        ComPtr<ID3D11Texture2D> m_texture;
+        ComPtr<ID3D11ShaderResourceView> m_textureView;
+        ComPtr<ID3D11SamplerState> m_samplerState;
     };
 
     class Triangle : public Object

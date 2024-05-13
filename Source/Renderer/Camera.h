@@ -40,8 +40,8 @@ namespace DX
 
         struct ViewProjBuffer
         {
-            mathfu::Matrix4x4Packed m_viewMatrix = mathfu::Matrix4x4::Identity();
-            mathfu::Matrix4x4Packed m_projMatrix = mathfu::Matrix4x4::Identity();
+            mathfu::Matrix4x4Packed m_viewMatrix;
+            mathfu::Matrix4x4Packed m_projMatrix;
         };
 
         ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;

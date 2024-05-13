@@ -1,12 +1,11 @@
 #include <Renderer/Renderer.h>
 #include <Window/Window.h>
+#include <FileUtils.h>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
 #include <array>
-#include <fstream>
-#include <sstream>
 
 namespace DX
 {
@@ -120,8 +119,8 @@ namespace DX
     bool Renderer::CreateSwapChain()
     {
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-        swapChainDesc.BufferDesc.Width = m_window->GetSize().m_width;
-        swapChainDesc.BufferDesc.Height = m_window->GetSize().m_height;
+        swapChainDesc.BufferDesc.Width = m_window->GetSize().x;
+        swapChainDesc.BufferDesc.Height = m_window->GetSize().y;
         swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
         swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
@@ -199,8 +198,8 @@ namespace DX
         D3D11_VIEWPORT viewport = {};
         viewport.TopLeftX = 0.0f;
         viewport.TopLeftY = 0.0f;
-        viewport.Width = static_cast<float>(m_window->GetSize().m_width);
-        viewport.Height = static_cast<float>(m_window->GetSize().m_height);
+        viewport.Width = static_cast<float>(m_window->GetSize().x);
+        viewport.Height = static_cast<float>(m_window->GetSize().y);
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
 
@@ -265,14 +264,18 @@ namespace DX
 
     ComPtr<ID3DBlob> Renderer::CompileShader(const std::string& shaderFilename, const std::string& entryPoint, const std::string& shaderModel) const
     {
-        const std::string pixelShaderCode = ReadAssetFile(shaderFilename);
+        const auto pixelShaderCode = ReadAssetFile(shaderFilename);
+        if (!pixelShaderCode.has_value())
+        {
+            return {};
+        }
 
         ComPtr<ID3DBlob> shaderBlob;
         ComPtr<ID3DBlob> errorBlob;
 
         auto result = D3DCompile(
-            pixelShaderCode.c_str(),
-            pixelShaderCode.length(),
+            pixelShaderCode->c_str(),
+            pixelShaderCode->length(),
             nullptr, // Source name
             nullptr, // Macros for shader
             nullptr, // Includes for shader
@@ -294,72 +297,6 @@ namespace DX
         }
 
         return shaderBlob;
-    }
-
-    std::string Renderer::ReadAssetFile(const std::string& fileName) const
-    {
-        auto fileNamePath = GetAssetPath() / fileName;
-        if (!std::filesystem::exists(fileNamePath))
-        {
-            std::printf("Error: filename path %s does not exist.\n", fileNamePath.generic_string().c_str());
-            return {};
-        }
-
-        if (std::ifstream file(fileNamePath);
-            file.is_open())
-        {
-            std::ostringstream stringBuffer;
-            stringBuffer << file.rdbuf();
-
-            file.close();
-            return stringBuffer.str();
-        }
-        else
-        {
-            std::printf("Error: filename path %s failed to open.\n", fileNamePath.generic_string().c_str());
-            return {};
-        }
-    }
-
-    std::filesystem::path Renderer::GetAssetPath() const
-    {
-        auto execPath = GetExecutablePath();
-        execPath /= "Assets";
-        if (std::filesystem::exists(execPath))
-        {
-            return execPath;
-        }
-
-        // If the Assets folder is not in the same location as the executable,
-        // that could be because the executable is being run from a build folder
-        // (for example from Visual Studio). Try to find the 'build' folder to
-        // extract the project path and use that to look for the Assets folder.
-        if (auto it = execPath.generic_string().find("build");
-            it != std::string::npos)
-        {
-            std::filesystem::path projectPath = execPath.generic_string().substr(0, it);
-            projectPath /= "Assets";
-            if (std::filesystem::exists(projectPath))
-            {
-                return projectPath;
-            }
-        }
-
-        std::printf("Error: Assets path not found.\n");
-        return {};
-    }
-
-    std::filesystem::path Renderer::GetExecutablePath() const
-    {
-#ifdef _WIN32
-        char path[MAX_PATH];
-        GetModuleFileName(NULL, path, MAX_PATH);
-        std::filesystem::path execPath(path);
-        return execPath.remove_filename();
-#else
-#error "Renderer::GetExecutablePath: Unsupported platform."
-        return {};
-#endif
     }
 
     bool Renderer::CreateInputLayout()

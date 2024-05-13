@@ -4,8 +4,13 @@
 
 namespace mathfu
 {
+    // Vector3 size might differ depending on platform and build configuration of mathfu (SIMD, padding, etc).
+    // To serialize and deserialize as a flat array, use Vector3Packed, which is a POD version of Vector3.
     using Vector3 = Vector<float, 3>;
     using Vector3Packed = VectorPacked<float, 3>;
+
+    // This is always stored as POD.
+    using Vector3Int = Vector<int, 3>;
 
     /// @brief Calculate the cross product of two Vector3.
     ///

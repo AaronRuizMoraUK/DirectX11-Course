@@ -4,6 +4,8 @@
 
 namespace mathfu
 {
+    // Color size might differ depending on platform and build configuration of mathfu (SIMD, padding, etc).
+    // To serialize and deserialize as a flat array, use ColorPacked, which is a POD version of Color.
     using Color = Vector<float, 4>;
     using ColorPacked = VectorPacked<float, 4>;
 
@@ -17,15 +19,6 @@ namespace mathfu
         static const Color Yellow = Color(1.0f, 1.0f, 0.0f, 1.0f);
         static const Color Cyan = Color(0.0f, 1.0f, 1.0f, 1.0f);
         static const Color Magenta = Color(1.0f, 0.0f, 1.0f, 1.0f);
-
-        static const ColorPacked BlackPacked{ Black };
-        static const ColorPacked WhitePacked{ White };
-        static const ColorPacked RedPacked{ Red };
-        static const ColorPacked GreenPacked{ Green };
-        static const ColorPacked BluePacked{ Blue };
-        static const ColorPacked YellowPacked{ Yellow };
-        static const ColorPacked CyanPacked{ Cyan };
-        static const ColorPacked MagentaPacked{ Magenta };
     }
 
     // Create color passing float values in the range [0.0f, 1.0f]

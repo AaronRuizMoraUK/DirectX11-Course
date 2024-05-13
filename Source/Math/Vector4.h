@@ -4,8 +4,13 @@
 
 namespace mathfu
 {
+    // Vector4 size might differ depending on platform and build configuration of mathfu (SIMD, padding, etc).
+    // To serialize and deserialize as a flat array, use Vector4Packed, which is a POD version of Vector4.
     using Vector4 = Vector<float, 4>;
     using Vector4Packed = VectorPacked<float, 4>;
+
+    // This is always stored as POD.
+    using Vector4Int = Vector<int, 4>;
 
     /// @brief Calculate the dot product of two Vector4.
     ///
