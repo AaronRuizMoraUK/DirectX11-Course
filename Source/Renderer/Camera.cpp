@@ -93,31 +93,30 @@ namespace DX
         {
             mathfu::Vector3 deltaMovement(0.0f);
 
+            // Forward/Backward
             if (glfwGetKey(windowHandler, GLFW_KEY_W) == GLFW_PRESS)
             {
                 deltaMovement += m_transform.GetBasisZ();
             }
-
             if (glfwGetKey(windowHandler, GLFW_KEY_S) == GLFW_PRESS)
             {
                 deltaMovement -= m_transform.GetBasisZ();
             }
-
+            // Left/Right (LeftHand)
             if (glfwGetKey(windowHandler, GLFW_KEY_A) == GLFW_PRESS)
             {
                 deltaMovement -= m_transform.GetBasisX();
             }
-
             if (glfwGetKey(windowHandler, GLFW_KEY_D) == GLFW_PRESS)
             {
                 deltaMovement += m_transform.GetBasisX();
             }
 
+            // Up/Down
             if (glfwGetKey(windowHandler, GLFW_KEY_E) == GLFW_PRESS)
             {
                 deltaMovement += mathfu::kAxisY3f;
             }
-
             if (glfwGetKey(windowHandler, GLFW_KEY_Q) == GLFW_PRESS)
             {
                 deltaMovement -= mathfu::kAxisY3f;
@@ -149,16 +148,17 @@ namespace DX
             mathfu::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
 
             // Clamp pitch to avoid camera looking straight up or down.
+            // Negative pitch delta makes camera look higher.
             const float angle = acosf(mathfu::Vector3::DotProduct(m_transform.GetBasisZ(), mathfu::kAxisY3f)) * mathfu::kRadiansToDegrees;
             const float minAngle = 10.0f;
-            if ((angle < minAngle && delta.y < 0.0f) ||
-                (angle > (180.0f - minAngle) && delta.y > 0.0f))
+            if ((angle <= minAngle && delta.y < 0.0f) ||          // Avoid looking higher than 10 degrees to up axis
+                (angle >= (180.0f - minAngle) && delta.y > 0.0f)) // Avoid looking lower  than 10 degrees to -up axis
             {
                 delta.y = 0.0f;
             }
 
             m_transform.m_rotation =
-                mathfu::Quat::FromAngleAxis(delta.x, mathfu::kAxisY3f) * // Apply yaw in world space to orbit around up axis
+                mathfu::Quat::FromAngleAxis(delta.x, mathfu::kAxisY3f) * // Apply yaw in world space to orbit around up axis (LeftHand)
                 m_transform.m_rotation * 
                 mathfu::Quat::FromAngleAxis(delta.y, mathfu::kAxisX3f); // Apply pitch in local space
 

@@ -14,9 +14,10 @@ namespace DX
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
 
+        // Vertex Buffer
         {
             D3D11_BUFFER_DESC vertexBufferDesc = {};
-            vertexBufferDesc.ByteWidth = sizeof(VertexPC) * m_vertexData.size();
+            vertexBufferDesc.ByteWidth = GetVertexSize() * m_vertexData.size();
             vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
             vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
             vertexBufferDesc.CPUAccessFlags = 0;
@@ -30,9 +31,10 @@ namespace DX
             renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, m_vertexBuffer.GetAddressOf());
         }
 
+        // Index Buffer
         {
             D3D11_BUFFER_DESC indexBufferDesc = {};
-            indexBufferDesc.ByteWidth = sizeof(Index) * m_indexData.size();
+            indexBufferDesc.ByteWidth = GetIndexxSize() * m_indexData.size();
             indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
             indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
             indexBufferDesc.CPUAccessFlags = 0;
@@ -46,6 +48,7 @@ namespace DX
             renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexSubresourceData, m_indexBuffer.GetAddressOf());
         }
 
+        // Constant Buffer
         {
             D3D11_BUFFER_DESC constantBufferDesc = {};
             constantBufferDesc.ByteWidth = sizeof(mathfu::Matrix4x4Packed);
@@ -67,9 +70,6 @@ namespace DX
 
     void Object::SetBuffers()
     {
-        const uint32_t vertexBufferStride = sizeof(VertexPC);
-        const uint32_t vertexBufferOffset = 0;
-
         auto* renderer = RendererManager::Get().GetRenderer(0);
         assert(renderer);
 
@@ -83,6 +83,9 @@ namespace DX
             renderer->GetDeviceContext()->Unmap(m_worldMatrixConstantBuffer.Get(), 0);
         }
 
+        const uint32_t vertexBufferStride = GetVertexSize();
+        const uint32_t vertexBufferOffset = 0;
+
         renderer->GetDeviceContext()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &vertexBufferStride, &vertexBufferOffset);
         renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
         renderer->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_worldMatrixConstantBuffer.GetAddressOf());
@@ -90,11 +93,13 @@ namespace DX
 
     Triangle::Triangle()
     {
+        // Clockwise order (CW) - LeftHand
+
         m_vertexData =
         {{
-            { mathfu::Vector3Packed(mathfu::Vector3(-0.5f, -0.5f, 0.0f)), mathfu::Colors::RedPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(0.0f,   0.5f, 0.0f)), mathfu::Colors::GreenPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(0.5f,  -0.5f, 0.0f)), mathfu::Colors::BluePacked }
+            { mathfu::Vector3Packed(mathfu::Vector3(-0.5f, -0.5f, 0.0f)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(0.0f,   0.5f, 0.0f)), mathfu::Vector2Packed(mathfu::Vector2(0.5f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(0.5f,  -0.5f, 0.0f)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) }
         }};
 
         m_indexData = { 0, 1, 2 };
@@ -106,38 +111,73 @@ namespace DX
     {
         const mathfu::Vector3 half = 0.5f * extends;
 
+        // 6 faces, 2 triangles each face, 3 vertices each triangle.
+        // Clockwise order (CW) - LeftHand
+
         m_vertexData =
         {{
-            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, -half.z)), mathfu::Colors::RedPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, half.z)), mathfu::Colors::GreenPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(half.x, -half.y, half.z)), mathfu::Colors::BluePacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(half.x, -half.y, -half.z)), mathfu::Colors::CyanPacked },
+            // Front face
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
 
-            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, half.y, -half.z)), mathfu::Colors::MagentaPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, half.y, half.z)), mathfu::Colors::YellowPacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(half.x, half.y, half.z)), mathfu::Colors::WhitePacked },
-            { mathfu::Vector3Packed(mathfu::Vector3(half.x, half.y, -half.z)), mathfu::Colors::BlackPacked },
+            // Back face
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x, -half.y, half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x,  half.y, half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y, half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
+
+            // Right face
+            { mathfu::Vector3Packed(mathfu::Vector3(half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(half.x,  half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(half.x, -half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
+
+            // Left face
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
+
+            // Top face
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x,  half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x,  half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x,  half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
+
+            // Bottom face
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x, -half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 0.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3( half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(0.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y, -half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 1.0f)) },
+            { mathfu::Vector3Packed(mathfu::Vector3(-half.x, -half.y,  half.z)), mathfu::Vector2Packed(mathfu::Vector2(1.0f, 0.0f)) },
         }};
 
-        m_indexData = // 6 faces, 2 triangles each face, 3 vertices each triangle.
+        m_indexData =
         {
-            2, 1, 0,
-            0, 3, 2,
+            // Front face
+            0, 1, 2,
+            2, 3, 0,
 
+            // Back face
             4, 5, 6,
             6, 7, 4,
 
-            1, 2, 6,
-            6, 5, 1,
+            // Right face
+            8, 9, 10,
+            10, 11, 8,
 
-            2, 3, 7,
-            7, 6, 2,
+            // Left face
+            12, 13, 14,
+            14, 15, 12,
 
-            3, 0, 4,
-            4, 7, 3,
+            // Top face
+            16, 17, 18,
+            18, 19, 16,
 
-            0, 1, 5,
-            5, 4, 0
+            // Top face
+            20, 23, 22,
+            22, 21, 20
         };
 
         CreateBuffers();

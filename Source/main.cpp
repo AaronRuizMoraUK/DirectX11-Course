@@ -26,7 +26,7 @@ int main()
     }
 
     // Camera
-    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(0.0f, 0.0f, -3.0f), mathfu::Vector3(0.0f));
+    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(2.0f, 1.0f, -2.0f), mathfu::Vector3(0.0f));
 
     // Rendering objects initialization
     std::vector<std::unique_ptr<DX::Object>> objects;
@@ -43,11 +43,11 @@ int main()
         // ------
         constexpr float deltaTime = 1.0f / 60.0f;
         camera->Update(deltaTime);
-        for (auto& object : objects)
-        {
-            mathfu::Transform& transform = object->GetTransform();
-            transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.0f, 0.0, 1.0f * deltaTime));
-        }
+        //for (auto& object : objects)
+        //{
+        //    mathfu::Transform& transform = object->GetTransform();
+        //    transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.0f, 0.0, 1.0f * deltaTime));
+        //}
 
         // ------
         // Render

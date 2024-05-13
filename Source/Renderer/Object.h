@@ -28,12 +28,15 @@ namespace DX
         void SetTransform(const mathfu::Transform& transform) { m_transform = transform; }
 
     protected:
+        void CreateBuffers();
+
+        uint32_t GetVertexSize() const { return sizeof(VertexPUV); }
+        uint32_t GetIndexxSize() const { return sizeof(Index); }
+
         mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
 
-        std::vector<VertexPC> m_vertexData;
+        std::vector<VertexPUV> m_vertexData;
         std::vector<Index> m_indexData;
-
-        void CreateBuffers();
 
     private:
         ComPtr<ID3D11Buffer> m_vertexBuffer;
