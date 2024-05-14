@@ -2,9 +2,12 @@
 
 <img src="./DX11-logo.jpg">
 
-Project generated while doing Sections 1-3 of the Udemy course  [The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/) by The Tech Courses.
+Project generated while doing Sections 4-8 of the Udemy course  [The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/) by The Tech Courses.
 
-Simple DirectX 11 renderer that draws a triangle and a cube on screen using a texture.
+The ['main' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/main) contains a Rendering Engine using DirectX 11 built from scratch.
+
+The **['SimpleRenderer' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/SimpleRenderer)** contains a
+**Simple DirectX 11 Renderer** that was generated during Sections 1-3 of the course.
 
 ## Build and Run
 
@@ -28,8 +31,6 @@ Steps
   ````
 - Open `DirectX11-Course.sln` with Visual Studio
 - Build and run `main` project
-
-<img src="./SimpleRenderer.gif">
 
 ## Controls
 
