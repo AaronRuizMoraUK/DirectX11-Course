@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Math/Vector2.h>
+
 #include <string>
 #include <filesystem>
 #include <optional>
-#include <Math/Vector2.h>
 
 namespace DX
 {

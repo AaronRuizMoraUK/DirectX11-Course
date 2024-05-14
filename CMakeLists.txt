@@ -15,50 +15,47 @@ endif()
 # Project name
 project ("DirectX11-Course")
 
-# --------------------------------------
+# ----------------------------------------------------
 # 3rd party libraries
 
 include("${CMAKE_SOURCE_DIR}/Scripts/FetchLibraries.cmake")
 
-# --------------------------------------
-# Main executable
+# ----------------------------------------------------
+# Engine libraries
 
-file(GLOB_RECURSE SOURCE_FILES
-    "${CMAKE_SOURCE_DIR}/Source/*.*")
+add_subdirectory(Source/Core)
+add_subdirectory(Source/Runtime)
+
+# ----------------------------------------------------
+# EditorApplication project
+
+add_subdirectory(Source/EditorApplication)
+
+# Set EditorApplication as the default project in Visual Studio
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT EditorApplication)
+
+# ----------------------------------------------------
+# Project with content from root folder for easy access from Visual Studio
+
+set(ROOT_FILES "${CMAKE_SOURCE_DIR}/README.md" "${CMAKE_SOURCE_DIR}/.gitignore")
 
 file(GLOB_RECURSE SCRIPT_FILES
     "${CMAKE_SOURCE_DIR}/Scripts/*.*")
 
 file(GLOB_RECURSE ASSET_FILES
-    "${CMAKE_SOURCE_DIR}/Assets/*.hlsl")
-
+    "${CMAKE_SOURCE_DIR}/Assets/*.*")
+    
 # Set the Asset files to be treated as non-compilable files
 foreach(ASSET_FILE ${ASSET_FILES})
     set_source_files_properties(${ASSET_FILE} PROPERTIES HEADER_FILE_ONLY TRUE)
 endforeach()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" FILES 
-    ${SOURCE_FILES}
+    ${ROOT_FILES}
     ${SCRIPT_FILES}
     ${ASSET_FILES})
 
-add_executable(main README.md .gitignore
-    ${SOURCE_FILES}
+add_library(Content INTERFACE 
+    ${ROOT_FILES}
     ${SCRIPT_FILES}
     ${ASSET_FILES})
-
-# Includes
-target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/Source")
-
-# Compiler definitions
-target_compile_definitions(main PUBLIC STB_IMAGE_IMPLEMENTATION=1) # For stb
-
-# Libraries
-target_link_libraries(main PRIVATE glfw)
-target_link_libraries(main PRIVATE stb)
-target_link_libraries(main PRIVATE mathfu)
-target_link_libraries(main PRIVATE d3d11.lib)
-target_link_libraries(main PRIVATE d3dcompiler.lib)
-
-# Set main as the default project in Visual Studio
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT main)
