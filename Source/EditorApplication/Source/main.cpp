@@ -11,17 +11,17 @@ int main()
 {
     //const mathfu::Vector2Int windowSize{ 3440, 1440 };
     //const int refreshRate = 144;
-    //const bool fullscreen = true;
+    //const bool fullScreen = true;
     //const bool vSync = true;
 
     const mathfu::Vector2Int windowSize{ 1280, 720 };
     const int refreshRate = 144;
-    const bool fullscreen = false;
+    const bool fullScreen = false;
     const bool vSync = true;
 
     // Window initialization
     DX::WindowManager& windowManager = DX::WindowManager::Get();
-    DX::Window* window = windowManager.CreateWindowWithTitle("DirectX11 Course", windowSize, refreshRate, fullscreen, vSync);
+    DX::Window* window = windowManager.CreateWindowWithTitle("DirectX11 Course", windowSize, refreshRate, fullScreen, vSync);
     if (!window)
     {
         return -1;
