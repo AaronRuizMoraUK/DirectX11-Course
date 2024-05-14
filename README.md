@@ -2,9 +2,9 @@
 
 <img src="./DX11-logo.jpg">
 
-Project generated while doing Sections 4-8 of the Udemy course  [The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/) by The Tech Courses.
+Project generated while doing Sections 4-8 of the Udemy course *[The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/)* by 'The Tech Courses'.
 
-The ['main' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/main) contains a **Rendering Engine using DirectX 11** built from scratch.
+The ['main' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/main) contains a **Rendering Engine using DirectX 11** built from scratch (***IN PROGRESS***).
 
 The ['SimpleRenderer' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/SimpleRenderer) contains a
 **Simple DirectX 11 Renderer** that was generated during Sections 1-3 of the course.
