@@ -30,7 +30,7 @@ namespace DX
 
     private:
         bool m_firstUpdate = true;
-        float m_moveSpeed = 2.0f;
+        float m_moveSpeed = 4.0f;
         float m_rotationSensitivity = 3.0f;
 
         mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();

@@ -15,7 +15,7 @@ int main()
     //const bool vSync = true;
 
     const mathfu::Vector2Int windowSize{ 1280, 720 };
-    const int refreshRate = 60;
+    const int refreshRate = 144;
     const bool fullscreen = false;
     const bool vSync = true;
 
