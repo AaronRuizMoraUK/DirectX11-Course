@@ -14,7 +14,7 @@
 // No Release configuration
 
 #define DX_LOG(level, title, message, ...)          ::DX::Internal::Log(::DX::Internal::LogLevel::level, title, message, ##__VA_ARGS__)
-#define DX_ASSERT(condition, title, message, ...)   ::DX::Internal::Assert((condition), title, message, ##__VA_ARGS__)
+#define DX_ASSERT(condition, title, message, ...)   ::DX::Internal::Assert((condition), #condition, title, __FILE__, __LINE__, message, ##__VA_ARGS__)
 
 #else
 // Release configuration
@@ -35,5 +35,5 @@ namespace DX::Internal
 
     void Log(LogLevel level, const char* title, const char* message, ...);
 
-    void Assert(bool condition, const char* title, const char* message, ...);
+    void Assert(bool condition, const char* conditionStr, const char* title, const char* file, int line, const char* message, ...);
 } // namespace DX::Internal

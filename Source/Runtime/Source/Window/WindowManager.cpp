@@ -1,10 +1,10 @@
 #include <Window/WindowManager.h>
+#include <Log/Log.h>
 
 // GLFW uses Vulkan by default, so we need to indicate to not use it.
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include <cassert>
 #include <ranges>
 
 namespace DX
@@ -29,12 +29,9 @@ namespace DX
 
     WindowManager::WindowManager()
     {
-        std::printf("Initializing GLFW...\n");
-        if (!glfwInit())
-        {
-            std::printf("Error: Failed to initialize GLFW.\n");
-            assert(false);
-        }
+        DX_LOG(Info, "Window Manager", "Initializing GLFW...");
+        bool success = glfwInit();
+        DX_ASSERT(success, "Window Manager", "Failed to initialize GLFW.");
     }
 
     WindowManager::~WindowManager()
@@ -42,7 +39,7 @@ namespace DX
         // Clearing the map will destroy all windows.
         m_windows.clear();
 
-        std::printf("Terminating GLFW...\n");
+        DX_LOG(Info, "Window Manager", "Terminating GLFW...");
         glfwTerminate();
     }
 

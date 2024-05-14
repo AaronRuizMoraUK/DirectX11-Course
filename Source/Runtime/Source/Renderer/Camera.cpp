@@ -1,6 +1,7 @@
 #include <Renderer/Camera.h>
 #include <Renderer/RendererManager.h>
 #include <Window/WindowManager.h>
+#include <Log/Log.h>
 
 #include <Math/Vector2.h>
 #include <Math/Matrix3x3.h>
@@ -40,7 +41,7 @@ namespace DX
     void Camera::CreateBuffers()
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
-        assert(renderer);
+        DX_ASSERT(renderer, "Camera", "Renderer 0 not found");
 
         {
             D3D11_BUFFER_DESC constantBufferDesc = {};
@@ -66,7 +67,7 @@ namespace DX
     void Camera::Update(float deltaTime)
     {
         Window* window = WindowManager::Get().GetWindow(0);
-        assert(window);
+        DX_ASSERT(window, "Camera", "Window 0 not found");
 
         auto* windowHandler = window->GetWindowHandler();
 
@@ -179,7 +180,7 @@ namespace DX
     mathfu::Matrix4x4 Camera::GetProjectionMatrix() const
     {
         Window* window = WindowManager::Get().GetWindow(0);
-        assert(window);
+        DX_ASSERT(window, "Camera", "Window 0 not found");
 
         const float fovY = 74.0f * mathfu::kDegreesToRadians;
         const float aspectRatio = static_cast<float>(window->GetSize().x) / static_cast<float>(window->GetSize().y);
@@ -197,7 +198,7 @@ namespace DX
     void Camera::SetBuffers()
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
-        assert(renderer);
+        DX_ASSERT(renderer, "Camera", "Renderer 0 not found");
 
         // Update constant buffer with the latest view and projection matrices.
         {

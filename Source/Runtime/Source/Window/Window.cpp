@@ -1,4 +1,5 @@
 #include <Window/Window.h>
+#include <Log/Log.h>
 
 // GLFW uses Vulkan by default, so we need to indicate to not use it.
 #define GLFW_INCLUDE_NONE
@@ -8,8 +9,6 @@
     #define GLFW_EXPOSE_NATIVE_WIN32
     #include <GLFW/glfw3native.h>
 #endif
-
-#include <cstdio>
 
 namespace DX
 {
@@ -36,11 +35,11 @@ namespace DX
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        std::printf("Creating window %u with size %dx%d...\n", m_windowId, m_size.x, m_size.y);
+        DX_LOG(Info, "Window", "Creating window %u with size %dx%d...", m_windowId, m_size.x, m_size.y);
         m_window = glfwCreateWindow(m_size.x, m_size.y, m_title.c_str(), nullptr, nullptr);
         if (!m_window)
         {
-            std::printf("Error: Failed to create GLFW window.\n");
+            DX_LOG(Error, "Window", "Failed to create GLFW window.");
             return false;
         }
 
@@ -61,7 +60,7 @@ namespace DX
     {
         if (m_window)
         {
-            std::printf("Terminating window %u...\n", m_windowId);
+            DX_LOG(Info, "Window", "Terminating window %u...", m_windowId);
             glfwDestroyWindow(m_window);
             m_window = nullptr;
         }

@@ -1,4 +1,5 @@
 #include <File/FileUtils.h>
+#include <Log/Log.h>
 
 #include <stb_image.h>
 
@@ -17,7 +18,7 @@ namespace DX
         auto fileNamePath = GetAssetPath() / fileName;
         if (!std::filesystem::exists(fileNamePath))
         {
-            std::printf("Error: filename path %s does not exist.\n", fileNamePath.generic_string().c_str());
+            DX_LOG(Error, "FileUtils", "Filename path % s does not exist.", fileNamePath.generic_string().c_str());
             return std::nullopt;
         }
 
@@ -32,7 +33,7 @@ namespace DX
         }
         else
         {
-            std::printf("Error: filename path %s failed to open.\n", fileNamePath.generic_string().c_str());
+            DX_LOG(Error, "FileUtils", "Filename path %s failed to open.", fileNamePath.generic_string().c_str());
             return std::nullopt;
         }
     }
@@ -42,14 +43,14 @@ namespace DX
         auto fileNamePath = GetAssetPath() / fileName;
         if (!std::filesystem::exists(fileNamePath))
         {
-            std::printf("Error: filename path %s does not exist.\n", fileNamePath.generic_string().c_str());
+            DX_LOG(Error, "FileUtils", "Filename path %s does not exist.", fileNamePath.generic_string().c_str());
             return nullptr;
         }
 
         uint8_t* textureData = stbi_load(fileNamePath.generic_string().c_str(), &textureSizeOut.x, &textureSizeOut.y, nullptr, STBI_rgb_alpha);
         if (!textureData)
         {
-            std::printf("Error: failed to load texture %s.\n", fileNamePath.generic_string().c_str());
+            DX_LOG(Error, "FileUtils", "Failed to load texture %s.", fileNamePath.generic_string().c_str());
             return nullptr;
         }
 
@@ -80,7 +81,7 @@ namespace DX
             }
         }
 
-        std::printf("Error: Assets path not found.\n");
+        DX_LOG(Error, "FileUtils", "Assets path not found.");
         return {};
     }
 
@@ -92,7 +93,7 @@ namespace DX
         std::filesystem::path execPath(path);
         return execPath.remove_filename();
 #else
-#error "Renderer::GetExecutablePath: Unsupported platform."
+        #error "Renderer::GetExecutablePath: Unsupported platform."
         return {};
 #endif
     }

@@ -2,8 +2,8 @@
 #include <Renderer/RendererManager.h>
 #include <Renderer/Object.h>
 #include <Renderer/Camera.h>
+#include <Log/Log.h>
 
-#include <cstdio>
 #include <array>
 #include <memory>
 
@@ -74,6 +74,6 @@ int main()
     DX::RendererManager::Destroy();
     DX::WindowManager::Destroy();
 
-    std::printf("Done!\n");
+    DX_LOG(Info, "Main", "Done!");
     return 0;
 }

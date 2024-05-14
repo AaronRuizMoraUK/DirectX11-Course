@@ -1,6 +1,7 @@
 #include <Renderer/Renderer.h>
 #include <Window/Window.h>
 #include <File/FileUtils.h>
+#include <Log/Log.h>
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -27,7 +28,7 @@ namespace DX
             return true; // Already initialized
         }
 
-        std::printf("Initializing DX11 Renderer...\n");
+        DX_LOG(Info, "Renderer", "Initializing DX11 Renderer...");
 
         if (!CreateDevice())
         {
@@ -64,7 +65,7 @@ namespace DX
 
     void Renderer::Terminate()
     {
-        std::printf("Terminating DX11 Renderer...\n");
+        DX_LOG(Info, "Renderer", "Terminating DX11 Renderer...");
 
         DestroyInputLayout();
         DestroyShaders();
@@ -108,11 +109,11 @@ namespace DX
 
         if (FAILED(result))
         {
-            std::printf("Error: Failed to create D3D11 device.\n");
+            DX_LOG(Error, "Renderer", "Failed to create D3D11 device.");
             return false;
         }
 
-        std::printf("D3D11 device created.\n");
+        DX_LOG(Info, "Renderer", "D3D11 device created.");
         return true;
     }
 
@@ -145,11 +146,11 @@ namespace DX
 
         if (FAILED(result))
         {
-            std::printf("Error: Failed to create D3D11 swap chain.\n");
+            DX_LOG(Error, "Renderer", "Failed to create D3D11 swap chain.");
             return false;
         }
 
-        std::printf("D3D11 swap chain created.\n");
+        DX_LOG(Info, "Renderer", "D3D11 swap chain created.");
         return true;
     }
 
@@ -166,11 +167,11 @@ namespace DX
 
         if (FAILED(result))
         {
-            std::printf("Error: Failed to create Render Target View for swap chain's buffer.\n");
+            DX_LOG(Error, "Renderer", "Failed to create Render Target View for swap chain's buffer.");
             return false;
         }
 
-        std::printf("Render Target View for swap chain's buffer created.\n");
+        DX_LOG(Info, "Renderer", "Render Target View for swap chain's buffer created.");
         return true;
     }
 
@@ -228,7 +229,7 @@ namespace DX
 
         if (FAILED(resultVS))
         {
-            std::printf("Error: Failed to create vertex shader %s.\n", vertexShaderFilename.c_str());
+            DX_LOG(Error, "Renderer", "Failed to create vertex shader %s.", vertexShaderFilename.c_str());
             return false;
         }
 
@@ -247,7 +248,7 @@ namespace DX
 
         if (FAILED(resultPS))
         {
-            std::printf("Error: Failed to create pixel shader %s.\n", pixelShaderFilename.c_str());
+            DX_LOG(Error, "Renderer", "Failed to create pixel shader %s.", pixelShaderFilename.c_str());
             return false;
         }
 
@@ -288,10 +289,10 @@ namespace DX
 
         if (FAILED(result))
         {
-            std::printf("Error: Failed to compile shader %s.\n", shaderFilename.c_str());
+            DX_LOG(Error, "Renderer", "Failed to compile shader %s.", shaderFilename.c_str());
             if (errorBlob && errorBlob->GetBufferPointer())
             {
-                std::printf("Message from shader compiler:\n%s\n", static_cast<char*>(errorBlob->GetBufferPointer()));
+                DX_LOG(Error, "Renderer", "Message from shader compiler:\n%s\n", static_cast<char*>(errorBlob->GetBufferPointer()));
             }
             return {};
         }
@@ -319,7 +320,7 @@ namespace DX
 
         if (FAILED(result))
         {
-            std::printf("Error: Failed to create input layout.\n");
+            DX_LOG(Error, "Renderer", "Failed to create input layout.");
             return false;
         }
 

@@ -1,6 +1,7 @@
 #include <Renderer/Object.h>
 #include <Renderer/RendererManager.h>
 #include <File/FileUtils.h>
+#include <Log/Log.h>
 
 #include <d3d11.h>
 
@@ -13,7 +14,7 @@ namespace DX
     void Object::CreateBuffers()
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
-        assert(renderer);
+        DX_ASSERT(renderer, "Object", "Renderer 0 not found");
 
         // Vertex Buffer
         {
@@ -125,7 +126,7 @@ namespace DX
     void Object::SetBuffers()
     {
         auto* renderer = RendererManager::Get().GetRenderer(0);
-        assert(renderer);
+        DX_ASSERT(renderer, "Object", "Renderer 0 not found");
 
         // Update constant buffer with the latest world matrix.
         {

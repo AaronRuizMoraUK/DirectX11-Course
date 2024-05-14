@@ -37,6 +37,7 @@ namespace DX::Internal
                 };
 
             std::printf("%s%s%s", colorStr(logColor), message, colorStr(LogColor::Normal));
+
 #ifdef _WIN32
             OutputDebugString(message);
 #endif
@@ -77,21 +78,21 @@ namespace DX::Internal
         DebugOutput(logColor, buffer);
     }
 
-    void Assert(bool condition, const char* title, const char* message, ...)
+    void Assert(bool condition, const char* conditionStr, const char* title, const char* file, int line, const char* message, ...)
     {
         if (!condition)
         {
             char buffer[8 * 1024];
             char* head = buffer;
 
-            head += std::sprintf(head, "[%s] Assert: ", title);
+            head += std::sprintf(head, "[%s] Assertion failed: ", title);
 
             va_list args;
             va_start(args, message);
             head += vsprintf(head, message, args);
             va_end(args);
 
-            std::sprintf(head, "\n");
+            std::sprintf(head, "\nFile: %s, line %d\nCondition: %s\n", file, line, conditionStr);
 
             DebugOutput(LogColor::Red, buffer);
 

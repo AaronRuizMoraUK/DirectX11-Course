@@ -1,8 +1,6 @@
 #include <Renderer/RendererManager.h>
 #include <Window/Window.h>
 
-#include <cassert>
-
 namespace DX
 {
     std::unique_ptr<RendererManager> RendererManager::Instance;
