@@ -4,9 +4,6 @@
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set the build configurations to only Debug and Release
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Limited Configs" FORCE)
-
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
     cmake_policy(SET CMP0141 NEW)
@@ -14,6 +11,25 @@ endif()
 
 # Project name
 project ("DirectX11-Course")
+
+# ----------------------------------------------------
+# Setup build configuration types
+
+set(CMAKE_CONFIGURATION_TYPES "Debug;Development;Release" CACHE STRING "Config types" FORCE)
+
+# Copy Release configuration flags to Development configuration
+set(CMAKE_CXX_FLAGS_DEVELOPMENT "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "Flags used by the C++ compiler during Development builds." FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_DEVELOPMENT "${CMAKE_EXE_LINKER_FLAGS_RELEASE}" CACHE STRING "Flags used for linking binaries during Development builds." FORCE)
+set(CMAKE_SHARED_LINKER_FLAGS_DEVELOPMENT "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}" CACHE STRING "Flags used by the shared libraries linker during Development builds." FORCE)
+
+# Adjust flags for Development configuration to allow debugging: remove NDEBUG macro and add debug information.
+if(MSVC)
+    string(REPLACE "/DNDEBUG" "/Zi" CMAKE_CXX_FLAGS_DEVELOPMENT "${CMAKE_CXX_FLAGS_DEVELOPMENT}")
+    set(CMAKE_EXE_LINKER_FLAGS_DEVELOPMENT "${CMAKE_EXE_LINKER_FLAGS_DEVELOPMENT} /DEBUG" CACHE STRING "Generate debug information" FORCE)
+    set(CMAKE_SHARED_LINKER_FLAGS_DEVELOPMENT "${CMAKE_SHARED_LINKER_FLAGS_DEVELOPMENT} /DEBUG" CACHE STRING "Generate debug information" FORCE)
+else()
+    string(REPLACE "-DNDEBUG" "-g" CMAKE_CXX_FLAGS_DEVELOPMENT "${CMAKE_CXX_FLAGS_DEVELOPMENT}")
+endif()
 
 # ----------------------------------------------------
 # 3rd party libraries
