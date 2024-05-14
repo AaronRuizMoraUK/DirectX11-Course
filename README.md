@@ -6,7 +6,7 @@ Project generated while doing Sections 4-8 of the Udemy course  [The Complete Co
 
 The ['main' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/main) contains a **Rendering Engine using DirectX 11** built from scratch.
 
-The **['SimpleRenderer' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/SimpleRenderer)** contains a
+The ['SimpleRenderer' branch](https://github.com/AaronRuizMoraUK/DirectX11-Course/tree/SimpleRenderer) contains a
 **Simple DirectX 11 Renderer** that was generated during Sections 1-3 of the course.
 
 ## Build and Run
