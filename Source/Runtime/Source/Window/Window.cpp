@@ -12,10 +12,13 @@
 
 namespace DX
 {
-    Window::Window(WindowId windowId, const mathfu::Vector2Int& size, std::string title)
+    Window::Window(WindowId windowId, std::string title, const mathfu::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync)
         : m_windowId(windowId)
-        , m_size(size)
         , m_title(std::move(title))
+        , m_size(size)
+        , m_refreshRate(refreshRate)
+        , m_fullScreen(fullScreen)
+        , m_vSync(vSync)
     {
     }
 
@@ -36,7 +39,7 @@ namespace DX
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
         DX_LOG(Info, "Window", "Creating window %u with size %dx%d...", m_windowId, m_size.x, m_size.y);
-        m_window = glfwCreateWindow(m_size.x, m_size.y, m_title.c_str(), nullptr, nullptr);
+        m_window = glfwCreateWindow(m_size.x, m_size.y, m_title.c_str(), (m_fullScreen) ? glfwGetPrimaryMonitor() : nullptr, nullptr);
         if (!m_window)
         {
             DX_LOG(Error, "Window", "Failed to create GLFW window.");
@@ -66,7 +69,7 @@ namespace DX
         }
     }
 
-    bool Window::IsVisible() const
+    bool Window::IsOpen() const
     {
         return !glfwWindowShouldClose(m_window);
     }

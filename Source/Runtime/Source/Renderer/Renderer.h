@@ -38,6 +38,9 @@ namespace DX
         Renderer(RendererId rendererId, Window* window);
         ~Renderer();
 
+        Renderer(const Renderer&) = delete;
+        Renderer& operator=(const Renderer&) = delete;
+
         bool Initialize();
         void Terminate();
 

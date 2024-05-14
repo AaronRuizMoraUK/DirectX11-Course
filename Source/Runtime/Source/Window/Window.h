@@ -20,14 +20,20 @@ namespace DX
     class Window
     {
     public:
-        Window(WindowId windowId, const mathfu::Vector2Int& size, std::string title);
+        Window(WindowId windowId, std::string title, const mathfu::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync);
         ~Window();
+
+        Window(const Window&) = delete;
+        Window& operator=(const Window&) = delete;
 
         bool Initialize();
         void Terminate();
 
-        bool IsVisible() const;
+        bool IsOpen() const;
         const mathfu::Vector2Int& GetSize() const { return m_size; }
+        int GetRefreshRate() const { return m_refreshRate; }
+        bool IsFullScreen() const { return m_fullScreen; }
+        bool IsVSyncEnabled() const { return m_vSync; }
 
         WindowId GetId() const { return m_windowId; }
         GLFWwindow* GetWindowHandler() { return m_window; }
@@ -40,9 +46,15 @@ namespace DX
 
     private:
         const WindowId m_windowId = InvalidWindowId;
-        mathfu::Vector2Int m_size;
         std::string m_title;
+        mathfu::Vector2Int m_size;
+        int m_refreshRate = 60;
+        bool m_fullScreen = false;
+        bool m_vSync = true;
+
         GLFWwindow* m_window = nullptr;
+
+        // Mouse scroll
         float m_scrollOffset = 0.0f;
         float m_scrollOffsetAccumulator = 0.0f;
     };

@@ -123,14 +123,14 @@ namespace DX
         swapChainDesc.BufferDesc.Width = m_window->GetSize().x;
         swapChainDesc.BufferDesc.Height = m_window->GetSize().y;
         swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+        swapChainDesc.BufferDesc.RefreshRate.Numerator = m_window->GetRefreshRate();
         swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
         swapChainDesc.SampleDesc.Count = 1;
         swapChainDesc.SampleDesc.Quality = 0;
         swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         swapChainDesc.BufferCount = 1;
         swapChainDesc.OutputWindow = m_window->GetWindowNativeHandler();
-        swapChainDesc.Windowed = true;
+        swapChainDesc.Windowed = !m_window->IsFullScreen();
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
         ComPtr<IDXGIDevice> dxgiDevice;
@@ -183,7 +183,7 @@ namespace DX
     void Renderer::Present()
     {
         m_swapChain->Present(
-            1, // VSync On
+            m_window->IsVSyncEnabled() ? 1 : 0, // VSync
             0  // Flags
         );
     }

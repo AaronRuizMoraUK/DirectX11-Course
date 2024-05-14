@@ -9,9 +9,19 @@
 
 int main()
 {
+    //const mathfu::Vector2Int windowSize{ 3440, 1440 };
+    //const int refreshRate = 144;
+    //const bool fullscreen = true;
+    //const bool vSync = true;
+
+    const mathfu::Vector2Int windowSize{ 1280, 720 };
+    const int refreshRate = 60;
+    const bool fullscreen = false;
+    const bool vSync = true;
+
     // Window initialization
     DX::WindowManager& windowManager = DX::WindowManager::Get();
-    DX::Window* window = windowManager.CreateWindowWithTitle({1280, 720}, "DirectX11 Course");
+    DX::Window* window = windowManager.CreateWindowWithTitle("DirectX11 Course", windowSize, refreshRate, fullscreen, vSync);
     if (!window)
     {
         return -1;
@@ -34,14 +44,14 @@ int main()
     objects.push_back(std::make_unique<DX::Cube>(mathfu::Vector3(1.0f)));
     objects[0]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
 
-    while (window->IsVisible())
+    while (window->IsOpen())
     {
         windowManager.PollEvents();
 
         // ------
         // Update
         // ------
-        constexpr float deltaTime = 1.0f / 60.0f;
+        constexpr float deltaTime = 1.0f / static_cast<float>(refreshRate); // TODO: Calculate delta time
         camera->Update(deltaTime);
         //for (auto& object : objects)
         //{
