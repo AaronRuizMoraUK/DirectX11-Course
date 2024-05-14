@@ -2,7 +2,7 @@
 
 <img src="./DX11-logo.jpg">
 
-Project generated from doing the Udemy course  [The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/) by The Tech Courses.
+Project generated while doing Sections 1-3 of the Udemy course  [The Complete Course of Microsoft DirectX 2024](https://www.udemy.com/course/directx-course/) by The Tech Courses.
 
 Simple DirectX 11 renderer that draws a triangle and a cube on screen using a texture.
 
