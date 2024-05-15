@@ -45,8 +45,6 @@ namespace DX
             return;
         }
 
-        DX_LOG(Info, "SwapChain", "Graphics swap chain created.");
-
         // Get back buffer
         result = m_dx11SwapChain->GetBuffer(0, IID_PPV_ARGS(m_dx11BackBuffer.GetAddressOf()));
         if (FAILED(result))
@@ -54,6 +52,8 @@ namespace DX
             DX_LOG(Fatal, "SwapChain", "Failed to get back buffer from D3D11 swap chain.");
             return;
         }
+
+        DX_LOG(Info, "SwapChain", "Graphics swap chain created.");
     }
 
     SwapChain::~SwapChain()
