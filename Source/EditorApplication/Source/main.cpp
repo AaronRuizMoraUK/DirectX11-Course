@@ -7,10 +7,12 @@
 #else
 #include <Graphics/Device/DeviceManager.h>
 #include <Graphics/SwapChain/SwapChain.h>
+#include <Graphics/FrameBuffer/FrameBuffer.h>
 #endif
 
 #include <Window/WindowManager.h>
 #include <Log/Log.h>
+#include <Math/Color.h>
 
 #include <array>
 #include <memory>
@@ -72,7 +74,7 @@ int main()
         // ------
         // Render
         // ------
-        const mathfu::Vector4 clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+        const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
         renderer->ClearColor(clearColor);
 
         renderer->SetPipeline();
@@ -98,27 +100,34 @@ int main()
 
     // Graphics device initialization
     DX::DeviceManager& deviceManager = DX::DeviceManager::Get();
-    DX::Device* device = deviceManager.CreateDevice(DX::DeviceDesc{});
+    DX::Device* device = deviceManager.CreateDevice({});
     if (!device)
     {
         return -1;
     }
-    auto swapChain = device->CreateSwapChain(DX::SwapChainDesc{ window, 1, DX::TextureFormat::R8G8B8A8_UNORM });
 
-    while (window->IsOpen())
     {
-        windowManager.PollEvents();
+        auto swapChain = device->CreateSwapChain({ window, 1, DX::TextureFormat::R8G8B8A8_UNORM });
+        auto frameBuffer = device->CreateFrameBuffer({ swapChain.get() });
 
-        // ------
-        // Update
-        // ------
+        while (window->IsOpen())
+        {
+            windowManager.PollEvents();
 
-        // ------
-        // Render
-        // ------
+            // ------
+            // Update
+            // ------
+
+            // ------
+            // Render
+            // ------
+            const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+            frameBuffer->Clear(clearColor, 0.0f, 0);
+
+            swapChain->Present();
+        }
     }
 
-    swapChain.reset();
     DX::DeviceManager::Destroy();
     DX::WindowManager::Destroy();
 

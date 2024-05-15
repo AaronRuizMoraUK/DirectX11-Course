@@ -22,6 +22,7 @@ namespace DX
 
         void Present();
 
+        // TODO: Can back buffer be stored as Texture class and return a Texture instead?
         ComPtr<ID3D11Texture2D> GetBackBuffer();
 
     private:
