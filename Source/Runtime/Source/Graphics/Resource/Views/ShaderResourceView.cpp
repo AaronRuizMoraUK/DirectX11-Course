@@ -1,4 +1,4 @@
-#include <Graphics/Views/ShaderResourceView.h>
+#include <Graphics/Resource/Views/ShaderResourceView.h>
 
 namespace DX
 {

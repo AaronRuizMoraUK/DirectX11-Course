@@ -1,4 +1,4 @@
-#include <Graphics/Views/DepthStencilView.h>
+#include <Graphics/Resource/Views/DepthStencilView.h>
 
 namespace DX
 {

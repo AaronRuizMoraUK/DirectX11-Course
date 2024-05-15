@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Graphics/DeviceObject/DeviceObject.h>
-#include <Graphics/Texture/TextureDesc.h>
+#include <Graphics/Resource/Texture/TextureDesc.h>
 
 #include <Graphics/DirectX/ComPtr.h>
 class ID3D11Texture1D;

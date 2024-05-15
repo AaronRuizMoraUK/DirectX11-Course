@@ -2,16 +2,16 @@
 
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
-#include <Graphics/Buffer/Buffer.h>
-#include <Graphics/Texture/Texture.h>
+#include <Graphics/Resource/Buffer/Buffer.h>
+#include <Graphics/Resource/Texture/Texture.h>
 #include <Graphics/Sampler/Sampler.h>
 #include <Graphics/Shader/Shader.h>
-#include <Graphics/Views/ShaderResourceView.h>
-#include <Graphics/Views/ShaderRWResourceView.h>
-#include <Graphics/Views/RenderTargetView.h>
-#include <Graphics/Views/DepthStencilView.h>
+#include <Graphics/Resource/Views/ShaderResourceView.h>
+#include <Graphics/Resource/Views/ShaderRWResourceView.h>
+#include <Graphics/Resource/Views/RenderTargetView.h>
+#include <Graphics/Resource/Views/DepthStencilView.h>
 #include <Graphics/Pipeline/Pipeline.h>
-#include <Graphics/ResourceLayout/ResourceLayout.h>
+#include <Graphics/Resource/ResourceLayout/ResourceLayout.h>
 #include <Graphics/CommandList/CommandList.h>
 
 #include <Log/Log.h>

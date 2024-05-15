@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Graphics/DeviceObject/DeviceObject.h>
-#include <Graphics/Views/DepthStencilViewDesc.h>
+#include <Graphics/Resource/Views/DepthStencilViewDesc.h>
 
 namespace DX
 {

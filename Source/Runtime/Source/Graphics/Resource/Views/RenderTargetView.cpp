@@ -1,4 +1,4 @@
-#include <Graphics/Views/RenderTargetView.h>
+#include <Graphics/Resource/Views/RenderTargetView.h>
 
 namespace DX
 {

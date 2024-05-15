@@ -1,4 +1,4 @@
-#include <Graphics/Texture/Texture.h>
+#include <Graphics/Resource/Texture/Texture.h>
 
 #include <Graphics/Device/Device.h>
 #include <Log/Log.h>

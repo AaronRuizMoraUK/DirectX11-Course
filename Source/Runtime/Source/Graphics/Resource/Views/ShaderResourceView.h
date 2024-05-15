@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Graphics/DeviceObject/DeviceObject.h>
-#include <Graphics/Views/ShaderResourceViewDesc.h>
+#include <Graphics/Resource/Views/ShaderResourceViewDesc.h>
 
 namespace DX
 {

@@ -1,4 +1,4 @@
-#include <Graphics/Buffer/Buffer.h>
+#include <Graphics/Resource/Buffer/Buffer.h>
 
 namespace DX
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Graphics/DeviceObject/DeviceObject.h>
-#include <Graphics/Buffer/BufferDesc.h>
+#include <Graphics/Resource/Buffer/BufferDesc.h>
 
 namespace DX
 {
