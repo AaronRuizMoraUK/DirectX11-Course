@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    Pipeline::Pipeline(std::shared_ptr<Device> device, const PipelineDesc& desc)
+    Pipeline::Pipeline(Device* device, const PipelineDesc& desc)
         : DeviceObject(device)
     {
     }

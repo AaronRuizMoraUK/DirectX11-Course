@@ -8,7 +8,7 @@ namespace DX
     class Sampler : public DeviceObject
     {
     public:
-        Sampler(std::shared_ptr<Device> device, const SamplerDesc& desc);
+        Sampler(Device* device, const SamplerDesc& desc);
         ~Sampler() = default;
 
         Sampler(const Sampler&) = delete;

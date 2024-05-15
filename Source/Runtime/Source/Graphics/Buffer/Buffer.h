@@ -8,7 +8,7 @@ namespace DX
     class Buffer : public DeviceObject
     {
     public:
-        Buffer(std::shared_ptr<Device> device, const BufferDesc& desc);
+        Buffer(Device* device, const BufferDesc& desc);
         ~Buffer() = default;
 
         Buffer(const Buffer&) = delete;

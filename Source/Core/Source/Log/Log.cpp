@@ -53,9 +53,6 @@ namespace DX::Internal
 
         switch(level)
         {
-            case LogLevel::Info:
-                head += std::sprintf(head, "[%s] ", title);
-                break;
             case LogLevel::Warning:
                 logColor = LogColor::Yellow;
                 head += std::sprintf(head, "[%s] Warning: ", title);
@@ -64,7 +61,13 @@ namespace DX::Internal
                 logColor = LogColor::Red;
                 head += std::sprintf(head, "[%s] Error: ", title);
                 break;
+            case LogLevel::Fatal:
+                logColor = LogColor::Red;
+                head += std::sprintf(head, "[%s] Fatal Error: ", title);
+                break;
+            case LogLevel::Info:
             default:
+                head += std::sprintf(head, "[%s] ", title);
                 break;
         }
 
@@ -76,6 +79,11 @@ namespace DX::Internal
         std::sprintf(head, "\n");
 
         DebugOutput(logColor, buffer);
+
+        if (level == LogLevel::Fatal)
+        {
+            abort();
+        }
     }
 
     void Assert(bool condition, const char* conditionStr, const char* title, const char* file, int line, const char* message, ...)

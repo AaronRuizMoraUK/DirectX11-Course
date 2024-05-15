@@ -2,8 +2,6 @@
 
 #include <Graphics/DeviceObject/DeviceObjectType.h>
 
-#include <memory>
-
 namespace DX
 {
     class Device;
@@ -11,7 +9,7 @@ namespace DX
     class DeviceObject
     {
     public:
-        DeviceObject(std::shared_ptr<Device> device);
+        DeviceObject(Device* device);
         virtual ~DeviceObject() = default;
 
         DeviceObject(const DeviceObject&) = delete;
@@ -20,6 +18,6 @@ namespace DX
         virtual DeviceObjectType GetType() const = 0;
 
     protected:
-        std::shared_ptr<Device> m_ownerDevice; // TODO: Does it need to be shared_ptr?
+        Device* m_ownerDevice = nullptr;
     };
 } // namespace DX

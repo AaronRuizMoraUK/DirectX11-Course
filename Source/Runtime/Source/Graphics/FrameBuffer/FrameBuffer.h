@@ -8,7 +8,7 @@ namespace DX
     class FrameBuffer : public DeviceObject
     {
     public:
-        FrameBuffer(std::shared_ptr<Device> device, const FrameBufferDesc& desc);
+        FrameBuffer(Device* device, const FrameBufferDesc& desc);
         ~FrameBuffer() = default;
 
         FrameBuffer(const FrameBuffer&) = delete;

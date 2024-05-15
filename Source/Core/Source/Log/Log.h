@@ -6,6 +6,7 @@
 // DX_LOG(Info, "Title", "My message %d", 123);
 // DX_LOG(Warning, "Title", "My message %d", 123);
 // DX_LOG(Error, "Title", "My message %d", 123);
+// DX_LOG(Fatal, "Title", "My message %d", 123);
 //
 // DX_ASSERT(condition, "Title", "My message %d", 123);
 // -------------------------------------------------------
@@ -30,7 +31,8 @@ namespace DX::Internal
     {
         Info,
         Warning,
-        Error
+        Error,
+        Fatal
     };
 
     void Log(LogLevel level, const char* title, const char* message, ...);

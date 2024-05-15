@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    Shader::Shader(std::shared_ptr<Device> device, const ShaderDesc& desc)
+    Shader::Shader(Device* device, const ShaderDesc& desc)
         : DeviceObject(device)
     {
     }

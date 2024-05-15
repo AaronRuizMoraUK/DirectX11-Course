@@ -8,7 +8,7 @@ namespace DX
     class Shader : public DeviceObject
     {
     public:
-        Shader(std::shared_ptr<Device> device, const ShaderDesc& desc);
+        Shader(Device* device, const ShaderDesc& desc);
         ~Shader() = default;
 
         Shader(const Shader&) = delete;

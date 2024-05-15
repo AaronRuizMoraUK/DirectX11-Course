@@ -32,11 +32,11 @@ namespace DX
     struct ResourceLayoutDesc;
     struct CommandListDesc;
 
-    class Device : public std::enable_shared_from_this<Device>
+    class Device
     {
     public:
         Device(const DeviceDesc& desc);
-        ~Device() = default;
+        ~Device();
 
         Device(const Device&) = delete;
         Device& operator=(const Device&) = delete;
@@ -51,13 +51,16 @@ namespace DX
         std::shared_ptr<ResourceLayout> CreateResourceLayout(const ResourceLayoutDesc& desc);
         std::shared_ptr<CommandList> CreateCommandList(const CommandListDesc& desc);
 
-        SwapChain* GetSwapChain() { return m_swapChain.get(); }
+        //std::shared_ptr<SwapChain> GetSwapChain() { return m_swapChain; }
+
+        ComPtr<ID3D11Device> GetDX11Device();
+        ComPtr<ID3D11DeviceContext> GetDX11ImmediateContext();
 
     private:
         using DeviceObjects = std::vector<std::shared_ptr<DeviceObject>>;
 
         DeviceObjects m_deviceObjects;
-        std::shared_ptr<SwapChain> m_swapChain;
+        //std::shared_ptr<SwapChain> m_swapChain;
 
     private:
         ComPtr<ID3D11Device> m_dx11Device;

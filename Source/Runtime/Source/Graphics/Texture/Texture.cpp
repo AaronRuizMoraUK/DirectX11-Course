@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    Texture::Texture(std::shared_ptr<Device> device, const TextureDesc& desc)
+    Texture::Texture(Device* device, const TextureDesc& desc)
         : DeviceObject(device)
     {
     }

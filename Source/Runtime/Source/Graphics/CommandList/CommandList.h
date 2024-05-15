@@ -8,7 +8,7 @@ namespace DX
     class CommandList : public DeviceObject
     {
     public:
-        CommandList(std::shared_ptr<Device> device, const CommandListDesc& desc);
+        CommandList(Device* device, const CommandListDesc& desc);
         ~CommandList() = default;
 
         CommandList(const CommandList&) = delete;

@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    FrameBuffer::FrameBuffer(std::shared_ptr<Device> device, const FrameBufferDesc& desc)
+    FrameBuffer::FrameBuffer(Device* device, const FrameBufferDesc& desc)
         : DeviceObject(device)
     {
     }

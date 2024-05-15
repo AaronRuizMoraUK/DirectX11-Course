@@ -8,7 +8,7 @@ namespace DX
     class Texture : public DeviceObject
     {
     public:
-        Texture(std::shared_ptr<Device> device, const TextureDesc& desc);
+        Texture(Device* device, const TextureDesc& desc);
         ~Texture() = default;
 
         Texture(const Texture&) = delete;

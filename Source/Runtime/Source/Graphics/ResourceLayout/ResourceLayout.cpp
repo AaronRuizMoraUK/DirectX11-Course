@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    ResourceLayout::ResourceLayout(std::shared_ptr<Device> device, const ResourceLayoutDesc& desc)
+    ResourceLayout::ResourceLayout(Device* device, const ResourceLayoutDesc& desc)
         : DeviceObject(device)
     {
     }

@@ -30,8 +30,10 @@ namespace DX
     WindowManager::WindowManager()
     {
         DX_LOG(Info, "Window Manager", "Initializing GLFW...");
-        bool success = glfwInit();
-        DX_ASSERT(success, "Window Manager", "Failed to initialize GLFW.");
+        if (!glfwInit())
+        {
+            DX_LOG(Fatal, "Window Manager", "Failed to initialize GLFW.");
+        }
     }
 
     WindowManager::~WindowManager()

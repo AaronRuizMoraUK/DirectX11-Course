@@ -8,7 +8,7 @@ namespace DX
     class Pipeline : public DeviceObject
     {
     public:
-        Pipeline(std::shared_ptr<Device> device, const PipelineDesc& desc);
+        Pipeline(Device* device, const PipelineDesc& desc);
         ~Pipeline() = default;
 
         Pipeline(const Pipeline&) = delete;

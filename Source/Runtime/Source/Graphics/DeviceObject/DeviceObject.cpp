@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    DeviceObject::DeviceObject(std::shared_ptr<Device> device)
+    DeviceObject::DeviceObject(Device* device)
     : m_ownerDevice(device)
     {
     }

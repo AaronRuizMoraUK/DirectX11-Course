@@ -8,7 +8,7 @@ namespace DX
     class ResourceLayout : public DeviceObject
     {
     public:
-        ResourceLayout(std::shared_ptr<Device> device, const ResourceLayoutDesc& desc);
+        ResourceLayout(Device* device, const ResourceLayoutDesc& desc);
         ~ResourceLayout() = default;
 
         ResourceLayout(const ResourceLayout&) = delete;

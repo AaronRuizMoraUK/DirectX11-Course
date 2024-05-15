@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    CommandList::CommandList(std::shared_ptr<Device> device, const CommandListDesc& desc)
+    CommandList::CommandList(Device* device, const CommandListDesc& desc)
         : DeviceObject(device)
     {
     }

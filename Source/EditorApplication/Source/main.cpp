@@ -1,7 +1,15 @@
-#include <Window/WindowManager.h>
+#define SIMPLE_RENDERER 0
+
+#if SIMPLE_RENDERER
 #include <Renderer/RendererManager.h>
 #include <Renderer/Object.h>
 #include <Renderer/Camera.h>
+#else
+#include <Graphics/Device/Device.h>
+#include <Graphics/SwapChain/SwapChain.h>
+#endif
+
+#include <Window/WindowManager.h>
 #include <Log/Log.h>
 
 #include <array>
@@ -26,6 +34,8 @@ int main()
     {
         return -1;
     }
+
+#if SIMPLE_RENDERER
 
     // Renderer initialization
     DX::RendererManager& rendererManager = DX::RendererManager::Get();
@@ -83,6 +93,27 @@ int main()
     camera.reset();
     DX::RendererManager::Destroy();
     DX::WindowManager::Destroy();
+
+#else
+
+    // Graphics initialization
+    auto graphicsDevice = std::make_shared<DX::Device>(DX::DeviceDesc{});
+    auto graphicsSwapChain = graphicsDevice->CreateSwapChain(DX::SwapChainDesc{ window });
+
+    while (window->IsOpen())
+    {
+        windowManager.PollEvents();
+
+        // ------
+        // Update
+        // ------
+
+        // ------
+        // Render
+        // ------
+    }
+
+#endif // SIMPLE_RENDERER
 
     DX_LOG(Info, "Main", "Done!");
     return 0;

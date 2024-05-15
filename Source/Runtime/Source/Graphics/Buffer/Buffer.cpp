@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    Buffer::Buffer(std::shared_ptr<Device> device, const BufferDesc& desc)
+    Buffer::Buffer(Device* device, const BufferDesc& desc)
         : DeviceObject(device)
     {
     }
