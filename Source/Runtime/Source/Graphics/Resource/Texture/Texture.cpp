@@ -21,9 +21,9 @@ namespace DX
             textureDesc.MipLevels = desc.m_mipLevels;
             textureDesc.ArraySize = desc.m_arraySize;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
-            textureDesc.Usage = D3D11_USAGE_IMMUTABLE; // TODO
-            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // TODO
-            textureDesc.CPUAccessFlags = 0; // TODO
+            textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
+            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
@@ -76,9 +76,9 @@ namespace DX
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.SampleDesc.Count = desc.m_sampleCount;
             textureDesc.SampleDesc.Quality = desc.m_sampleQuality;
-            textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
-            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            textureDesc.CPUAccessFlags = 0;
+            textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
+            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
@@ -130,9 +130,9 @@ namespace DX
             textureDesc.Depth = desc.m_size.z;
             textureDesc.MipLevels = desc.m_mipLevels;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
-            textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
-            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            textureDesc.CPUAccessFlags = 0;
+            textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
+            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;

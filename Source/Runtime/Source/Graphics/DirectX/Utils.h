@@ -7,7 +7,7 @@
 
 namespace DX
 {
-    static D3D11_USAGE ToDX11ResourceUsageFlag(ResourceUsage usage)
+    static D3D11_USAGE ToDX11ResourceUsage(ResourceUsage usage)
     {
         switch (usage)
         {
@@ -23,39 +23,36 @@ namespace DX
         }
     }
 
-    static D3D11_BIND_FLAG ToDX11ResourceBindFlag(ResourceBind bind)
+    static uint32_t ToDX11ResourceBindFlag(ResourceBindFlag bindFlag)
     {
-        switch (bind)
-        {
-        case ResourceBind::VertexBuffer:   return D3D11_BIND_VERTEX_BUFFER;
-        case ResourceBind::IndexBuffer:    return D3D11_BIND_INDEX_BUFFER;
-        case ResourceBind::ConstantBuffer: return D3D11_BIND_CONSTANT_BUFFER;
-        case ResourceBind::ShaderResource: return D3D11_BIND_SHADER_RESOURCE;
-        case ResourceBind::StreamOutput:   return D3D11_BIND_STREAM_OUTPUT;
-        case ResourceBind::RenderTarget:   return D3D11_BIND_RENDER_TARGET;
-        case ResourceBind::DepthStencil:   return D3D11_BIND_DEPTH_STENCIL;
-        case ResourceBind::UnorderedAccess:return D3D11_BIND_UNORDERED_ACCESS;
-        case ResourceBind::Decoder:        return D3D11_BIND_DECODER;
-        case ResourceBind::VideoEncoder:   return D3D11_BIND_VIDEO_ENCODER;
+        uint32_t dx11BindFlags = 0;
 
-        case ResourceBind::Unknown:
-        default:
-            DX_LOG(Error, "Utils", "Unknown resource bind value %d", bind);
-            return D3D11_BIND_VERTEX_BUFFER;
-        }
+        dx11BindFlags |= (bindFlag & ResourceBind_VertexBuffer)     ? D3D11_BIND_VERTEX_BUFFER    : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_IndexBuffer)      ? D3D11_BIND_INDEX_BUFFER     : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_ConstantBuffer)   ? D3D11_BIND_CONSTANT_BUFFER  : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_ShaderResource)   ? D3D11_BIND_SHADER_RESOURCE  : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_StreamOutput)     ? D3D11_BIND_STREAM_OUTPUT    : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_RenderTarget)     ? D3D11_BIND_RENDER_TARGET    : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_DepthStencil)     ? D3D11_BIND_DEPTH_STENCIL    : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_Decoder)          ? D3D11_BIND_DECODER          : 0;
+        dx11BindFlags |= (bindFlag & ResourceBind_VideoEncoder)     ? D3D11_BIND_VIDEO_ENCODER    : 0;
+
+        return dx11BindFlags;
     }
 
-    static D3D11_CPU_ACCESS_FLAG ToDX11ResourceCPUAccessFlag(ResourceCPUAccess cpuAccess)
+    static uint32_t ToDX11ResourceCPUAccess(ResourceCPUAccess cpuAccess)
     {
         switch (cpuAccess)
         {
-        case ResourceCPUAccess::Read:  return D3D11_CPU_ACCESS_READ;
-        case ResourceCPUAccess::Write: return D3D11_CPU_ACCESS_WRITE;
+        case ResourceCPUAccess::None:      return 0;
+        case ResourceCPUAccess::Read:      return D3D11_CPU_ACCESS_READ;
+        case ResourceCPUAccess::Write:     return D3D11_CPU_ACCESS_WRITE;
+        case ResourceCPUAccess::ReadWrite: return D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 
-        case ResourceCPUAccess::Unknown:
         default:
             DX_LOG(Error, "Utils", "Unknown resource CPU access value %d", cpuAccess);
-            return D3D11_CPU_ACCESS_READ;
+            return 0;
         }
     }
 

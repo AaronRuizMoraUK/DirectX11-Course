@@ -17,30 +17,27 @@ namespace DX
         Count
     };
 
-    enum class ResourceBind
+    // Allows bitwise operations on ResourceBindFlag
+    enum ResourceBindFlag
     {
-        Unknown = 0,
-
-        VertexBuffer,
-        IndexBuffer,
-        ConstantBuffer,
-        ShaderResource,
-        StreamOutput,
-        RenderTarget,
-        DepthStencil,
-        UnorderedAccess,
-        Decoder,
-        VideoEncoder,
-
-        Count
+        ResourceBind_VertexBuffer = 1 << 0,
+        ResourceBind_IndexBuffer = 1 << 1,
+        ResourceBind_ConstantBuffer = 1 << 2,
+        ResourceBind_ShaderResource = 1 << 3,
+        ResourceBind_ShaderRWResource = 1 << 4,
+        ResourceBind_StreamOutput = 1 << 5,
+        ResourceBind_RenderTarget = 1 << 6,
+        ResourceBind_DepthStencil = 1 << 7,
+        ResourceBind_Decoder = 1 << 8,
+        ResourceBind_VideoEncoder = 1 << 9
     };
 
     enum class ResourceCPUAccess
     {
-        Unknown = 0,
-
-        Write,
+        None = 0,
         Read,
+        Write,
+        ReadWrite,
 
         Count
     };
