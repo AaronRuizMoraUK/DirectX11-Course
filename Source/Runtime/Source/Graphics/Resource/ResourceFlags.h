@@ -5,6 +5,46 @@
 
 namespace DX
 {
+    enum class ResourceUsage
+    {
+        Unknown = 0,
+
+        Default,
+        Immutable,
+        Dynamic,
+        Staging,
+
+        Count
+    };
+
+    enum class ResourceBind
+    {
+        Unknown = 0,
+
+        VertexBuffer,
+        IndexBuffer,
+        ConstantBuffer,
+        ShaderResource,
+        StreamOutput,
+        RenderTarget,
+        DepthStencil,
+        UnorderedAccess,
+        Decoder,
+        VideoEncoder,
+
+        Count
+    };
+
+    enum class ResourceCPUAccess
+    {
+        Unknown = 0,
+
+        Write,
+        Read,
+
+        Count
+    };
+
     enum class ResourceFormat
     {
         Unknown = 0,

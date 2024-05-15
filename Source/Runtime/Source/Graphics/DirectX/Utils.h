@@ -7,6 +7,58 @@
 
 namespace DX
 {
+    static D3D11_USAGE ToDX11ResourceUsageFlag(ResourceUsage usage)
+    {
+        switch (usage)
+        {
+        case ResourceUsage::Default:   return D3D11_USAGE_DEFAULT;
+        case ResourceUsage::Immutable: return D3D11_USAGE_IMMUTABLE;
+        case ResourceUsage::Dynamic:   return D3D11_USAGE_DYNAMIC;
+        case ResourceUsage::Staging:   return D3D11_USAGE_STAGING;
+
+        case ResourceUsage::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown resource usage value %d", usage);
+            return D3D11_USAGE_DEFAULT;
+        }
+    }
+
+    static D3D11_BIND_FLAG ToDX11ResourceBindFlag(ResourceBind bind)
+    {
+        switch (bind)
+        {
+        case ResourceBind::VertexBuffer:   return D3D11_BIND_VERTEX_BUFFER;
+        case ResourceBind::IndexBuffer:    return D3D11_BIND_INDEX_BUFFER;
+        case ResourceBind::ConstantBuffer: return D3D11_BIND_CONSTANT_BUFFER;
+        case ResourceBind::ShaderResource: return D3D11_BIND_SHADER_RESOURCE;
+        case ResourceBind::StreamOutput:   return D3D11_BIND_STREAM_OUTPUT;
+        case ResourceBind::RenderTarget:   return D3D11_BIND_RENDER_TARGET;
+        case ResourceBind::DepthStencil:   return D3D11_BIND_DEPTH_STENCIL;
+        case ResourceBind::UnorderedAccess:return D3D11_BIND_UNORDERED_ACCESS;
+        case ResourceBind::Decoder:        return D3D11_BIND_DECODER;
+        case ResourceBind::VideoEncoder:   return D3D11_BIND_VIDEO_ENCODER;
+
+        case ResourceBind::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown resource bind value %d", bind);
+            return D3D11_BIND_VERTEX_BUFFER;
+        }
+    }
+
+    static D3D11_CPU_ACCESS_FLAG ToDX11ResourceCPUAccessFlag(ResourceCPUAccess cpuAccess)
+    {
+        switch (cpuAccess)
+        {
+        case ResourceCPUAccess::Read:  return D3D11_CPU_ACCESS_READ;
+        case ResourceCPUAccess::Write: return D3D11_CPU_ACCESS_WRITE;
+
+        case ResourceCPUAccess::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown resource CPU access value %d", cpuAccess);
+            return D3D11_CPU_ACCESS_READ;
+        }
+    }
+
     static DXGI_FORMAT ToDX11ResourceFormat(ResourceFormat format)
     {
         switch (format)
