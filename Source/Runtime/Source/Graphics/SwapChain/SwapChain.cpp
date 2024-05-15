@@ -39,7 +39,6 @@ namespace DX
         dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf()));
 
         auto result = dxgiFactory->CreateSwapChain(m_ownerDevice->GetDX11Device().Get(), &swapChainDesc, m_dx11SwapChain.GetAddressOf());
-
         if (FAILED(result))
         {
             DX_LOG(Fatal, "SwapChain", "Failed to create D3D11 swap chain.");
@@ -49,7 +48,12 @@ namespace DX
         DX_LOG(Info, "SwapChain", "Graphics swap chain created.");
 
         // Get back buffer
-        m_dx11SwapChain->GetBuffer(0, IID_PPV_ARGS(m_dx11BackBuffer.GetAddressOf()));
+        result = m_dx11SwapChain->GetBuffer(0, IID_PPV_ARGS(m_dx11BackBuffer.GetAddressOf()));
+        if (FAILED(result))
+        {
+            DX_LOG(Fatal, "SwapChain", "Failed to get back buffer from D3D11 swap chain.");
+            return;
+        }
     }
 
     SwapChain::~SwapChain()

@@ -97,8 +97,8 @@ int main()
 #else
 
     // Graphics initialization
-    auto graphicsDevice = std::make_shared<DX::Device>(DX::DeviceDesc{});
-    auto graphicsSwapChain = graphicsDevice->CreateSwapChain(DX::SwapChainDesc{ window });
+    auto device = std::make_shared<DX::Device>(DX::DeviceDesc{});
+    auto swapChain = device->CreateSwapChain(DX::SwapChainDesc{ window });
 
     while (window->IsOpen())
     {

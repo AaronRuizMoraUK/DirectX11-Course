@@ -47,6 +47,7 @@ namespace DX
 
     Device::~Device()
     {
+        // Check if objects won't be destroyed.
         int leakCount = std::reduce(m_deviceObjects.begin(), m_deviceObjects.end(), 0,
             [](int count, const auto& deviceObject)
             {
