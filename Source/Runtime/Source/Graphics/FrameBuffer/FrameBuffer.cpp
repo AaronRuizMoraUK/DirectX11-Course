@@ -5,7 +5,7 @@
 #include <Log/Log.h>
 
 #include <d3d11.h>
-#include <Graphics/DirectX/TextureUtils.h>
+#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {

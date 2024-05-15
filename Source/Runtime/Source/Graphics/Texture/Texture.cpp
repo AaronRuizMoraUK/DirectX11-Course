@@ -4,10 +4,13 @@
 #include <Log/Log.h>
 
 #include <d3d11.h>
-#include <Graphics/DirectX/TextureUtils.h>
+#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {
+    // TODO: Replace all object's comptr textures with Textures
+    // TODO: Add a constructor passing comptr texture directly (useful for Swap Chain)
+    // TODO: Move initialization of all objects out of constructor
     Texture::Texture(Device* device, const TextureDesc& desc)
         : DeviceObject(device)
     {
@@ -17,10 +20,10 @@ namespace DX
             textureDesc.Width = desc.m_size.x;
             textureDesc.MipLevels = desc.m_mipLevels;
             textureDesc.ArraySize = desc.m_arraySize;
-            textureDesc.Format = ToDX11TextureFormat(desc.m_format);
-            textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
-            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            textureDesc.CPUAccessFlags = 0;
+            textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
+            textureDesc.Usage = D3D11_USAGE_IMMUTABLE; // TODO
+            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; // TODO
+            textureDesc.CPUAccessFlags = 0; // TODO
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
@@ -38,7 +41,7 @@ namespace DX
                     {
                         const int index = (arrayIndex * mipLevels) + mipIndex;
                         const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
-                        const int rowBytes = TextureFormatSize(desc.m_format, mipSizeX);
+                        const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = 0;
@@ -70,7 +73,7 @@ namespace DX
             textureDesc.Height = desc.m_size.y;
             textureDesc.MipLevels = desc.m_mipLevels;
             textureDesc.ArraySize = desc.m_arraySize;
-            textureDesc.Format = ToDX11TextureFormat(desc.m_format);
+            textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.SampleDesc.Count = desc.m_sampleCount;
             textureDesc.SampleDesc.Quality = desc.m_sampleQuality;
             textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -94,7 +97,7 @@ namespace DX
                         const int index = (arrayIndex * mipLevels) + mipIndex;
                         const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
                         const int mipSizeY = std::max<uint32_t>(1, desc.m_size.y >> mipIndex);
-                        const int rowBytes = TextureFormatSize(desc.m_format, mipSizeX);
+                        const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = rowBytes;
@@ -126,7 +129,7 @@ namespace DX
             textureDesc.Height = desc.m_size.y;
             textureDesc.Depth = desc.m_size.z;
             textureDesc.MipLevels = desc.m_mipLevels;
-            textureDesc.Format = ToDX11TextureFormat(desc.m_format);
+            textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
             textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
             textureDesc.CPUAccessFlags = 0;
@@ -149,7 +152,7 @@ namespace DX
                         const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
                         const int mipSizeY = std::max<uint32_t>(1, desc.m_size.y >> mipIndex);
                         const int mipSizeZ = std::max<uint32_t>(1, desc.m_size.z >> mipIndex);
-                        const int rowBytes = TextureFormatSize(desc.m_format, mipSizeX);
+                        const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = rowBytes;
@@ -176,7 +179,7 @@ namespace DX
         }
         else
         {
-            DX_LOG(Fatal, "TextureUtils", "Unknown texture type %d", desc.m_type);
+            DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_type);
         }
     }
 } // namespace DX

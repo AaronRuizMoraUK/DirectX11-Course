@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/Texture/TextureFormat.h>
+#include <Graphics/Resource/ResourceFlags.h>
 
 namespace DX
 {
@@ -10,6 +10,6 @@ namespace DX
     {
         Window* m_window;
         int m_bufferCount;
-        TextureFormat m_bufferFormat;
+        ResourceFormat m_bufferFormat;
     };
 } // namespace DX

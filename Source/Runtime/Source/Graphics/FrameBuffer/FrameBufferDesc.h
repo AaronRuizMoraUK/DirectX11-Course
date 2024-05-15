@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/Texture/TextureFormat.h>
+#include <Graphics/Resource/ResourceFlags.h>
 
 #include <memory>
 

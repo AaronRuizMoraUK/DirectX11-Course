@@ -107,7 +107,7 @@ int main()
     }
 
     {
-        auto swapChain = device->CreateSwapChain({ window, 1, DX::TextureFormat::R8G8B8A8_UNORM });
+        auto swapChain = device->CreateSwapChain({ window, 1, DX::ResourceFormat::R8G8B8A8_UNORM });
         auto frameBuffer = device->CreateFrameBuffer({ swapChain.get() });
 
         while (window->IsOpen())

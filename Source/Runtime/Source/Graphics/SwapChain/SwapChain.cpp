@@ -5,7 +5,7 @@
 #include <Log/Log.h>
 
 #include <d3d11.h>
-#include <Graphics/DirectX/TextureUtils.h>
+#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {
@@ -18,7 +18,7 @@ namespace DX
         swapChainDesc.BufferDesc.Height = desc.m_window->GetSize().y;
         swapChainDesc.BufferDesc.RefreshRate.Numerator = desc.m_window->GetRefreshRate();
         swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-        swapChainDesc.BufferDesc.Format = DX::ToDX11TextureFormat(desc.m_bufferFormat);
+        swapChainDesc.BufferDesc.Format = DX::ToDX11ResourceFormat(desc.m_bufferFormat);
         swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
         swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
         swapChainDesc.SampleDesc.Count = desc.m_bufferCount;
