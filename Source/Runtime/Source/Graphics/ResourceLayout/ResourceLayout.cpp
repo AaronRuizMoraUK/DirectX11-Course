@@ -1,4 +1,4 @@
-#include <Graphics/Resource/ResourceLayout/ResourceLayout.h>
+#include <Graphics/ResourceLayout/ResourceLayout.h>
 
 namespace DX
 {

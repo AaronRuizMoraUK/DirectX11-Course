@@ -11,7 +11,7 @@
 #include <Graphics/Resource/Views/RenderTargetView.h>
 #include <Graphics/Resource/Views/DepthStencilView.h>
 #include <Graphics/Pipeline/Pipeline.h>
-#include <Graphics/Resource/ResourceLayout/ResourceLayout.h>
+#include <Graphics/ResourceLayout/ResourceLayout.h>
 #include <Graphics/CommandList/CommandList.h>
 
 #include <Log/Log.h>
