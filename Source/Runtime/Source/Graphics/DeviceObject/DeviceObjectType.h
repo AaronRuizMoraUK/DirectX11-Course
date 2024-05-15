@@ -16,6 +16,6 @@ namespace DX
         ResourceLayout,
         CommandList,
 
-        Num
+        Count
     };
 } // namespace DX

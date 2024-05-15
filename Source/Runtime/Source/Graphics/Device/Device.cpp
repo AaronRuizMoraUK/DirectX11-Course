@@ -19,7 +19,8 @@
 
 namespace DX
 {
-    Device::Device(const DeviceDesc& desc)
+    Device::Device(DeviceId deviceId, const DeviceDesc& desc)
+        : m_deviceId(deviceId)
     {
         const std::array<D3D_FEATURE_LEVEL, 1> featureLevels = { D3D_FEATURE_LEVEL_11_1 };
 
@@ -42,7 +43,7 @@ namespace DX
             return;
         }
 
-        DX_LOG(Info, "Device", "Graphics device created.");
+        DX_LOG(Info, "Device", "Graphics device %u created.", m_deviceId);
     }
 
     Device::~Device()
@@ -55,12 +56,12 @@ namespace DX
             });
         if (leakCount > 0)
         {
-            DX_LOG(Warning, "Device", "There are %d graphics objects that are still referenced when destroying the graphics device.", leakCount);
+            DX_LOG(Warning, "Device", "There are %d graphics objects that are still referenced when destroying the graphics device %u.", leakCount, m_deviceId);
         }
 
         m_deviceObjects.clear();
 
-        DX_LOG(Info, "Device", "Graphics device destroyed.");
+        DX_LOG(Info, "Device", "Graphics device %u destroyed.", m_deviceId);
     }
 
     std::shared_ptr<SwapChain> Device::CreateSwapChain(const SwapChainDesc& desc)

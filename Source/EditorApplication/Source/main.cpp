@@ -5,7 +5,7 @@
 #include <Renderer/Object.h>
 #include <Renderer/Camera.h>
 #else
-#include <Graphics/Device/Device.h>
+#include <Graphics/Device/DeviceManager.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #endif
 
@@ -96,9 +96,14 @@ int main()
 
 #else
 
-    // Graphics initialization
-    auto device = std::make_shared<DX::Device>(DX::DeviceDesc{});
-    auto swapChain = device->CreateSwapChain(DX::SwapChainDesc{ window });
+    // Graphics device initialization
+    DX::DeviceManager& deviceManager = DX::DeviceManager::Get();
+    DX::Device* device = deviceManager.CreateDevice(DX::DeviceDesc{});
+    if (!device)
+    {
+        return -1;
+    }
+    auto swapChain = device->CreateSwapChain(DX::SwapChainDesc{ window, 1, DX::TextureFormat::R8G8B8A8_UNORM });
 
     while (window->IsOpen())
     {
@@ -112,6 +117,10 @@ int main()
         // Render
         // ------
     }
+
+    swapChain.reset();
+    DX::DeviceManager::Destroy();
+    DX::WindowManager::Destroy();
 
 #endif // SIMPLE_RENDERER
 

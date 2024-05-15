@@ -32,14 +32,24 @@ namespace DX
     struct ResourceLayoutDesc;
     struct CommandListDesc;
 
+    namespace Internal
+    {
+        template<typename Tag>
+        using DeviceIdType = uint32_t;
+    }
+    using DeviceId = Internal::DeviceIdType<struct DeviceIdTag>;
+    static const DeviceId InvalidDeviceId = 0xFFFFFFFF;
+
     class Device
     {
     public:
-        Device(const DeviceDesc& desc);
+        Device(DeviceId deviceId, const DeviceDesc& desc);
         ~Device();
 
         Device(const Device&) = delete;
         Device& operator=(const Device&) = delete;
+
+        DeviceId GetId() const { return m_deviceId; }
 
         std::shared_ptr<SwapChain> CreateSwapChain(const SwapChainDesc& desc);
         std::shared_ptr<FrameBuffer> CreateFrameBuffer(const FrameBufferDesc& desc);
@@ -59,6 +69,7 @@ namespace DX
     private:
         using DeviceObjects = std::vector<std::shared_ptr<DeviceObject>>;
 
+        const DeviceId m_deviceId = InvalidDeviceId;
         DeviceObjects m_deviceObjects;
         //std::shared_ptr<SwapChain> m_swapChain;
 

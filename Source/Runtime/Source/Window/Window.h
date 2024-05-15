@@ -29,13 +29,14 @@ namespace DX
         bool Initialize();
         void Terminate();
 
+        WindowId GetId() const { return m_windowId; }
+
         bool IsOpen() const;
         const mathfu::Vector2Int& GetSize() const { return m_size; }
         int GetRefreshRate() const { return m_refreshRate; }
         bool IsFullScreen() const { return m_fullScreen; }
         bool IsVSyncEnabled() const { return m_vSync; }
 
-        WindowId GetId() const { return m_windowId; }
         GLFWwindow* GetWindowHandler() { return m_window; }
         HWND GetWindowNativeHandler();
 
