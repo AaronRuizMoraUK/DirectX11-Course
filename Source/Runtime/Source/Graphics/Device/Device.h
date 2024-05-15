@@ -18,6 +18,10 @@ namespace DX
     class Texture;
     class Sampler;
     class Shader;
+    class ShaderResourceView;
+    class ShaderRWResourceView;
+    class RenderTargetView;
+    class DepthStencilView;
     class Pipeline;
     class ResourceLayout;
     class CommandList;
@@ -28,6 +32,10 @@ namespace DX
     struct TextureDesc;
     struct SamplerDesc;
     struct ShaderDesc;
+    struct ShaderResourceViewDesc;
+    struct ShaderRWResourceViewDesc;
+    struct RenderTargetViewDesc;
+    struct DepthStencilViewDesc;
     struct PipelineDesc;
     struct ResourceLayoutDesc;
     struct CommandListDesc;
@@ -57,6 +65,10 @@ namespace DX
         std::shared_ptr<Texture> CreateTexture(const TextureDesc& desc);
         std::shared_ptr<Sampler> CreateSampler(const SamplerDesc& desc);
         std::shared_ptr<Shader> CreateShader(const ShaderDesc& desc);
+        std::shared_ptr<ShaderResourceView> CreateShaderResourceView(const ShaderResourceViewDesc& desc);
+        std::shared_ptr<ShaderRWResourceView> CreateShaderRWResourceView(const ShaderRWResourceViewDesc& desc);
+        std::shared_ptr<RenderTargetView> CreateRenderTargetView(const RenderTargetViewDesc& desc);
+        std::shared_ptr<DepthStencilView> CreateDepthStencilView(const DepthStencilViewDesc& desc);
         std::shared_ptr<Pipeline> CreatePipeline(const PipelineDesc& desc);
         std::shared_ptr<ResourceLayout> CreateResourceLayout(const ResourceLayoutDesc& desc);
         std::shared_ptr<CommandList> CreateCommandList(const CommandListDesc& desc);

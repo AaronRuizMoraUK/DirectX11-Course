@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Log/Log.h>
+#include <cmath>
+
 namespace DX
 {
     enum class TextureFormat
@@ -10,6 +13,7 @@ namespace DX
         R32G32B32A32_FLOAT,
         R32G32B32A32_UINT,
         R32G32B32A32_SINT,
+
         R32G32B32_TYPELESS,
         R32G32B32_FLOAT,
         R32G32B32_UINT,
@@ -88,18 +92,27 @@ namespace DX
         R8G8_B8G8_UNORM,
         G8R8_G8B8_UNORM,
 
+        //  Also known as DXT1, this format is used for color maps and can handle 1 bit of alpha.
         BC1_TYPELESS,
         BC1_UNORM,
         BC1_UNORM_SRGB,
+
+        // Also known as DXT3, this format includes explicit alpha and is used for textures with more detailed alpha transitions.
         BC2_TYPELESS,
         BC2_UNORM,
         BC2_UNORM_SRGB,
+
+        // Also known as DXT5, it provides interpolated alpha and is preferred for better alpha gradients compared to BC2.
         BC3_TYPELESS,
         BC3_UNORM,
         BC3_UNORM_SRGB,
+
+        // Used primarily for single-channel data (red only), such as height maps or alpha maps.
         BC4_TYPELESS,
         BC4_UNORM,
         BC4_SNORM,
+
+        // Stores two channels (red and green), commonly used for normal maps or two-channel data maps.
         BC5_TYPELESS,
         BC5_UNORM,
         BC5_SNORM,
@@ -114,13 +127,147 @@ namespace DX
         B8G8R8X8_TYPELESS,
         B8G8R8X8_UNORM_SRGB,
 
+        // Designed for high dynamic range (HDR) images
         BC6H_TYPELESS,
         BC6H_UF16,
         BC6H_SF16,
+
+        // Offers a higher quality color compression, supporting a full range of alpha and more complex color palettes,
+        // suitable for high quality texture compression.
         BC7_TYPELESS,
         BC7_UNORM,
         BC7_UNORM_SRGB,
 
         Count
     };
+
+    static int TextureFormatSize(TextureFormat format, int elementCount = 1)
+    {
+        switch (format)
+        {
+        case TextureFormat::Unknown:                     return 0;
+
+        case TextureFormat::R32G32B32A32_TYPELESS:       return elementCount * 16;
+        case TextureFormat::R32G32B32A32_FLOAT:          return elementCount * 16;
+        case TextureFormat::R32G32B32A32_UINT:           return elementCount * 16;
+        case TextureFormat::R32G32B32A32_SINT:           return elementCount * 16;
+
+        case TextureFormat::R32G32B32_TYPELESS:          return elementCount * 12;
+        case TextureFormat::R32G32B32_FLOAT:             return elementCount * 12;
+        case TextureFormat::R32G32B32_UINT:              return elementCount * 12;
+        case TextureFormat::R32G32B32_SINT:              return elementCount * 12;
+
+        case TextureFormat::R16G16B16A16_TYPELESS:       return elementCount * 8;
+        case TextureFormat::R16G16B16A16_FLOAT:          return elementCount * 8;
+        case TextureFormat::R16G16B16A16_UNORM:          return elementCount * 8;
+        case TextureFormat::R16G16B16A16_UINT:           return elementCount * 8;
+        case TextureFormat::R16G16B16A16_SNORM:          return elementCount * 8;
+        case TextureFormat::R16G16B16A16_SINT:           return elementCount * 8;
+
+        case TextureFormat::R32G32_TYPELESS:             return elementCount * 8;
+        case TextureFormat::R32G32_FLOAT:                return elementCount * 8;
+        case TextureFormat::R32G32_UINT:                 return elementCount * 8;
+        case TextureFormat::R32G32_SINT:                 return elementCount * 8;
+        case TextureFormat::R32G8X24_TYPELESS:           return elementCount * 8;
+
+        case TextureFormat::D32_FLOAT_S8X24_UINT:        return elementCount * 8;
+        case TextureFormat::R32_FLOAT_X8X24_TYPELESS:    return elementCount * 8;
+        case TextureFormat::X32_TYPELESS_G8X24_UINT:     return elementCount * 8;
+
+        case TextureFormat::R10G10B10A2_TYPELESS:        return elementCount * 4;
+        case TextureFormat::R10G10B10A2_UNORM:           return elementCount * 4;
+        case TextureFormat::R10G10B10A2_UINT:            return elementCount * 4;
+        case TextureFormat::R11G11B10_FLOAT:             return elementCount * 4;
+
+        case TextureFormat::R8G8B8A8_TYPELESS:           return elementCount * 4;
+        case TextureFormat::R8G8B8A8_UNORM:              return elementCount * 4;
+        case TextureFormat::R8G8B8A8_UNORM_SRGB:         return elementCount * 4;
+        case TextureFormat::R8G8B8A8_UINT:               return elementCount * 4;
+        case TextureFormat::R8G8B8A8_SNORM:              return elementCount * 4;
+        case TextureFormat::R8G8B8A8_SINT:               return elementCount * 4;
+
+        case TextureFormat::R16G16_TYPELESS:             return elementCount * 4;
+        case TextureFormat::R16G16_FLOAT:                return elementCount * 4;
+        case TextureFormat::R16G16_UNORM:                return elementCount * 4;
+        case TextureFormat::R16G16_UINT:                 return elementCount * 4;
+        case TextureFormat::R16G16_SNORM:                return elementCount * 4;
+        case TextureFormat::R16G16_SINT:                 return elementCount * 4;
+
+        case TextureFormat::R32_TYPELESS:                return elementCount * 4;
+        case TextureFormat::D32_FLOAT:                   return elementCount * 4;
+        case TextureFormat::R32_FLOAT:                   return elementCount * 4;
+        case TextureFormat::R32_UINT:                    return elementCount * 4;
+        case TextureFormat::R32_SINT:                    return elementCount * 4;
+
+        case TextureFormat::R24G8_TYPELESS:              return elementCount * 4;
+        case TextureFormat::D24_UNORM_S8_UINT:           return elementCount * 4;
+        case TextureFormat::R24_UNORM_X8_TYPELESS:       return elementCount * 4;
+        case TextureFormat::X24_TYPELESS_G8_UINT:        return elementCount * 4;
+
+        case TextureFormat::R8G8_TYPELESS:               return elementCount * 2;
+        case TextureFormat::R8G8_UNORM:                  return elementCount * 2;
+        case TextureFormat::R8G8_UINT:                   return elementCount * 2;
+        case TextureFormat::R8G8_SNORM:                  return elementCount * 2;
+        case TextureFormat::R8G8_SINT:                   return elementCount * 2;
+
+        case TextureFormat::R16_TYPELESS:                return elementCount * 2;
+        case TextureFormat::R16_FLOAT:                   return elementCount * 2;
+        case TextureFormat::D16_UNORM:                   return elementCount * 2;
+        case TextureFormat::R16_UNORM:                   return elementCount * 2;
+        case TextureFormat::R16_UINT:                    return elementCount * 2;
+        case TextureFormat::R16_SNORM:                   return elementCount * 2;
+        case TextureFormat::R16_SINT:                    return elementCount * 2;
+
+        case TextureFormat::R8_TYPELESS:                 return elementCount * 1;
+        case TextureFormat::R8_UNORM:                    return elementCount * 1;
+        case TextureFormat::R8_UINT:                     return elementCount * 1;
+        case TextureFormat::R8_SNORM:                    return elementCount * 1;
+        case TextureFormat::R8_SINT:                     return elementCount * 1;
+        case TextureFormat::A8_UNORM:                    return elementCount * 1;
+
+        // 1 bit per element rounded up to nearest byte. Example: 10 elements -> 10 bits -> 2 bytes.
+        case TextureFormat::R1_UNORM:                    return std::ceil(elementCount / 8.0f);
+
+        case TextureFormat::R9G9B9E5_SHAREDEXP:          return elementCount * 0;
+        case TextureFormat::R8G8_B8G8_UNORM:             return elementCount * 0;
+        case TextureFormat::G8R8_G8B8_UNORM:             return elementCount * 0;
+
+        case TextureFormat::BC1_TYPELESS:                return elementCount * 8;
+        case TextureFormat::BC1_UNORM:                   return elementCount * 8;
+        case TextureFormat::BC1_UNORM_SRGB:              return elementCount * 8;
+        case TextureFormat::BC2_TYPELESS:                return elementCount * 16;
+        case TextureFormat::BC2_UNORM:                   return elementCount * 16;
+        case TextureFormat::BC2_UNORM_SRGB:              return elementCount * 16;
+        case TextureFormat::BC3_TYPELESS:                return elementCount * 16;
+        case TextureFormat::BC3_UNORM:                   return elementCount * 16;
+        case TextureFormat::BC3_UNORM_SRGB:              return elementCount * 16;
+        case TextureFormat::BC4_TYPELESS:                return elementCount * 8;
+        case TextureFormat::BC4_UNORM:                   return elementCount * 8;
+        case TextureFormat::BC4_SNORM:                   return elementCount * 8;
+        case TextureFormat::BC5_TYPELESS:                return elementCount * 16;
+        case TextureFormat::BC5_UNORM:                   return elementCount * 16;
+        case TextureFormat::BC5_SNORM:                   return elementCount * 16;
+
+        case TextureFormat::B5G6R5_UNORM:                return elementCount * 2;
+        case TextureFormat::B5G5R5A1_UNORM:              return elementCount * 2;
+        case TextureFormat::B8G8R8A8_UNORM:              return elementCount * 4;
+        case TextureFormat::B8G8R8X8_UNORM:              return elementCount * 4;
+        case TextureFormat::R10G10B10_XR_BIAS_A2_UNORM:  return elementCount * 4;
+        case TextureFormat::B8G8R8A8_TYPELESS:           return elementCount * 4;
+        case TextureFormat::B8G8R8A8_UNORM_SRGB:         return elementCount * 4;
+        case TextureFormat::B8G8R8X8_TYPELESS:           return elementCount * 4;
+        case TextureFormat::B8G8R8X8_UNORM_SRGB:         return elementCount * 4;
+
+        case TextureFormat::BC6H_TYPELESS:               return elementCount * 16;
+        case TextureFormat::BC6H_UF16:                   return elementCount * 16;
+        case TextureFormat::BC6H_SF16:                   return elementCount * 16;
+        case TextureFormat::BC7_TYPELESS:                return elementCount * 16;
+        case TextureFormat::BC7_UNORM:                   return elementCount * 16;
+        case TextureFormat::BC7_UNORM_SRGB:              return elementCount * 16;
+
+        default:
+            DX_LOG(Error, "TextureFormat", "Unknown texture format %d", format);
+            return 0;
+        }
+    }
 } // namespace DX

@@ -6,6 +6,10 @@
 #include <Graphics/Texture/Texture.h>
 #include <Graphics/Sampler/Sampler.h>
 #include <Graphics/Shader/Shader.h>
+#include <Graphics/Views/ShaderResourceView.h>
+#include <Graphics/Views/ShaderRWResourceView.h>
+#include <Graphics/Views/RenderTargetView.h>
+#include <Graphics/Views/DepthStencilView.h>
 #include <Graphics/Pipeline/Pipeline.h>
 #include <Graphics/ResourceLayout/ResourceLayout.h>
 #include <Graphics/CommandList/CommandList.h>
@@ -104,6 +108,34 @@ namespace DX
         auto shader = std::make_shared<Shader>(this, desc);
         m_deviceObjects.push_back(shader);
         return shader;
+    }
+
+    std::shared_ptr<ShaderResourceView> Device::CreateShaderResourceView(const ShaderResourceViewDesc& desc)
+    {
+        auto shaderResourceView = std::make_shared<ShaderResourceView>(this, desc);
+        m_deviceObjects.push_back(shaderResourceView);
+        return shaderResourceView;
+    }
+
+    std::shared_ptr<ShaderRWResourceView> Device::CreateShaderRWResourceView(const ShaderRWResourceViewDesc& desc)
+    {
+        auto shaderRWResourceView = std::make_shared<ShaderRWResourceView>(this, desc);
+        m_deviceObjects.push_back(shaderRWResourceView);
+        return shaderRWResourceView;
+    }
+
+    std::shared_ptr<RenderTargetView> Device::CreateRenderTargetView(const RenderTargetViewDesc& desc)
+    {
+        auto renderTargetView = std::make_shared<RenderTargetView>(this, desc);
+        m_deviceObjects.push_back(renderTargetView);
+        return renderTargetView;
+    }
+
+    std::shared_ptr<DepthStencilView> Device::CreateDepthStencilView(const DepthStencilViewDesc& desc)
+    {
+        auto depthStencilView = std::make_shared<DepthStencilView>(this, desc);
+        m_deviceObjects.push_back(depthStencilView);
+        return depthStencilView;
     }
 
     std::shared_ptr<Pipeline> Device::CreatePipeline(const PipelineDesc& desc)

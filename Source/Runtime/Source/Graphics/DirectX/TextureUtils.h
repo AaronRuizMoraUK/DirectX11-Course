@@ -17,6 +17,7 @@ namespace DX
         case TextureFormat::R32G32B32A32_FLOAT:          return DXGI_FORMAT_R32G32B32A32_FLOAT;
         case TextureFormat::R32G32B32A32_UINT:           return DXGI_FORMAT_R32G32B32A32_UINT;
         case TextureFormat::R32G32B32A32_SINT:           return DXGI_FORMAT_R32G32B32A32_SINT;
+
         case TextureFormat::R32G32B32_TYPELESS:          return DXGI_FORMAT_R32G32B32_TYPELESS;
         case TextureFormat::R32G32B32_FLOAT:             return DXGI_FORMAT_R32G32B32_FLOAT;
         case TextureFormat::R32G32B32_UINT:              return DXGI_FORMAT_R32G32B32_UINT;
@@ -129,7 +130,7 @@ namespace DX
         case TextureFormat::BC7_UNORM_SRGB:              return DXGI_FORMAT_BC7_UNORM_SRGB;
 
         default:
-            DX_LOG(Fatal, "TextureUtils", "Unknown texture format %d", format);
+            DX_LOG(Error, "TextureUtils", "Unknown texture format %d", format);
             return DXGI_FORMAT_UNKNOWN;
         }
     }
