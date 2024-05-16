@@ -6,6 +6,8 @@ Project generated while doing Sections 1-3 of the Udemy course  [The Complete Co
 
 Simple DirectX 11 renderer that draws a triangle and a cube on screen using a texture.
 
+<img src="./SimpleRenderer.gif">
+
 ## Build and Run
 
 Requirements
@@ -28,8 +30,6 @@ Steps
   ````
 - Open `DirectX11-Course.sln` with Visual Studio
 - Build and run `main` project
-
-<img src="./SimpleRenderer.gif">
 
 ## Controls
 
