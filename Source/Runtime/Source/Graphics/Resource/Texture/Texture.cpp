@@ -14,6 +14,12 @@ namespace DX
     {
         if (desc.m_dataIsNativeResource)
         {
+            if (!desc.m_data)
+            {
+                DX_LOG(Fatal, "Texture", "Texture description with invalid data.");
+                return;
+            }
+
             m_dx11Texture = static_cast<ID3D11Resource*>(desc.m_data);
         }
         else if (desc.m_variant == TextureVariant::Texture1D)

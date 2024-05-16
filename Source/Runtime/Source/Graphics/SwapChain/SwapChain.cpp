@@ -12,8 +12,15 @@ namespace DX
 {
     SwapChain::SwapChain(Device* device, const SwapChainDesc& desc)
         : DeviceObject(device)
-        , m_vSyncEnabled(desc.m_window->IsVSyncEnabled())
     {
+        if (!desc.m_window)
+        {
+            DX_LOG(Fatal, "SwapChain", "Swap chain description with invalid window.");
+            return;
+        }
+
+        m_vSyncEnabled = desc.m_window->IsVSyncEnabled();
+
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
         swapChainDesc.BufferDesc.Width = desc.m_window->GetSize().x;
         swapChainDesc.BufferDesc.Height = desc.m_window->GetSize().y;

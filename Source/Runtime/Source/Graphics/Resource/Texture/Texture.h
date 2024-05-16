@@ -22,9 +22,11 @@ namespace DX
         const TextureDesc& GetTextureDesc() const { return m_desc; }
 
         ComPtr<ID3D11Resource> GetDX11Texture();
+
     private:
         TextureDesc m_desc;
 
+    private:
         ComPtr<ID3D11Resource> m_dx11Texture;
     };
 } // namespace DX

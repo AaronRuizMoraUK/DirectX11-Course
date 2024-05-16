@@ -14,10 +14,10 @@ namespace DX
         using Resource = std::variant<std::shared_ptr<Texture>, std::shared_ptr<Buffer>>;
         Resource m_resource;
 
-        // Index of the first mipmap level to use.
-        uint32_t m_firstMip;
+        // Only for textures
+        uint32_t m_firstMip; // Index of the first mipmap level to use.
 
-        // Only for textures with array > 0
+        // Only for textures 1D and 2D with array > 0
         uint32_t m_firstArray; // Index of the first texture to use in an array of textures.
         uint32_t m_arraySize; // Number of arrays in the textures to use starting from m_firstArray.
 

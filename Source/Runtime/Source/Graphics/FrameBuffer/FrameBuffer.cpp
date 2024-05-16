@@ -74,11 +74,14 @@ namespace DX
 
     void FrameBuffer::Clear(std::optional<mathfu::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil)
     {
-        if (color.has_value())
+        if (m_colorRenderTargetView && color.has_value())
         {
             m_colorRenderTargetView->Clear(*color);
         }
 
-        m_depthStencilView->Clear(depth, stencil);
+        if (m_depthStencilView)
+        {
+            m_depthStencilView->Clear(depth, stencil);
+        }
     }
 } // namespace DX
