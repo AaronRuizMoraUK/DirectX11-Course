@@ -17,7 +17,7 @@
 #include <Log/Log.h>
 
 #include <array>
-#include <numeric>
+#include <algorithm>
 
 #include <d3d11.h>
 
@@ -52,30 +52,32 @@ namespace DX
 
     Device::~Device()
     {
-        DeviceObjects potentialLeakedObjects;
-        potentialLeakedObjects.reserve(m_deviceObjects.size());
-        for (const auto& deviceObject : m_deviceObjects)
+#ifndef NDEBUG
+        // Erase iteratively device objects that have no external references (its count is 1).
+        // Stop when all objects are erased or when no more objects can be erased.
+        // If there are still objects in the list, that means they are still referenced somewhere
+        // and could be a memory leak.
         {
-            if (deviceObject.use_count() > 1)
+            int objectsCount;
+            do
             {
-                potentialLeakedObjects.push_back(deviceObject);
+                objectsCount = m_deviceObjects.size();
+                m_deviceObjects.erase(
+                    std::remove_if(m_deviceObjects.begin(), m_deviceObjects.end(), [](const auto& deviceObject)
+                        {
+                            return deviceObject.use_count() == 1;
+                        }),
+                    m_deviceObjects.end());
+            } while (objectsCount != m_deviceObjects.size() && !m_deviceObjects.empty());
+
+            if (!m_deviceObjects.empty())
+            {
+                DX_LOG(Warning, "Device", "There are %d device objects still referenced at the time of destroying device %u.", m_deviceObjects.size(), m_deviceId);
             }
         }
+#endif
 
         m_deviceObjects.clear();
-
-        // Check if there are objects that won't be destroyed, meaning something else is still using them.
-        int leakCount = std::reduce(m_deviceObjects.begin(), m_deviceObjects.end(), 0,
-            [](int count, const auto& deviceObject)
-            {
-                return count + (deviceObject.use_count() > 1) ? 1 : 0;
-            });
-        if (leakCount > 0)
-        {
-            DX_LOG(Warning, "Device", "There are %d graphics objects that are still referenced when destroying the graphics device %u.", leakCount, m_deviceId);
-        }
-
-        potentialLeakedObjects.clear();
 
         DX_LOG(Info, "Device", "Graphics device %u destroyed.", m_deviceId);
     }

@@ -129,11 +129,11 @@ namespace DX
             return;
         }
 
-        DX_LOG(Verbose, "Buffer", "Shader created.");
+        DX_LOG(Verbose, "Shader", "%s shader '%s' created.", ShaderTypeStr(m_shaderInfo.m_shaderType), m_shaderInfo.m_name.c_str());
     }
 
     Shader::~Shader()
     {
-        DX_LOG(Verbose, "Buffer", "Shader destroyed.");
+        DX_LOG(Verbose, "Shader", "%s shader '%s' destroyed.", ShaderTypeStr(m_shaderInfo.m_shaderType), m_shaderInfo.m_name.c_str());
     }
 } // namespace DX

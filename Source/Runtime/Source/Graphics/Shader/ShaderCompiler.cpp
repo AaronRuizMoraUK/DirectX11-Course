@@ -60,6 +60,9 @@ namespace DX
             return nullptr;
         }
 
+        DX_LOG(Verbose, "ShaderCompiler", "Shader '%s' (entry point: '%s') compiled successfully.",
+            shaderInfo.m_name.c_str(), shaderInfo.m_entryPoint.c_str());
+
         return std::make_unique<DX11ShaderBytecode>(std::move(shaderBlob));
     }
 } // namespace DX

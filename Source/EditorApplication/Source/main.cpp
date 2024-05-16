@@ -8,6 +8,8 @@
 #include <Graphics/Device/DeviceManager.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
+#include <Graphics/Shader/Shader.h>
+#include <Graphics/Shader/ShaderCompiler.h>
 #endif
 
 #include <Window/WindowManager.h>
@@ -109,6 +111,15 @@ int main()
     {
         auto swapChain = device->CreateSwapChain({ window, 1, DX::ResourceFormat::R8G8B8A8_UNORM });
         auto frameBuffer = device->CreateFrameBuffer({ swapChain->GetBackBufferTexture(), nullptr, true /*Create Depth Stencil*/});
+
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType::Vertex, "Shaders/VertexShader.hlsl", "main" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType::Pixel, "Shaders/PixelShader.hlsl", "main" };
+
+        auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
+        auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
+
+        auto vertexShader = device->CreateShader({vertexShaderInfo, vertexShaderByteCode.get() });
+        auto pixelShader = device->CreateShader({ pixelShaderInfo, pixelShaderByteCode.get() });
 
         while (window->IsOpen())
         {
