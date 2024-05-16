@@ -8,6 +8,23 @@
 
 namespace DX
 {
+    static const char* GetTextureDimStr(TextureVariant variant)
+    {
+        switch (variant)
+        {
+        case TextureVariant::Texture1D:
+            return "1D";
+        case TextureVariant::Texture2D:
+            return "2D";
+        case TextureVariant::TextureCube:
+            return "Cube";
+        case TextureVariant::Texture3D:
+            return "3D";
+        default:
+            return "Unknown";
+        }
+    }
+
     Texture::Texture(Device* device, const TextureDesc& desc)
         : DeviceObject(device)
         , m_desc(desc)
@@ -45,7 +62,7 @@ namespace DX
                 std::byte* head = static_cast<std::byte*>(desc.m_data);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
-                    for(int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
+                    for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
                         const int index = (arrayIndex * mipLevels) + mipIndex;
                         const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
@@ -74,8 +91,14 @@ namespace DX
 
             m_dx11Texture = dx11Texture;
         }
-        else if (desc.m_variant == TextureVariant::Texture2D)
+        else if (desc.m_variant == TextureVariant::Texture2D || desc.m_variant == TextureVariant::TextureCube)
         {
+            if (desc.m_variant == TextureVariant::TextureCube && desc.m_arraySize % 6 != 0)
+            {
+                DX_LOG(Fatal, "Texture", "Failed to create Cube texture. Array size must be multiple of 6, but was %d.", desc.m_arraySize);
+                return;
+            }
+
             D3D11_TEXTURE2D_DESC textureDesc = {};
             textureDesc.Width = desc.m_size.x;
             textureDesc.Height = desc.m_size.y;
@@ -87,7 +110,7 @@ namespace DX
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
             textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
-            textureDesc.MiscFlags = 0;
+            textureDesc.MiscFlags = (desc.m_variant == TextureVariant::TextureCube) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_data)
@@ -124,7 +147,7 @@ namespace DX
 
             if (FAILED(result))
             {
-                DX_LOG(Fatal, "Texture", "Failed to create 2D texture.");
+                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", GetTextureDimStr(desc.m_variant));
                 return;
             }
 
@@ -191,16 +214,16 @@ namespace DX
             return;
         }
 
-        DX_LOG(Verbose, "Texture", "Texture %dD %dx%dx%d, %d mipmaps and %d array created.",
-            desc.m_variant, desc.m_size.x, desc.m_size.y, desc.m_size.z, desc.m_mipLevels, desc.m_arraySize);
+        DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array created.",
+            GetTextureDimStr(desc.m_variant), desc.m_size.x, desc.m_size.y, desc.m_size.z, desc.m_mipLevels, desc.m_arraySize);
     }
 
     Texture::~Texture()
     {
         if (m_dx11Texture)
         {
-            DX_LOG(Verbose, "Texture", "Texture %dD %dx%dx%d, %d mipmaps and %d array destroyed.",
-                m_desc.m_variant, m_desc.m_size.x, m_desc.m_size.y, m_desc.m_size.z, m_desc.m_mipLevels, m_desc.m_arraySize);
+            DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array destroyed.",
+                GetTextureDimStr(m_desc.m_variant), m_desc.m_size.x, m_desc.m_size.y, m_desc.m_size.z, m_desc.m_mipLevels, m_desc.m_arraySize);
         }
     }
 

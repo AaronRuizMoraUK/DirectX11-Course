@@ -26,6 +26,7 @@ namespace DX
             break;
 
         case TextureVariant::Texture2D:
+        case TextureVariant::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             if (desc.m_sampleCount > 1)
             {
                 rtvDimension = (desc.m_arraySize > 0) ? D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY : D3D11_RTV_DIMENSION_TEXTURE2DMS;

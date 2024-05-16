@@ -11,6 +11,7 @@ namespace DX
 
         Texture1D,
         Texture2D,
+        TextureCube, // A two dimensional texture array with 6 sub-resources
         Texture3D,
 
         Count
@@ -26,10 +27,11 @@ namespace DX
         ResourceBindFlag m_bindFlag;
         ResourceCPUAccess m_cpuAccess;
 
-        // Texture1D and Texture2D only. 0 to not use array, avoid using 1 as it'll expect a texture array of size 1.
+        // With Texture1D, Texture2D: 0 to not be a texture array, > 0 to be an array. Avoid using 1 as it'll expect a texture array of size 1.
+        // With TextureCube: 6 to not be a texture array, multiples of 6 to be an array.
         uint32_t m_arraySize;
 
-        // The default sampler mode, with no anti - aliasing, has a count of 1 and a quality level of 0.
+        // Texture2D only. The default sampler mode, with no multisampling, has a count of 1 and a quality level of 0.
         uint32_t m_sampleCount; // Texture2D only
         uint32_t m_sampleQuality; // Texture2D only
 
