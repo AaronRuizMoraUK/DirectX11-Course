@@ -26,7 +26,15 @@ namespace DX
         bufferDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
         bufferDesc.MiscFlags = 0;
-        bufferDesc.StructureByteStride = 0; // TODO
+        switch (desc.m_variant)
+        {
+        case BufferVariant::Structured:
+            bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+            break;
+        case BufferVariant::Raw:
+            bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
+        }
+        bufferDesc.StructureByteStride = desc.m_structSizeInBytes;
 
         D3D11_SUBRESOURCE_DATA subresourceData = {};
         subresourceData.pSysMem = desc.m_initialData;

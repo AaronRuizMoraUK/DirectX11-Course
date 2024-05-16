@@ -110,7 +110,11 @@ namespace DX
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
             textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
-            textureDesc.MiscFlags = (desc.m_variant == TextureVariant::TextureCube) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
+            textureDesc.MiscFlags = 0;
+            if (desc.m_variant == TextureVariant::TextureCube)
+            {
+                textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
+            }
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)

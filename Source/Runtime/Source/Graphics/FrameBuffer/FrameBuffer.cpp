@@ -47,7 +47,7 @@ namespace DX
             rtvDesc.m_firstArray = 0;
             rtvDesc.m_arrayCount = m_colorTexture->GetTextureDesc().m_arrayCount;
             rtvDesc.m_firstDepth = 0;
-            rtvDesc.m_depthSize = -1;
+            rtvDesc.m_depthCount = -1;
 
             m_colorRenderTargetView = m_ownerDevice->CreateRenderTargetView(rtvDesc);
         }

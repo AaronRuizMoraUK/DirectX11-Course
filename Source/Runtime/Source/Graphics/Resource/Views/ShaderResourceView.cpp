@@ -64,24 +64,24 @@ namespace DX
         {
         case D3D11_SRV_DIMENSION_TEXTURE1D:
             srvDesc.Texture1D.MostDetailedMip = desc.m_firstMip;
-            srvDesc.Texture1D.MipLevels = desc.m_mipSize;
+            srvDesc.Texture1D.MipLevels = desc.m_mipCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
             srvDesc.Texture1DArray.MostDetailedMip = desc.m_firstMip;
-            srvDesc.Texture1DArray.MipLevels = desc.m_mipSize;
+            srvDesc.Texture1DArray.MipLevels = desc.m_mipCount;
             srvDesc.Texture1DArray.FirstArraySlice = desc.m_firstArray;
             srvDesc.Texture1DArray.ArraySize = desc.m_arrayCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE2D:
             srvDesc.Texture2D.MostDetailedMip = desc.m_firstMip;
-            srvDesc.Texture2D.MipLevels = desc.m_mipSize;
+            srvDesc.Texture2D.MipLevels = desc.m_mipCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
             srvDesc.Texture2DArray.MostDetailedMip = desc.m_firstMip;
-            srvDesc.Texture2DArray.MipLevels = desc.m_mipSize;
+            srvDesc.Texture2DArray.MipLevels = desc.m_mipCount;
             srvDesc.Texture2DArray.FirstArraySlice = desc.m_firstArray;
             srvDesc.Texture2DArray.ArraySize = desc.m_arrayCount;
             break;
@@ -97,19 +97,19 @@ namespace DX
 
         case D3D11_SRV_DIMENSION_TEXTURECUBE:
             srvDesc.TextureCube.MostDetailedMip = desc.m_firstMip;
-            srvDesc.TextureCube.MipLevels = desc.m_mipSize;
+            srvDesc.TextureCube.MipLevels = desc.m_mipCount;
             break;
 
         case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY:
             srvDesc.TextureCubeArray.MostDetailedMip = desc.m_firstMip;
-            srvDesc.TextureCubeArray.MipLevels = desc.m_mipSize;
+            srvDesc.TextureCubeArray.MipLevels = desc.m_mipCount;
             srvDesc.TextureCubeArray.First2DArrayFace = desc.m_firstArray;
             srvDesc.TextureCubeArray.NumCubes = desc.m_arrayCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE3D:
             srvDesc.Texture3D.MostDetailedMip = desc.m_firstMip;
-            srvDesc.Texture3D.MipLevels = desc.m_mipSize;
+            srvDesc.Texture3D.MipLevels = desc.m_mipCount;
             break;
         
         case D3D11_SRV_DIMENSION_UNKNOWN:
@@ -125,15 +125,40 @@ namespace DX
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-        
-        // View boundaries to the buffer
-        srvDesc.Buffer.FirstElement = desc.m_firstElement;
-        srvDesc.Buffer.NumElements = desc.m_numElements;
 
-        // TODO: 
-        // D3D11_SRV_DIMENSION_BUFFEREX ? -> For raw buffers (ByteAddressBuffer) ?
-        // rtvDesc.BufferEx ?? -> For raw buffers (ByteAddressBuffer) ?
+        switch (buffer.GetBufferDesc().m_variant)
+        {
+        case BufferVariant::Typed:
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+
+            // View boundaries to the buffer
+            srvDesc.Buffer.FirstElement = desc.m_firstElement;
+            srvDesc.Buffer.NumElements = desc.m_numElements;
+            break;
+
+        case BufferVariant::Structured:
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+
+            // View boundaries to the buffer
+            srvDesc.BufferEx.FirstElement = desc.m_firstElement;
+            srvDesc.BufferEx.NumElements = desc.m_numElements;
+            srvDesc.BufferEx.Flags = 0;
+            break;
+
+        case BufferVariant::Raw:
+            srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+
+            // View boundaries to the buffer
+            srvDesc.BufferEx.FirstElement = desc.m_firstElement;
+            srvDesc.BufferEx.NumElements = desc.m_numElements;
+            srvDesc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
+            break;
+
+        case BufferVariant::Unknown:
+        default:
+            DX_LOG(Error, "ShaderResourceView", "Unknown buffer variant %d", buffer.GetBufferDesc().m_variant);
+            break;
+        }
 
         return srvDesc;
     }

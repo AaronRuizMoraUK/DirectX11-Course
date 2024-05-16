@@ -74,7 +74,7 @@ namespace DX
         case D3D11_UAV_DIMENSION_TEXTURE3D:
             uavDesc.Texture3D.MipSlice = desc.m_firstMip;
             uavDesc.Texture3D.FirstWSlice = desc.m_firstDepth;
-            uavDesc.Texture3D.WSize = desc.m_depthSize;
+            uavDesc.Texture3D.WSize = desc.m_depthCount;
             break;
         
         case D3D11_UAV_DIMENSION_UNKNOWN:
@@ -96,6 +96,10 @@ namespace DX
         uavDesc.Buffer.FirstElement = desc.m_firstElement;
         uavDesc.Buffer.NumElements = desc.m_numElements;
         uavDesc.Buffer.Flags = 0;
+        if (buffer.GetBufferDesc().m_variant == BufferVariant::Raw)
+        {
+            uavDesc.Buffer.Flags |= D3D11_BUFFER_UAV_FLAG_RAW;
+        }
 
         return uavDesc;
     }

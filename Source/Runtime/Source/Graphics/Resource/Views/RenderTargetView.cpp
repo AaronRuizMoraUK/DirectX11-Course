@@ -90,7 +90,7 @@ namespace DX
         case D3D11_RTV_DIMENSION_TEXTURE3D:
             rtvDesc.Texture3D.MipSlice = desc.m_firstMip;
             rtvDesc.Texture3D.FirstWSlice = desc.m_firstDepth;
-            rtvDesc.Texture3D.WSize = desc.m_depthSize;
+            rtvDesc.Texture3D.WSize = desc.m_depthCount;
             break;
 
         case D3D11_RTV_DIMENSION_UNKNOWN:

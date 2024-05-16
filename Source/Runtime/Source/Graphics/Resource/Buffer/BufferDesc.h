@@ -29,12 +29,33 @@ namespace DX
         BufferBind_StreamOutput = 1 << 6,
     };
 
+    // Type of buffer when used in a shader or render target.
+    enum class BufferVariant
+    {
+        Unknown,
+
+        Typed, // Buffer where each element is a basic types: float, int or unsigned int
+        Structured, // Buffer where each element is a struct
+        Raw, // Buffer where each element is a byte
+
+        Total
+    };
+
     struct BufferDesc
     {
         uint32_t m_sizeInBytes;
         ResourceUsage m_usage;
         BufferBindFlag m_bindFlag;
         ResourceCPUAccess m_cpuAccess;
+
+        // Only relevant when using one of the following binding options:
+        // - BufferBind_ShaderResource
+        // - BufferBind_ShaderRWResource
+        // - BufferBind_RenderTarget
+        BufferVariant m_variant;
+
+        // Only when using Structured buffer variant. This is the size of the struct.
+        uint32_t m_structSizeInBytes;
 
         void* m_initialData;
     };

@@ -24,14 +24,15 @@ namespace DX
 
         // Only for textures
         uint32_t m_firstMip; // Index of the first mipmap level to use.
-        uint32_t m_mipSize; // Number of mipmap levels to use starting from m_firstMip. -1 for all mipmaps starting from m_firstMip.
+        uint32_t m_mipCount; // Number of mipmap levels to use, starting from m_firstMip. -1 for all mipmaps starting from m_firstMip.
 
         // Only for textures 1D, 2D and Cube with array > 0
         uint32_t m_firstArray; // Index of the first texture to use in an array of textures.
-        uint32_t m_arrayCount; // Number of arrays in the textures to use starting from m_firstArray.
+        uint32_t m_arrayCount; // Number of arrays in the texture to use, starting from m_firstArray.
 
-        // Only for Buffers
-        uint32_t m_firstElement; // Number of bytes between the beginning of the buffer and the first element to access.
-        uint32_t m_numElements; // The total number of elements in the view.
+        // Only for Buffers.
+        // Note it's the number of elements in the buffer, not bytes.
+        uint32_t m_firstElement; // Index of the first element to use in the buffer.
+        uint32_t m_numElements; // Number of elements in the buffer to use, starting from m_firstElement.
     };
 } // namespace DX
