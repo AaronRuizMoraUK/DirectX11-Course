@@ -12,7 +12,7 @@ namespace DX
     // 
     // - As VertexBuffer: format is specified with an InputLayout, which is set with DeviceContext->IASetInputLayout() call.
     // - As IndexBuffer: format is specified in DeviceContext->IASetIndexBuffer() call.
-    // - As ConstantBuffer: ??
+    // - As ConstantBuffer: format is expected to match the structure of the constant buffer in the shader.
     // - As ShaderResource, ShaderRWResource or RenderTarget: format is specified in their respective view description.
     // - As StreamOutput: format is always 32-bit values coming from the output declarations of the shader stages.
     //------------------------------------------------------------------------
