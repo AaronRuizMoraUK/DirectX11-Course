@@ -118,7 +118,7 @@ int main()
         auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
         auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
 
-        auto vertexShader = device->CreateShader({vertexShaderInfo, vertexShaderByteCode.get() });
+        auto vertexShader = device->CreateShader({ vertexShaderInfo, vertexShaderByteCode.get() });
         auto pixelShader = device->CreateShader({ pixelShaderInfo, pixelShaderByteCode.get() });
 
         while (window->IsOpen())
