@@ -1,9 +1,11 @@
 #pragma once
 
-#include <cstdint>
+#include <string>
 
 namespace DX
 {
+    class ShaderBytecode;
+
     enum class ShaderType
     {
         Unknown = 0,
@@ -18,11 +20,17 @@ namespace DX
         Count
     };
 
-    struct ShaderDesc
+    struct ShaderInfo
     {
         ShaderType m_shaderType;
+        std::string m_name;
+        std::string m_entryPoint;
+    };
 
-        void* m_bytecode;
-        uint32_t m_bytecodeSizeInBytes;
+    struct ShaderDesc
+    {
+        ShaderInfo m_shaderInfo;
+
+        ShaderBytecode* m_bytecode;
     };
 } // namespace DX

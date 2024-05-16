@@ -26,10 +26,10 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::Shader; }
 
-        ShaderType GetShaderType() const { return m_shaderType; }
+        const ShaderInfo& GetShaderInfo() const { return m_shaderInfo; }
 
     private:
-        ShaderType m_shaderType;
+        ShaderInfo m_shaderInfo;
 
     private:
         using DX11Shader = std::variant<
