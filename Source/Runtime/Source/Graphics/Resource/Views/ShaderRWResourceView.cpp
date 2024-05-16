@@ -15,27 +15,27 @@ namespace DX
 
         const TextureDesc& desc = texture.GetTextureDesc();
 
-        switch (desc.m_variant)
+        switch (desc.m_textureType)
         {
-        case TextureVariant::Unknown:
+        case TextureType::Unknown:
             uavDimension = D3D11_UAV_DIMENSION_UNKNOWN;
             break;
 
-        case TextureVariant::Texture1D:
+        case TextureType::Texture1D:
             uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE1DARRAY : D3D11_UAV_DIMENSION_TEXTURE1D;
             break;
 
-        case TextureVariant::Texture2D:
-        case TextureVariant::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
+        case TextureType::Texture2D:
+        case TextureType::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
             break;
 
-        case TextureVariant::Texture3D:
+        case TextureType::Texture3D:
             uavDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
             break;
 
         default:
-            DX_LOG(Error, "ShaderRWResourceView", "Unknown texture variant %d", desc.m_variant);
+            DX_LOG(Error, "ShaderRWResourceView", "Unknown texture type %d", desc.m_textureType);
             uavDimension = D3D11_UAV_DIMENSION_UNKNOWN;
         }
 
@@ -96,7 +96,7 @@ namespace DX
         uavDesc.Buffer.FirstElement = desc.m_firstElement;
         uavDesc.Buffer.NumElements = desc.m_numElements;
         uavDesc.Buffer.Flags = 0;
-        if (buffer.GetBufferDesc().m_variant == BufferVariant::Raw)
+        if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw)
         {
             uavDesc.Buffer.Flags |= D3D11_BUFFER_UAV_FLAG_RAW;
         }

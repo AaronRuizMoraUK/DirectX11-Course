@@ -20,7 +20,7 @@ namespace DX
             const TextureDesc& colorTextureDesc = m_colorTexture->GetTextureDesc();
 
             TextureDesc depthStencilTextureDesc = {};
-            depthStencilTextureDesc.m_variant = TextureVariant::Texture2D;
+            depthStencilTextureDesc.m_textureType = TextureType::Texture2D;
             depthStencilTextureDesc.m_dimensions = colorTextureDesc.m_dimensions;
             depthStencilTextureDesc.m_mipCount = colorTextureDesc.m_mipCount;
             depthStencilTextureDesc.m_format = ResourceFormat::D24_UNORM_S8_UINT;

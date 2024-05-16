@@ -14,18 +14,18 @@ namespace DX
 
         const TextureDesc& desc = texture.GetTextureDesc();
 
-        switch (desc.m_variant)
+        switch (desc.m_textureType)
         {
-        case TextureVariant::Unknown:
+        case TextureType::Unknown:
             dsvDimension = D3D11_DSV_DIMENSION_UNKNOWN;
             break;
 
-        case TextureVariant::Texture1D:
+        case TextureType::Texture1D:
             dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE1DARRAY : D3D11_DSV_DIMENSION_TEXTURE1D;
             break;
 
-        case TextureVariant::Texture2D:
-        case TextureVariant::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
+        case TextureType::Texture2D:
+        case TextureType::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             if (desc.m_sampleCount > 1)
             {
                 dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D11_DSV_DIMENSION_TEXTURE2DMS;
@@ -36,13 +36,13 @@ namespace DX
             }
             break;
 
-        case TextureVariant::Texture3D:
+        case TextureType::Texture3D:
             DX_LOG(Error, "DepthStencilView", "Depth stencil view does not support 3D textures");
             dsvDimension = D3D11_DSV_DIMENSION_UNKNOWN;
             break;
 
         default:
-            DX_LOG(Error, "DepthStencilView", "Unknown texture variant %d", desc.m_variant);
+            DX_LOG(Error, "DepthStencilView", "Unknown texture type %d", desc.m_textureType);
             dsvDimension = D3D11_DSV_DIMENSION_UNKNOWN;
             break;
         }

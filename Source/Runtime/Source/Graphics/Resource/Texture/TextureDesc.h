@@ -5,7 +5,7 @@
 
 namespace DX
 {
-    enum class TextureVariant
+    enum class TextureType
     {
         Unknown = 0,
 
@@ -36,7 +36,7 @@ namespace DX
 
     struct TextureDesc
     {
-        TextureVariant m_variant;
+        TextureType m_textureType;
         mathfu::Vector3Int m_dimensions;
         uint32_t m_mipCount; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
         ResourceFormat m_format;

@@ -70,7 +70,7 @@ namespace DX
             dx11BackBuffer->GetDesc(&dx11BackBufferDesc);
 
             TextureDesc backBufferTextureDesc = {};
-            backBufferTextureDesc.m_variant = TextureVariant::Texture2D;
+            backBufferTextureDesc.m_textureType = TextureType::Texture2D;
             backBufferTextureDesc.m_dimensions = mathfu::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
             backBufferTextureDesc.m_mipCount = dx11BackBufferDesc.MipLevels;
             backBufferTextureDesc.m_format = desc.m_bufferFormat;

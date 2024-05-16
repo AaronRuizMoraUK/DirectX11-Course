@@ -15,17 +15,17 @@ namespace DX
 
         const TextureDesc& desc = texture.GetTextureDesc();
 
-        switch (desc.m_variant)
+        switch (desc.m_textureType)
         {
-        case TextureVariant::Unknown:
+        case TextureType::Unknown:
             srvDimension = D3D11_SRV_DIMENSION_UNKNOWN;
             break;
         
-        case TextureVariant::Texture1D:
+        case TextureType::Texture1D:
             srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE1DARRAY : D3D11_SRV_DIMENSION_TEXTURE1D;
             break;
         
-        case TextureVariant::Texture2D:
+        case TextureType::Texture2D:
             if (desc.m_sampleCount > 1)
             {
                 srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D11_SRV_DIMENSION_TEXTURE2DMS;
@@ -36,17 +36,17 @@ namespace DX
             }
             break;
 
-        case TextureVariant::TextureCube:
+        case TextureType::TextureCube:
             DX_ASSERT(desc.m_arrayCount % 6 == 0, "ShaderResourceView", "Texture array size for TextureCube must be a multiple of 6, but passed %d" , desc.m_arrayCount);
             srvDimension = (desc.m_arrayCount > 6) ? D3D11_SRV_DIMENSION_TEXTURECUBEARRAY : D3D11_SRV_DIMENSION_TEXTURECUBE;
             break;
         
-        case TextureVariant::Texture3D:
+        case TextureType::Texture3D:
             srvDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
             break;
         
         default:
-            DX_LOG(Error, "ShaderResourceView", "Unknown texture variant %d", desc.m_variant);
+            DX_LOG(Error, "ShaderResourceView", "Unknown texture type %d", desc.m_textureType);
             srvDimension = D3D11_SRV_DIMENSION_UNKNOWN;
         }
 
@@ -126,9 +126,9 @@ namespace DX
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
 
-        switch (buffer.GetBufferDesc().m_variant)
+        switch (buffer.GetBufferDesc().m_bufferType)
         {
-        case BufferVariant::Typed:
+        case BufferType::Typed:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 
             // View boundaries to the buffer
@@ -136,7 +136,7 @@ namespace DX
             srvDesc.Buffer.NumElements = desc.m_numElements;
             break;
 
-        case BufferVariant::Structured:
+        case BufferType::Structured:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
             // View boundaries to the buffer
@@ -145,7 +145,7 @@ namespace DX
             srvDesc.BufferEx.Flags = 0;
             break;
 
-        case BufferVariant::Raw:
+        case BufferType::Raw:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
             // View boundaries to the buffer
@@ -154,9 +154,9 @@ namespace DX
             srvDesc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
             break;
 
-        case BufferVariant::Unknown:
+        case BufferType::Unknown:
         default:
-            DX_LOG(Error, "ShaderResourceView", "Unknown buffer variant %d", buffer.GetBufferDesc().m_variant);
+            DX_LOG(Error, "ShaderResourceView", "Unknown buffer type %d", buffer.GetBufferDesc().m_bufferType);
             break;
         }
 

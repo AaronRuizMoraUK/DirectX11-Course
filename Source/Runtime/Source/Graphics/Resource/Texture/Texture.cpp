@@ -8,17 +8,17 @@
 
 namespace DX
 {
-    static const char* GetTextureDimStr(TextureVariant variant)
+    static const char* GetTextureDimStr(TextureType textureType)
     {
-        switch (variant)
+        switch (textureType)
         {
-        case TextureVariant::Texture1D:
+        case TextureType::Texture1D:
             return "1D";
-        case TextureVariant::Texture2D:
+        case TextureType::Texture2D:
             return "2D";
-        case TextureVariant::TextureCube:
+        case TextureType::TextureCube:
             return "Cube";
-        case TextureVariant::Texture3D:
+        case TextureType::Texture3D:
             return "3D";
         default:
             return "Unknown";
@@ -39,7 +39,7 @@ namespace DX
 
             m_dx11Texture = static_cast<ID3D11Resource*>(desc.m_initialData);
         }
-        else if (desc.m_variant == TextureVariant::Texture1D)
+        else if (desc.m_textureType == TextureType::Texture1D)
         {
             D3D11_TEXTURE1D_DESC textureDesc = {};
             textureDesc.Width = desc.m_dimensions.x;
@@ -91,9 +91,9 @@ namespace DX
 
             m_dx11Texture = dx11Texture;
         }
-        else if (desc.m_variant == TextureVariant::Texture2D || desc.m_variant == TextureVariant::TextureCube)
+        else if (desc.m_textureType == TextureType::Texture2D || desc.m_textureType == TextureType::TextureCube)
         {
-            if (desc.m_variant == TextureVariant::TextureCube && desc.m_arrayCount % 6 != 0)
+            if (desc.m_textureType == TextureType::TextureCube && desc.m_arrayCount % 6 != 0)
             {
                 DX_LOG(Fatal, "Texture", "Failed to create Cube texture. Array size must be multiple of 6, but was %d.", desc.m_arrayCount);
                 return;
@@ -111,7 +111,7 @@ namespace DX
             textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
-            if (desc.m_variant == TextureVariant::TextureCube)
+            if (desc.m_textureType == TextureType::TextureCube)
             {
                 textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
             }
@@ -151,13 +151,13 @@ namespace DX
 
             if (FAILED(result))
             {
-                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", GetTextureDimStr(desc.m_variant));
+                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", GetTextureDimStr(desc.m_textureType));
                 return;
             }
 
             m_dx11Texture = dx11Texture;
         }
-        else if (desc.m_variant == TextureVariant::Texture3D)
+        else if (desc.m_textureType == TextureType::Texture3D)
         {
             D3D11_TEXTURE3D_DESC textureDesc = {};
             textureDesc.Width = desc.m_dimensions.x;
@@ -214,12 +214,12 @@ namespace DX
         }
         else
         {
-            DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_variant);
+            DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_textureType);
             return;
         }
 
         DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array created.",
-            GetTextureDimStr(desc.m_variant), desc.m_dimensions.x, desc.m_dimensions.y, desc.m_dimensions.z, desc.m_mipCount, desc.m_arrayCount);
+            GetTextureDimStr(desc.m_textureType), desc.m_dimensions.x, desc.m_dimensions.y, desc.m_dimensions.z, desc.m_mipCount, desc.m_arrayCount);
     }
 
     Texture::~Texture()
@@ -227,7 +227,7 @@ namespace DX
         if (m_dx11Texture)
         {
             DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array destroyed.",
-                GetTextureDimStr(m_desc.m_variant), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
+                GetTextureDimStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
         }
     }
 

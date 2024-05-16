@@ -26,12 +26,12 @@ namespace DX
         bufferDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
         bufferDesc.MiscFlags = 0;
-        switch (desc.m_variant)
+        switch (desc.m_bufferType)
         {
-        case BufferVariant::Structured:
+        case BufferType::Structured:
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
             break;
-        case BufferVariant::Raw:
+        case BufferType::Raw:
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
         }
         bufferDesc.StructureByteStride = desc.m_structSizeInBytes;

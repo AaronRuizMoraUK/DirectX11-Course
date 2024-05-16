@@ -30,7 +30,7 @@ namespace DX
     };
 
     // Type of buffer when used in a shader or render target.
-    enum class BufferVariant
+    enum class BufferType
     {
         Unknown,
 
@@ -52,9 +52,9 @@ namespace DX
         // - BufferBind_ShaderResource
         // - BufferBind_ShaderRWResource
         // - BufferBind_RenderTarget
-        BufferVariant m_variant;
+        BufferType m_bufferType;
 
-        // Only when using Structured buffer variant. This is the size of the struct.
+        // Only when using Structured buffer type. This is the size of the struct.
         uint32_t m_structSizeInBytes;
 
         void* m_initialData;
