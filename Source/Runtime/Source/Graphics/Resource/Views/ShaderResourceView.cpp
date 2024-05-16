@@ -37,7 +37,7 @@ namespace DX
             break;
 
         case TextureVariant::TextureCube:
-            DX_ASSERT(desc.m_arrayCount % 6 == 0, "ShaderResourceView", "Texture array size for TextureCube is not multiples of 6: %d" , desc.m_arrayCount);
+            DX_ASSERT(desc.m_arrayCount % 6 == 0, "ShaderResourceView", "Texture array size for TextureCube must be a multiple of 6, but passed %d" , desc.m_arrayCount);
             srvDimension = (desc.m_arrayCount > 6) ? D3D11_SRV_DIMENSION_TEXTURECUBEARRAY : D3D11_SRV_DIMENSION_TEXTURECUBE;
             break;
         

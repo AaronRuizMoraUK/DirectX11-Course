@@ -12,6 +12,14 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
+        // NOTE: In DirectX 12 this was increased to multiples of 256 bytes, equivalent to 4 matrices.
+        if ((desc.m_bindFlag & BufferBind_ConstantBuffer) &&
+            desc.m_sizeInBytes % 16 != 0)
+        {
+            DX_LOG(Fatal, "Buffer", "Failed to create buffer. Constant buffers size must be multiples of 16, but passed %d.", desc.m_sizeInBytes);
+            return;
+        }
+
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.ByteWidth = desc.m_sizeInBytes;
         bufferDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
@@ -27,7 +35,7 @@ namespace DX
 
         auto result = m_ownerDevice->GetDX11Device()->CreateBuffer(
             &bufferDesc,
-            (desc.m_initialData) ?  &subresourceData : nullptr,
+            (desc.m_initialData) ? &subresourceData : nullptr,
             m_dx11Buffer.GetAddressOf());
 
         if (FAILED(result))
