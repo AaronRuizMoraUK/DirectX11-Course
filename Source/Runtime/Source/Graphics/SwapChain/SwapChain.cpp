@@ -1,6 +1,7 @@
 #include <Graphics/SwapChain/SwapChain.h>
 
 #include <Graphics/Device/Device.h>
+#include <Graphics/Resource/Texture/Texture.h>
 #include <Window/Window.h>
 #include <Log/Log.h>
 
@@ -46,12 +47,36 @@ namespace DX
             return;
         }
 
-        // Get back buffer
-        result = m_dx11SwapChain->GetBuffer(0, IID_PPV_ARGS(m_dx11BackBuffer.GetAddressOf()));
-        if (FAILED(result))
+        // Create a texture with the back buffer of the swap chain.
+        // TODO: What happens when desc.m_bufferCount > 1
         {
-            DX_LOG(Fatal, "SwapChain", "Failed to get back buffer from D3D11 swap chain.");
-            return;
+            // Get back buffer
+            ComPtr<ID3D11Texture2D> dx11BackBuffer;
+            result = m_dx11SwapChain->GetBuffer(0, IID_PPV_ARGS(dx11BackBuffer.GetAddressOf()));
+            if (FAILED(result))
+            {
+                DX_LOG(Fatal, "SwapChain", "Failed to get back buffer from D3D11 swap chain.");
+                return;
+            }
+
+            D3D11_TEXTURE2D_DESC dx11BackBufferDesc;
+            dx11BackBuffer->GetDesc(&dx11BackBufferDesc);
+
+            TextureDesc backBufferTextureDesc = {};
+            backBufferTextureDesc.m_variant = TextureVariant::Texture2D;
+            backBufferTextureDesc.m_size = mathfu::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
+            backBufferTextureDesc.m_mipLevels = dx11BackBufferDesc.MipLevels;
+            backBufferTextureDesc.m_format = desc.m_bufferFormat;
+            backBufferTextureDesc.m_usage = ResourceUsage::Default;
+            backBufferTextureDesc.m_bindFlag = ResourceBind_RenderTarget;
+            backBufferTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
+            backBufferTextureDesc.m_arraySize = dx11BackBufferDesc.ArraySize;
+            backBufferTextureDesc.m_sampleCount = dx11BackBufferDesc.SampleDesc.Count;
+            backBufferTextureDesc.m_sampleQuality = dx11BackBufferDesc.SampleDesc.Quality;
+            backBufferTextureDesc.m_dataIsNativeResource = true;
+            backBufferTextureDesc.m_data = dx11BackBuffer.Get();
+
+            m_backBufferTexture = m_ownerDevice->CreateTexture(backBufferTextureDesc);
         }
 
         DX_LOG(Info, "SwapChain", "Graphics swap chain created.");
@@ -70,8 +95,8 @@ namespace DX
         );
     }
 
-    ComPtr<ID3D11Texture2D> SwapChain::GetBackBuffer()
+    std::shared_ptr<Texture> SwapChain::GetBackBufferTexture()
     {
-        return m_dx11BackBuffer;
+        return m_backBufferTexture;
     }
 } // namespace DX

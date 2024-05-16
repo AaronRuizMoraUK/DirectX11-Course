@@ -3,12 +3,16 @@
 #include <Graphics/DeviceObject/DeviceObject.h>
 #include <Graphics/SwapChain/SwapChainDesc.h>
 
+#include <memory>
+
 #include <Graphics/DirectX/ComPtr.h>
 class IDXGISwapChain;
-class ID3D11Texture2D;
 
 namespace DX
 {
+    class Device;
+    class Texture;
+
     class SwapChain : public DeviceObject
     {
     public:
@@ -22,14 +26,14 @@ namespace DX
 
         void Present();
 
-        // TODO: Can back buffer be stored as Texture class and return a Texture instead?
-        ComPtr<ID3D11Texture2D> GetBackBuffer();
+        std::shared_ptr<Texture> GetBackBufferTexture();
 
     private:
         bool m_vSyncEnabled = false;
 
+        std::shared_ptr<Texture> m_backBufferTexture;
+
     private:
         ComPtr<IDXGISwapChain> m_dx11SwapChain;
-        ComPtr<ID3D11Texture2D> m_dx11BackBuffer;
     };
 } // namespace DX

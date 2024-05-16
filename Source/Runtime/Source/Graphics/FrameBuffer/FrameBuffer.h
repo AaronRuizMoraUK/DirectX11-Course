@@ -5,14 +5,17 @@
 #include <Math/Color.h>
 
 #include <optional>
+#include <memory>
 
 #include <Graphics/DirectX/ComPtr.h>
-class ID3D11Texture2D;
 class ID3D11RenderTargetView;
 class ID3D11DepthStencilView;
 
 namespace DX
 {
+    class Device;
+    class Texture;
+
     class FrameBuffer : public DeviceObject
     {
     public:
@@ -27,10 +30,11 @@ namespace DX
         void Clear(std::optional<mathfu::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil);
 
     private:
-        ComPtr<ID3D11Texture2D> m_dx11ColorTexture;
-        ComPtr<ID3D11RenderTargetView> m_dx11ColorRenderTargetView;
+        std::shared_ptr<Texture> m_colorTexture;
+        std::shared_ptr<Texture> m_depthStencilTexture;
 
-        ComPtr<ID3D11Texture2D> m_dx11DepthStencilTexture;
+    private:
+        ComPtr<ID3D11RenderTargetView> m_dx11ColorRenderTargetView;
         ComPtr<ID3D11DepthStencilView> m_dx11DepthStencilView;
     };
 } // namespace DX

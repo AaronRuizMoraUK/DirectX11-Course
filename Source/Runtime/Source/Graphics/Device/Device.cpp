@@ -52,7 +52,19 @@ namespace DX
 
     Device::~Device()
     {
-        // Check if objects won't be destroyed.
+        DeviceObjects potentialLeakedObjects;
+        potentialLeakedObjects.reserve(m_deviceObjects.size());
+        for (const auto& deviceObject : m_deviceObjects)
+        {
+            if (deviceObject.use_count() > 1)
+            {
+                potentialLeakedObjects.push_back(deviceObject);
+            }
+        }
+
+        m_deviceObjects.clear();
+
+        // Check if there are objects that won't be destroyed, meaning something else is still using them.
         int leakCount = std::reduce(m_deviceObjects.begin(), m_deviceObjects.end(), 0,
             [](int count, const auto& deviceObject)
             {
@@ -63,7 +75,7 @@ namespace DX
             DX_LOG(Warning, "Device", "There are %d graphics objects that are still referenced when destroying the graphics device %u.", leakCount, m_deviceId);
         }
 
-        m_deviceObjects.clear();
+        potentialLeakedObjects.clear();
 
         DX_LOG(Info, "Device", "Graphics device %u destroyed.", m_deviceId);
     }

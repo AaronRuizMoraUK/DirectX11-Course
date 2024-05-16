@@ -59,6 +59,9 @@ namespace DX
 
         DeviceId GetId() const { return m_deviceId; }
 
+        // TODO: How to destroy device objects? Once created they are always kept inside m_deviceObjects.
+        // TODO: Move initialization of all objects out of constructor
+
         std::shared_ptr<SwapChain> CreateSwapChain(const SwapChainDesc& desc);
         std::shared_ptr<FrameBuffer> CreateFrameBuffer(const FrameBufferDesc& desc);
         std::shared_ptr<Buffer> CreateBuffer(const BufferDesc& desc);

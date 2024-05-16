@@ -2,6 +2,7 @@
 
 #include <Graphics/Device/Device.h>
 #include <Graphics/SwapChain/SwapChain.h>
+#include <Graphics/Resource/Texture/Texture.h>
 #include <Log/Log.h>
 
 #include <d3d11.h>
@@ -12,59 +13,41 @@ namespace DX
     FrameBuffer::FrameBuffer(Device* device, const FrameBufferDesc& desc)
         : DeviceObject(device)
     {
-        // Create a frame buffer from a SwapChain
-        if (desc.m_swapChain)
+        m_colorTexture = desc.m_colorAttachment;
+
+        // Create a default depth stencil texture
+        if (m_colorTexture && desc.m_createDepthStencilAttachment)
         {
-            m_dx11ColorTexture = desc.m_swapChain->GetBackBuffer();
+            const TextureDesc& colorTextureDesc = m_colorTexture->GetTextureDesc();
 
-            // Create a default depth stencil texture
-            {
-                D3D11_TEXTURE2D_DESC dx11ColorTextureDesc = {};
-                m_dx11ColorTexture->GetDesc(&dx11ColorTextureDesc);
+            TextureDesc depthStencilTextureDesc = {};
+            depthStencilTextureDesc.m_variant = TextureVariant::Texture2D;
+            depthStencilTextureDesc.m_size = colorTextureDesc.m_size;
+            depthStencilTextureDesc.m_mipLevels = colorTextureDesc.m_mipLevels;
+            depthStencilTextureDesc.m_format = ResourceFormat::D24_UNORM_S8_UINT;
+            depthStencilTextureDesc.m_usage = ResourceUsage::Default;
+            depthStencilTextureDesc.m_bindFlag = ResourceBind_DepthStencil;
+            depthStencilTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
+            depthStencilTextureDesc.m_arraySize = colorTextureDesc.m_arraySize;
+            depthStencilTextureDesc.m_sampleCount = colorTextureDesc.m_sampleCount;
+            depthStencilTextureDesc.m_sampleQuality = colorTextureDesc.m_sampleQuality;
 
-                D3D11_TEXTURE2D_DESC dx11DepthStencialTextureDesc = {};
-                dx11DepthStencialTextureDesc.Width = dx11ColorTextureDesc.Width;
-                dx11DepthStencialTextureDesc.Height = dx11ColorTextureDesc.Height;
-                dx11DepthStencialTextureDesc.MipLevels = 1;
-                dx11DepthStencialTextureDesc.ArraySize = 1;
-                dx11DepthStencialTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-                dx11DepthStencialTextureDesc.SampleDesc.Count = 1;
-                dx11DepthStencialTextureDesc.SampleDesc.Quality = 0;
-                dx11DepthStencialTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-                dx11DepthStencialTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-                dx11DepthStencialTextureDesc.CPUAccessFlags = 0;
-                dx11DepthStencialTextureDesc.MiscFlags = 0;
-
-                auto result = m_ownerDevice->GetDX11Device()->CreateTexture2D(
-                    &dx11DepthStencialTextureDesc, 
-                    nullptr, // No sub-resource data
-                    m_dx11DepthStencilTexture.GetAddressOf());
-
-                if (FAILED(result))
-                {
-                    DX_LOG(Fatal, "FrameBuffer", "Failed to create Depth Stencil texture.");
-                    return;
-                }
-            }
+            m_depthStencilTexture = m_ownerDevice->CreateTexture(depthStencilTextureDesc);
         }
-        // Create a frame buffer from textures passed in the description
         else
         {
-            // TODO: To be implemented with Texture class is done.
+            m_depthStencilTexture = desc.m_depthStencilAttachment;
         }
 
-        if (m_dx11ColorTexture)
+        if (m_colorTexture)
         {
-            D3D11_TEXTURE2D_DESC dx11ColorTextureDesc = {};
-            m_dx11ColorTexture->GetDesc(&dx11ColorTextureDesc);
-
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-            rtvDesc.Format = dx11ColorTextureDesc.Format;
-            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-            rtvDesc.Texture2D.MipSlice = 0;
+            rtvDesc.Format = ToDX11ResourceFormat(m_colorTexture->GetTextureDesc().m_format);
+            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // TODO: Create function to obtain RTV dimension from the texture.
+            rtvDesc.Texture2D.MipSlice = 0; // Index of first mipmap level to use.
 
             auto result = m_ownerDevice->GetDX11Device()->CreateRenderTargetView(
-                m_dx11ColorTexture.Get(),
+                m_colorTexture->GetDX11Texture().Get(),
                 &rtvDesc,
                 m_dx11ColorRenderTargetView.GetAddressOf()
             );
@@ -76,18 +59,15 @@ namespace DX
             }
         }
 
-        if (m_dx11DepthStencilTexture)
+        if (m_depthStencilTexture)
         {
-            D3D11_TEXTURE2D_DESC dx11DepthStencilTextureDesc = {};
-            m_dx11DepthStencilTexture->GetDesc(&dx11DepthStencilTextureDesc);
-
             D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-            dsvDesc.Format = dx11DepthStencilTextureDesc.Format;
-            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-            dsvDesc.Texture2D.MipSlice = 0;
+            dsvDesc.Format = ToDX11ResourceFormat(m_depthStencilTexture->GetTextureDesc().m_format);
+            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // TODO: Create function to obtain DSV dimension from the texture.
+            dsvDesc.Texture2D.MipSlice = 0; // Index of first mipmap level to use.
 
             auto result = m_ownerDevice->GetDX11Device()->CreateDepthStencilView(
-                m_dx11DepthStencilTexture.Get(),
+                m_depthStencilTexture->GetDX11Texture().Get(),
                 &dsvDesc,
                 m_dx11DepthStencilView.GetAddressOf()
             );

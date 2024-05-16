@@ -8,13 +8,15 @@
 
 namespace DX
 {
-    // TODO: Replace all object's comptr textures with Textures
-    // TODO: Add a constructor passing comptr texture directly (useful for Swap Chain)
-    // TODO: Move initialization of all objects out of constructor
     Texture::Texture(Device* device, const TextureDesc& desc)
         : DeviceObject(device)
+        , m_desc(desc)
     {
-        if (desc.m_type == TextureType::Texture1D)
+        if (desc.m_dataIsNativeResource)
+        {
+            m_dx11Texture = static_cast<ID3D11Resource*>(desc.m_data);
+        }
+        else if (desc.m_variant == TextureVariant::Texture1D)
         {
             D3D11_TEXTURE1D_DESC textureDesc = {};
             textureDesc.Width = desc.m_size.x;
@@ -66,7 +68,7 @@ namespace DX
 
             m_dx11Texture = dx11Texture;
         }
-        else if (desc.m_type == TextureType::Texture2D)
+        else if (desc.m_variant == TextureVariant::Texture2D)
         {
             D3D11_TEXTURE2D_DESC textureDesc = {};
             textureDesc.Width = desc.m_size.x;
@@ -122,7 +124,7 @@ namespace DX
 
             m_dx11Texture = dx11Texture;
         }
-        else if (desc.m_type == TextureType::Texture3D)
+        else if (desc.m_variant == TextureVariant::Texture3D)
         {
             D3D11_TEXTURE3D_DESC textureDesc = {};
             textureDesc.Width = desc.m_size.x;
@@ -179,7 +181,12 @@ namespace DX
         }
         else
         {
-            DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_type);
+            DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_variant);
         }
+    }
+
+    ComPtr<ID3D11Resource> Texture::GetDX11Texture()
+    {
+        return m_dx11Texture;
     }
 } // namespace DX

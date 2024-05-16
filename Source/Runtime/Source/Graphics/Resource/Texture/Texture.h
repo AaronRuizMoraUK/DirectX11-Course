@@ -4,11 +4,7 @@
 #include <Graphics/Resource/Texture/TextureDesc.h>
 
 #include <Graphics/DirectX/ComPtr.h>
-class ID3D11Texture1D;
-class ID3D11Texture2D;
-class ID3D11Texture3D;
-
-#include <variant>
+class ID3D11Resource;
 
 namespace DX
 {
@@ -23,8 +19,12 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::Texture; }
 
+        const TextureDesc& GetTextureDesc() const { return m_desc; }
+
+        ComPtr<ID3D11Resource> GetDX11Texture();
     private:
-        using DX11Texture = std::variant<ComPtr<ID3D11Texture1D>, ComPtr<ID3D11Texture2D>, ComPtr<ID3D11Texture3D>>;
-        DX11Texture m_dx11Texture;
+        TextureDesc m_desc;
+
+        ComPtr<ID3D11Resource> m_dx11Texture;
     };
 } // namespace DX
