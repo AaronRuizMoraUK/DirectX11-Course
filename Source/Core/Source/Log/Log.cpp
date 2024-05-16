@@ -16,7 +16,8 @@ namespace DX::Internal
         {
             Normal,
             Yellow,
-            Red
+            Red,
+            Blue
         };
 
         void DebugOutput(LogColor logColor, const char* message)
@@ -26,12 +27,14 @@ namespace DX::Internal
                     constexpr const char* LogNormal = "\033[39m";
                     constexpr const char* LogYellow = "\033[33m";
                     constexpr const char* LogRed = "\033[31m";
+                    constexpr const char* LogBlue = "\033[34m";
 
                     switch (logColor)
                     {
                     case LogColor::Normal: return LogNormal;
                     case LogColor::Yellow: return LogYellow;
                     case LogColor::Red: return LogRed;
+                    case LogColor::Blue: return LogBlue;
                     default: return LogNormal;
                     }
                 };
@@ -50,24 +53,27 @@ namespace DX::Internal
         char* head = buffer;
 
         LogColor logColor = LogColor::Normal;
+        head += std::sprintf(head, "[%s] ", title);
 
         switch(level)
         {
+            case LogLevel::Verbose:
+                logColor = LogColor::Blue;
+                break;
             case LogLevel::Warning:
                 logColor = LogColor::Yellow;
-                head += std::sprintf(head, "[%s] Warning: ", title);
+                head += std::sprintf(head, "Warning: ");
                 break;
             case LogLevel::Error:
                 logColor = LogColor::Red;
-                head += std::sprintf(head, "[%s] Error: ", title);
+                head += std::sprintf(head, "Error: ");
                 break;
             case LogLevel::Fatal:
                 logColor = LogColor::Red;
-                head += std::sprintf(head, "[%s] Fatal Error: ", title);
+                head += std::sprintf(head, "Fatal Error: ");
                 break;
             case LogLevel::Info:
             default:
-                head += std::sprintf(head, "[%s] ", title);
                 break;
         }
 

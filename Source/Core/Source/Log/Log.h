@@ -30,6 +30,7 @@ namespace DX::Internal
     enum class LogLevel
     {
         Info,
+        Verbose,
         Warning,
         Error,
         Fatal

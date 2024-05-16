@@ -12,7 +12,7 @@ namespace DX
     {
     public:
         Texture(Device* device, const TextureDesc& desc);
-        ~Texture() = default;
+        ~Texture();
 
         Texture(const Texture&) = delete;
         Texture& operator=(const Texture&) = delete;

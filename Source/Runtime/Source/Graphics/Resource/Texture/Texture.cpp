@@ -182,6 +182,19 @@ namespace DX
         else
         {
             DX_LOG(Fatal, "Utils", "Unknown texture type %d", desc.m_variant);
+            return;
+        }
+
+        DX_LOG(Verbose, "Texture", "Texture %dD %dx%dx%d, %d mipmaps and %d array created.",
+            desc.m_variant, desc.m_size.x, desc.m_size.y, desc.m_size.z, desc.m_mipLevels, desc.m_arraySize);
+    }
+
+    Texture::~Texture()
+    {
+        if (m_dx11Texture)
+        {
+            DX_LOG(Verbose, "Texture", "Texture %dD %dx%dx%d, %d mipmaps and %d array destroyed.",
+                m_desc.m_variant, m_desc.m_size.x, m_desc.m_size.y, m_desc.m_size.z, m_desc.m_mipLevels, m_desc.m_arraySize);
         }
     }
 
