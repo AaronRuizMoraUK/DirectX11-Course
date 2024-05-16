@@ -7,14 +7,12 @@
 #include <optional>
 #include <memory>
 
-#include <Graphics/DirectX/ComPtr.h>
-class ID3D11RenderTargetView;
-class ID3D11DepthStencilView;
-
 namespace DX
 {
     class Device;
     class Texture;
+    class RenderTargetView;
+    class DepthStencilView;
 
     class FrameBuffer : public DeviceObject
     {
@@ -31,10 +29,9 @@ namespace DX
 
     private:
         std::shared_ptr<Texture> m_colorTexture;
-        std::shared_ptr<Texture> m_depthStencilTexture;
+        std::shared_ptr<RenderTargetView> m_colorRenderTargetView;
 
-    private:
-        ComPtr<ID3D11RenderTargetView> m_dx11ColorRenderTargetView;
-        ComPtr<ID3D11DepthStencilView> m_dx11DepthStencilView;
+        std::shared_ptr<Texture> m_depthStencilTexture;
+        std::shared_ptr<DepthStencilView> m_depthStencilView;
     };
 } // namespace DX

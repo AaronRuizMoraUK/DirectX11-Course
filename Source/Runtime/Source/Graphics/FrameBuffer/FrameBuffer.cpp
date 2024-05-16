@@ -3,10 +3,9 @@
 #include <Graphics/Device/Device.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/Resource/Texture/Texture.h>
+#include <Graphics/Resource/Views/RenderTargetView.h>
+#include <Graphics/Resource/Views/DepthStencilView.h>
 #include <Log/Log.h>
-
-#include <d3d11.h>
-#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {
@@ -41,47 +40,31 @@ namespace DX
 
         if (m_colorTexture)
         {
-            D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-            rtvDesc.Format = ToDX11ResourceFormat(m_colorTexture->GetTextureDesc().m_format);
-            rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D; // TODO: Create function to obtain RTV dimension from the texture.
-            rtvDesc.Texture2D.MipSlice = 0; // Index of first mipmap level to use.
+            RenderTargetViewDesc rtvDesc = {};
+            rtvDesc.m_resource = m_colorTexture;
+            rtvDesc.m_firstMip =0;
+            rtvDesc.m_firstArray = 0;
+            rtvDesc.m_arraySize = m_colorTexture->GetTextureDesc().m_arraySize;
+            rtvDesc.m_firstDepth = 0;
+            rtvDesc.m_depthSize = -1;
 
-            auto result = m_ownerDevice->GetDX11Device()->CreateRenderTargetView(
-                m_colorTexture->GetDX11Texture().Get(),
-                &rtvDesc,
-                m_dx11ColorRenderTargetView.GetAddressOf()
-            );
-
-            if (FAILED(result))
-            {
-                DX_LOG(Fatal, "FrameBuffer", "Failed to create Color Render Target View.");
-                return;
-            }
+            m_colorRenderTargetView = m_ownerDevice->CreateRenderTargetView(rtvDesc);
         }
 
         if (m_depthStencilTexture)
         {
-            D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-            dsvDesc.Format = ToDX11ResourceFormat(m_depthStencilTexture->GetTextureDesc().m_format);
-            dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D; // TODO: Create function to obtain DSV dimension from the texture.
-            dsvDesc.Texture2D.MipSlice = 0; // Index of first mipmap level to use.
+            DepthStencilViewDesc dsvDesc = {};
+            dsvDesc.m_texture = m_depthStencilTexture;
+            dsvDesc.m_firstMip = 0;
+            dsvDesc.m_firstArray = 0;
+            dsvDesc.m_arraySize = m_depthStencilTexture->GetTextureDesc().m_arraySize;
 
-            auto result = m_ownerDevice->GetDX11Device()->CreateDepthStencilView(
-                m_depthStencilTexture->GetDX11Texture().Get(),
-                &dsvDesc,
-                m_dx11DepthStencilView.GetAddressOf()
-            );
-
-            if (FAILED(result))
-            {
-                DX_LOG(Fatal, "FrameBuffer", "Failed to create Depth Stencil View.");
-                return;
-            }
+            m_depthStencilView = m_ownerDevice->CreateDepthStencilView(dsvDesc);
         }
 
         DX_LOG(Info, "FrameBuffer", "Graphics frame buffer created. Color: %s DepthStencil: %s", 
-            (m_dx11ColorRenderTargetView) ? "YES" : "NO",
-            (m_dx11DepthStencilView) ? "YES" : "NO");
+            (m_colorRenderTargetView) ? "YES" : "NO",
+            (m_depthStencilView) ? "YES" : "NO");
     }
 
     FrameBuffer::~FrameBuffer()
@@ -93,16 +76,9 @@ namespace DX
     {
         if (color.has_value())
         {
-            m_ownerDevice->GetDX11ImmediateContext()->ClearRenderTargetView(
-                m_dx11ColorRenderTargetView.Get(), mathfu::ColorPacked(*color).data_);
+            m_colorRenderTargetView->Clear(*color);
         }
 
-        if (depth.has_value() || stencil.has_value())
-        {
-            uint32_t flags = (depth.has_value() ? D3D11_CLEAR_DEPTH : 0) | (stencil.has_value() ? D3D11_CLEAR_STENCIL : 0);
-
-            m_ownerDevice->GetDX11ImmediateContext()->ClearDepthStencilView(
-                m_dx11DepthStencilView.Get(), flags, depth.value_or(0.0f), stencil.value_or(0));
-        }
+        m_depthStencilView->Clear(depth, stencil);
     }
 } // namespace DX
