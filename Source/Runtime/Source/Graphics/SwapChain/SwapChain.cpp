@@ -75,7 +75,7 @@ namespace DX
             backBufferTextureDesc.m_mipLevels = dx11BackBufferDesc.MipLevels;
             backBufferTextureDesc.m_format = desc.m_bufferFormat;
             backBufferTextureDesc.m_usage = ResourceUsage::Default;
-            backBufferTextureDesc.m_bindFlag = ResourceBind_RenderTarget;
+            backBufferTextureDesc.m_bindFlag = TextureBind_RenderTarget;
             backBufferTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
             backBufferTextureDesc.m_arraySize = dx11BackBufferDesc.ArraySize;
             backBufferTextureDesc.m_sampleCount = dx11BackBufferDesc.SampleDesc.Count;

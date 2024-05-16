@@ -2,6 +2,8 @@
 
 #include <Log/Log.h>
 #include <Graphics/Resource/ResourceFlags.h>
+#include <Graphics/Resource/Texture/TextureDesc.h>
+#include <Graphics/Resource/Buffer/BufferDesc.h>
 
 #include <d3d11.h>
 
@@ -23,20 +25,29 @@ namespace DX
         }
     }
 
-    static uint32_t ToDX11ResourceBindFlag(ResourceBindFlag bindFlag)
+    static uint32_t ToDX11ResourceBindFlag(TextureBindFlag bindFlag)
     {
         uint32_t dx11BindFlags = 0;
 
-        dx11BindFlags |= (bindFlag & ResourceBind_VertexBuffer)     ? D3D11_BIND_VERTEX_BUFFER    : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_IndexBuffer)      ? D3D11_BIND_INDEX_BUFFER     : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_ConstantBuffer)   ? D3D11_BIND_CONSTANT_BUFFER  : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_ShaderResource)   ? D3D11_BIND_SHADER_RESOURCE  : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_StreamOutput)     ? D3D11_BIND_STREAM_OUTPUT    : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_RenderTarget)     ? D3D11_BIND_RENDER_TARGET    : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_DepthStencil)     ? D3D11_BIND_DEPTH_STENCIL    : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_Decoder)          ? D3D11_BIND_DECODER          : 0;
-        dx11BindFlags |= (bindFlag & ResourceBind_VideoEncoder)     ? D3D11_BIND_VIDEO_ENCODER    : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_ShaderResource)   ? D3D11_BIND_SHADER_RESOURCE  : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_RenderTarget)     ? D3D11_BIND_RENDER_TARGET    : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_DepthStencil)     ? D3D11_BIND_DEPTH_STENCIL    : 0;
+
+        return dx11BindFlags;
+    }
+
+    static uint32_t ToDX11ResourceBindFlag(BufferBindFlag bindFlag)
+    {
+        uint32_t dx11BindFlags = 0;
+
+        dx11BindFlags |= (bindFlag & BufferBind_VertexBuffer) ? D3D11_BIND_VERTEX_BUFFER : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_IndexBuffer) ? D3D11_BIND_INDEX_BUFFER : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_ConstantBuffer) ? D3D11_BIND_CONSTANT_BUFFER : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
+        dx11BindFlags |= (bindFlag & BufferBind_StreamOutput) ? D3D11_BIND_STREAM_OUTPUT : 0;
 
         return dx11BindFlags;
     }

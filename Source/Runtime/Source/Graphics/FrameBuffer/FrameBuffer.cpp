@@ -25,7 +25,7 @@ namespace DX
             depthStencilTextureDesc.m_mipLevels = colorTextureDesc.m_mipLevels;
             depthStencilTextureDesc.m_format = ResourceFormat::D24_UNORM_S8_UINT;
             depthStencilTextureDesc.m_usage = ResourceUsage::Default;
-            depthStencilTextureDesc.m_bindFlag = ResourceBind_DepthStencil;
+            depthStencilTextureDesc.m_bindFlag = TextureBind_DepthStencil;
             depthStencilTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
             depthStencilTextureDesc.m_arraySize = colorTextureDesc.m_arraySize;
             depthStencilTextureDesc.m_sampleCount = colorTextureDesc.m_sampleCount;
