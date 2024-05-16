@@ -27,7 +27,7 @@ namespace DX
 
         // Only for textures 1D, 2D and Cube with array > 0
         uint32_t m_firstArray; // Index of the first texture to use in an array of textures.
-        uint32_t m_arraySize; // Number of arrays in the textures to use starting from m_firstArray.
+        uint32_t m_arrayCount; // Number of arrays in the textures to use starting from m_firstArray.
 
         // Only for 3D textures
         uint32_t m_firstDepth; // First depth level to use.

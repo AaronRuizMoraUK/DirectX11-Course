@@ -31,6 +31,7 @@ namespace DX
 
     struct BufferDesc
     {
+        uint32_t m_sizeInBytes;
         ResourceUsage m_usage;
         BufferBindFlag m_bindFlag;
         ResourceCPUAccess m_cpuAccess;

@@ -42,9 +42,9 @@ namespace DX
         else if (desc.m_variant == TextureVariant::Texture1D)
         {
             D3D11_TEXTURE1D_DESC textureDesc = {};
-            textureDesc.Width = desc.m_size.x;
-            textureDesc.MipLevels = desc.m_mipLevels;
-            textureDesc.ArraySize = desc.m_arraySize;
+            textureDesc.Width = desc.m_dimensions.x;
+            textureDesc.MipLevels = desc.m_mipCount;
+            textureDesc.ArraySize = desc.m_arrayCount;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
             textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
@@ -54,8 +54,8 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
+                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
@@ -65,7 +65,7 @@ namespace DX
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
                         const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
+                        const int mipSizeX = std::max<uint32_t>(1, desc.m_dimensions.x >> mipIndex);
                         const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
@@ -93,17 +93,17 @@ namespace DX
         }
         else if (desc.m_variant == TextureVariant::Texture2D || desc.m_variant == TextureVariant::TextureCube)
         {
-            if (desc.m_variant == TextureVariant::TextureCube && desc.m_arraySize % 6 != 0)
+            if (desc.m_variant == TextureVariant::TextureCube && desc.m_arrayCount % 6 != 0)
             {
-                DX_LOG(Fatal, "Texture", "Failed to create Cube texture. Array size must be multiple of 6, but was %d.", desc.m_arraySize);
+                DX_LOG(Fatal, "Texture", "Failed to create Cube texture. Array size must be multiple of 6, but was %d.", desc.m_arrayCount);
                 return;
             }
 
             D3D11_TEXTURE2D_DESC textureDesc = {};
-            textureDesc.Width = desc.m_size.x;
-            textureDesc.Height = desc.m_size.y;
-            textureDesc.MipLevels = desc.m_mipLevels;
-            textureDesc.ArraySize = desc.m_arraySize;
+            textureDesc.Width = desc.m_dimensions.x;
+            textureDesc.Height = desc.m_dimensions.y;
+            textureDesc.MipLevels = desc.m_mipCount;
+            textureDesc.ArraySize = desc.m_arrayCount;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.SampleDesc.Count = desc.m_sampleCount;
             textureDesc.SampleDesc.Quality = desc.m_sampleQuality;
@@ -115,8 +115,8 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
+                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
@@ -126,8 +126,8 @@ namespace DX
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
                         const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
-                        const int mipSizeY = std::max<uint32_t>(1, desc.m_size.y >> mipIndex);
+                        const int mipSizeX = std::max<uint32_t>(1, desc.m_dimensions.x >> mipIndex);
+                        const int mipSizeY = std::max<uint32_t>(1, desc.m_dimensions.y >> mipIndex);
                         const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
@@ -156,10 +156,10 @@ namespace DX
         else if (desc.m_variant == TextureVariant::Texture3D)
         {
             D3D11_TEXTURE3D_DESC textureDesc = {};
-            textureDesc.Width = desc.m_size.x;
-            textureDesc.Height = desc.m_size.y;
-            textureDesc.Depth = desc.m_size.z;
-            textureDesc.MipLevels = desc.m_mipLevels;
+            textureDesc.Width = desc.m_dimensions.x;
+            textureDesc.Height = desc.m_dimensions.y;
+            textureDesc.Depth = desc.m_dimensions.z;
+            textureDesc.MipLevels = desc.m_mipCount;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
             textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
@@ -169,8 +169,8 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
+                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
@@ -180,9 +180,9 @@ namespace DX
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
                         const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, desc.m_size.x >> mipIndex);
-                        const int mipSizeY = std::max<uint32_t>(1, desc.m_size.y >> mipIndex);
-                        const int mipSizeZ = std::max<uint32_t>(1, desc.m_size.z >> mipIndex);
+                        const int mipSizeX = std::max<uint32_t>(1, desc.m_dimensions.x >> mipIndex);
+                        const int mipSizeY = std::max<uint32_t>(1, desc.m_dimensions.y >> mipIndex);
+                        const int mipSizeZ = std::max<uint32_t>(1, desc.m_dimensions.z >> mipIndex);
                         const int rowBytes = ResourceFormatSize(desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
@@ -215,7 +215,7 @@ namespace DX
         }
 
         DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array created.",
-            GetTextureDimStr(desc.m_variant), desc.m_size.x, desc.m_size.y, desc.m_size.z, desc.m_mipLevels, desc.m_arraySize);
+            GetTextureDimStr(desc.m_variant), desc.m_dimensions.x, desc.m_dimensions.y, desc.m_dimensions.z, desc.m_mipCount, desc.m_arrayCount);
     }
 
     Texture::~Texture()
@@ -223,7 +223,7 @@ namespace DX
         if (m_dx11Texture)
         {
             DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array destroyed.",
-                GetTextureDimStr(m_desc.m_variant), m_desc.m_size.x, m_desc.m_size.y, m_desc.m_size.z, m_desc.m_mipLevels, m_desc.m_arraySize);
+                GetTextureDimStr(m_desc.m_variant), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
         }
     }
 

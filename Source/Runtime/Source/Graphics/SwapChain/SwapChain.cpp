@@ -71,13 +71,13 @@ namespace DX
 
             TextureDesc backBufferTextureDesc = {};
             backBufferTextureDesc.m_variant = TextureVariant::Texture2D;
-            backBufferTextureDesc.m_size = mathfu::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
-            backBufferTextureDesc.m_mipLevels = dx11BackBufferDesc.MipLevels;
+            backBufferTextureDesc.m_dimensions = mathfu::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
+            backBufferTextureDesc.m_mipCount = dx11BackBufferDesc.MipLevels;
             backBufferTextureDesc.m_format = desc.m_bufferFormat;
             backBufferTextureDesc.m_usage = ResourceUsage::Default;
             backBufferTextureDesc.m_bindFlag = TextureBind_RenderTarget;
             backBufferTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
-            backBufferTextureDesc.m_arraySize = dx11BackBufferDesc.ArraySize;
+            backBufferTextureDesc.m_arrayCount = dx11BackBufferDesc.ArraySize;
             backBufferTextureDesc.m_sampleCount = dx11BackBufferDesc.SampleDesc.Count;
             backBufferTextureDesc.m_sampleQuality = dx11BackBufferDesc.SampleDesc.Quality;
             backBufferTextureDesc.m_initialDataIsNativeResource = true;

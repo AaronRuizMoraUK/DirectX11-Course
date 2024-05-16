@@ -21,18 +21,18 @@ namespace DX
             break;
 
         case TextureVariant::Texture1D:
-            dsvDimension = (desc.m_arraySize > 0) ? D3D11_DSV_DIMENSION_TEXTURE1DARRAY : D3D11_DSV_DIMENSION_TEXTURE1D;
+            dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE1DARRAY : D3D11_DSV_DIMENSION_TEXTURE1D;
             break;
 
         case TextureVariant::Texture2D:
         case TextureVariant::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             if (desc.m_sampleCount > 1)
             {
-                dsvDimension = (desc.m_arraySize > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D11_DSV_DIMENSION_TEXTURE2DMS;
+                dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D11_DSV_DIMENSION_TEXTURE2DMS;
             }
             else
             {
-                dsvDimension = (desc.m_arraySize > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
+                dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
             }
             break;
 
@@ -66,7 +66,7 @@ namespace DX
         case D3D11_DSV_DIMENSION_TEXTURE1DARRAY:
             dsvDesc.Texture1DArray.MipSlice = desc.m_firstMip;
             dsvDesc.Texture1DArray.FirstArraySlice = desc.m_firstArray;
-            dsvDesc.Texture1DArray.ArraySize = desc.m_arraySize;
+            dsvDesc.Texture1DArray.ArraySize = desc.m_arrayCount;
             break;
 
         case D3D11_DSV_DIMENSION_TEXTURE2D:
@@ -76,7 +76,7 @@ namespace DX
         case D3D11_DSV_DIMENSION_TEXTURE2DARRAY:
             dsvDesc.Texture2DArray.MipSlice = desc.m_firstMip;
             dsvDesc.Texture2DArray.FirstArraySlice = desc.m_firstArray;
-            dsvDesc.Texture2DArray.ArraySize = desc.m_arraySize;
+            dsvDesc.Texture2DArray.ArraySize = desc.m_arrayCount;
             break;
 
         case D3D11_DSV_DIMENSION_TEXTURE2DMS:
@@ -85,7 +85,7 @@ namespace DX
 
         case D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY:
             dsvDesc.Texture2DMSArray.FirstArraySlice = desc.m_firstArray;
-            dsvDesc.Texture2DMSArray.ArraySize = desc.m_arraySize;
+            dsvDesc.Texture2DMSArray.ArraySize = desc.m_arrayCount;
             break;
 
         case D3D11_DSV_DIMENSION_UNKNOWN:

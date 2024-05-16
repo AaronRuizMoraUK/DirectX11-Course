@@ -22,23 +22,23 @@ namespace DX
             break;
         
         case TextureVariant::Texture1D:
-            srvDimension = (desc.m_arraySize > 0) ? D3D11_SRV_DIMENSION_TEXTURE1DARRAY : D3D11_SRV_DIMENSION_TEXTURE1D;
+            srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE1DARRAY : D3D11_SRV_DIMENSION_TEXTURE1D;
             break;
         
         case TextureVariant::Texture2D:
             if (desc.m_sampleCount > 1)
             {
-                srvDimension = (desc.m_arraySize > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D11_SRV_DIMENSION_TEXTURE2DMS;
+                srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D11_SRV_DIMENSION_TEXTURE2DMS;
             }
             else
             {
-                srvDimension = (desc.m_arraySize > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
+                srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
             }
             break;
 
         case TextureVariant::TextureCube:
-            DX_ASSERT(desc.m_arraySize % 6 == 0, "ShaderResourceView", "Texture array size for TextureCube is not multiples of 6: %d" , desc.m_arraySize);
-            srvDimension = (desc.m_arraySize > 6) ? D3D11_SRV_DIMENSION_TEXTURECUBEARRAY : D3D11_SRV_DIMENSION_TEXTURECUBE;
+            DX_ASSERT(desc.m_arrayCount % 6 == 0, "ShaderResourceView", "Texture array size for TextureCube is not multiples of 6: %d" , desc.m_arrayCount);
+            srvDimension = (desc.m_arrayCount > 6) ? D3D11_SRV_DIMENSION_TEXTURECUBEARRAY : D3D11_SRV_DIMENSION_TEXTURECUBE;
             break;
         
         case TextureVariant::Texture3D:
@@ -71,7 +71,7 @@ namespace DX
             srvDesc.Texture1DArray.MostDetailedMip = desc.m_firstMip;
             srvDesc.Texture1DArray.MipLevels = desc.m_mipSize;
             srvDesc.Texture1DArray.FirstArraySlice = desc.m_firstArray;
-            srvDesc.Texture1DArray.ArraySize = desc.m_arraySize;
+            srvDesc.Texture1DArray.ArraySize = desc.m_arrayCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE2D:
@@ -83,7 +83,7 @@ namespace DX
             srvDesc.Texture2DArray.MostDetailedMip = desc.m_firstMip;
             srvDesc.Texture2DArray.MipLevels = desc.m_mipSize;
             srvDesc.Texture2DArray.FirstArraySlice = desc.m_firstArray;
-            srvDesc.Texture2DArray.ArraySize = desc.m_arraySize;
+            srvDesc.Texture2DArray.ArraySize = desc.m_arrayCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE2DMS:
@@ -92,7 +92,7 @@ namespace DX
         
         case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY:
             srvDesc.Texture2DMSArray.FirstArraySlice = desc.m_firstArray;
-            srvDesc.Texture2DMSArray.ArraySize = desc.m_arraySize;
+            srvDesc.Texture2DMSArray.ArraySize = desc.m_arrayCount;
             break;
 
         case D3D11_SRV_DIMENSION_TEXTURECUBE:
@@ -104,7 +104,7 @@ namespace DX
             srvDesc.TextureCubeArray.MostDetailedMip = desc.m_firstMip;
             srvDesc.TextureCubeArray.MipLevels = desc.m_mipSize;
             srvDesc.TextureCubeArray.First2DArrayFace = desc.m_firstArray;
-            srvDesc.TextureCubeArray.NumCubes = desc.m_arraySize;
+            srvDesc.TextureCubeArray.NumCubes = desc.m_arrayCount;
             break;
         
         case D3D11_SRV_DIMENSION_TEXTURE3D:

@@ -22,12 +22,12 @@ namespace DX
             break;
 
         case TextureVariant::Texture1D:
-            uavDimension = (desc.m_arraySize > 0) ? D3D11_UAV_DIMENSION_TEXTURE1DARRAY : D3D11_UAV_DIMENSION_TEXTURE1D;
+            uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE1DARRAY : D3D11_UAV_DIMENSION_TEXTURE1D;
             break;
 
         case TextureVariant::Texture2D:
         case TextureVariant::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
-            uavDimension = (desc.m_arraySize > 0) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
+            uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
             break;
 
         case TextureVariant::Texture3D:
@@ -58,7 +58,7 @@ namespace DX
         case D3D11_UAV_DIMENSION_TEXTURE1DARRAY:
             uavDesc.Texture1DArray.MipSlice = desc.m_firstMip;
             uavDesc.Texture1DArray.FirstArraySlice = desc.m_firstArray;
-            uavDesc.Texture1DArray.ArraySize = desc.m_arraySize;
+            uavDesc.Texture1DArray.ArraySize = desc.m_arrayCount;
             break;
         
         case D3D11_UAV_DIMENSION_TEXTURE2D:
@@ -68,7 +68,7 @@ namespace DX
         case D3D11_UAV_DIMENSION_TEXTURE2DARRAY:
             uavDesc.Texture2DArray.MipSlice = desc.m_firstMip;
             uavDesc.Texture2DArray.FirstArraySlice = desc.m_firstArray;
-            uavDesc.Texture2DArray.ArraySize = desc.m_arraySize;
+            uavDesc.Texture2DArray.ArraySize = desc.m_arrayCount;
             break;
         
         case D3D11_UAV_DIMENSION_TEXTURE3D:

@@ -37,8 +37,8 @@ namespace DX
     struct TextureDesc
     {
         TextureVariant m_variant;
-        mathfu::Vector3Int m_size; // Dimensions of the texture.
-        uint32_t m_mipLevels; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
+        mathfu::Vector3Int m_dimensions;
+        uint32_t m_mipCount; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
         ResourceFormat m_format;
         ResourceUsage m_usage;
         TextureBindFlag m_bindFlag;
@@ -46,7 +46,7 @@ namespace DX
 
         // With Texture1D, Texture2D: 0 to not be a texture array, > 0 to be an array. Avoid using 1 as it'll expect a texture array of size 1.
         // With TextureCube: 6 to not be a texture array, multiples of 6 to be an array.
-        uint32_t m_arraySize;
+        uint32_t m_arrayCount;
 
         // Texture2D only. The default sampler mode, with no multisampling, has a count of 1 and a quality level of 0.
         uint32_t m_sampleCount; // Texture2D only

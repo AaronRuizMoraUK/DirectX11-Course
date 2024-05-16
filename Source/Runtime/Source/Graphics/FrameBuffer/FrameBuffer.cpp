@@ -21,13 +21,13 @@ namespace DX
 
             TextureDesc depthStencilTextureDesc = {};
             depthStencilTextureDesc.m_variant = TextureVariant::Texture2D;
-            depthStencilTextureDesc.m_size = colorTextureDesc.m_size;
-            depthStencilTextureDesc.m_mipLevels = colorTextureDesc.m_mipLevels;
+            depthStencilTextureDesc.m_dimensions = colorTextureDesc.m_dimensions;
+            depthStencilTextureDesc.m_mipCount = colorTextureDesc.m_mipCount;
             depthStencilTextureDesc.m_format = ResourceFormat::D24_UNORM_S8_UINT;
             depthStencilTextureDesc.m_usage = ResourceUsage::Default;
             depthStencilTextureDesc.m_bindFlag = TextureBind_DepthStencil;
             depthStencilTextureDesc.m_cpuAccess = ResourceCPUAccess::None;
-            depthStencilTextureDesc.m_arraySize = colorTextureDesc.m_arraySize;
+            depthStencilTextureDesc.m_arrayCount = colorTextureDesc.m_arrayCount;
             depthStencilTextureDesc.m_sampleCount = colorTextureDesc.m_sampleCount;
             depthStencilTextureDesc.m_sampleQuality = colorTextureDesc.m_sampleQuality;
 
@@ -45,7 +45,7 @@ namespace DX
             rtvDesc.m_viewFormat = m_colorTexture->GetTextureDesc().m_format;
             rtvDesc.m_firstMip =0;
             rtvDesc.m_firstArray = 0;
-            rtvDesc.m_arraySize = m_colorTexture->GetTextureDesc().m_arraySize;
+            rtvDesc.m_arrayCount = m_colorTexture->GetTextureDesc().m_arrayCount;
             rtvDesc.m_firstDepth = 0;
             rtvDesc.m_depthSize = -1;
 
@@ -59,7 +59,7 @@ namespace DX
             dsvDesc.m_viewFormat = m_depthStencilTexture->GetTextureDesc().m_format;
             dsvDesc.m_firstMip = 0;
             dsvDesc.m_firstArray = 0;
-            dsvDesc.m_arraySize = m_depthStencilTexture->GetTextureDesc().m_arraySize;
+            dsvDesc.m_arrayCount = m_depthStencilTexture->GetTextureDesc().m_arrayCount;
 
             m_depthStencilView = m_ownerDevice->CreateDepthStencilView(dsvDesc);
         }
