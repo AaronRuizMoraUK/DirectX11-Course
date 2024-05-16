@@ -18,7 +18,7 @@ namespace DX
         bufferDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
         bufferDesc.MiscFlags = 0;
-        bufferDesc.StructureByteStride = 0;
+        bufferDesc.StructureByteStride = 0; // TODO
 
         D3D11_SUBRESOURCE_DATA subresourceData = {};
         subresourceData.pSysMem = desc.m_initialData;
@@ -27,7 +27,7 @@ namespace DX
 
         auto result = m_ownerDevice->GetDX11Device()->CreateBuffer(
             &bufferDesc,
-            &subresourceData,
+            (desc.m_initialData) ?  &subresourceData : nullptr,
             m_dx11Buffer.GetAddressOf());
 
         if (FAILED(result))
