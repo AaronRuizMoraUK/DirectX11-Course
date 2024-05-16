@@ -52,9 +52,9 @@ namespace DX
         uint32_t m_sampleCount; // Texture2D only
         uint32_t m_sampleQuality; // Texture2D only
 
-        // When true the native resource is passed in m_data
-        // When false the data is copied into the native texture.
-        bool m_dataIsNativeResource;
-        void* m_data;
+        // When true the native resource is passed in the initial data.
+        // When false the initial data is copied into the native texture.
+        bool m_initialDataIsNativeResource;
+        void* m_initialData;
     };
 } // namespace DX

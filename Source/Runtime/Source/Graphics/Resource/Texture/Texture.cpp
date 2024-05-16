@@ -29,15 +29,15 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
-        if (desc.m_dataIsNativeResource)
+        if (desc.m_initialDataIsNativeResource)
         {
-            if (!desc.m_data)
+            if (!desc.m_initialData)
             {
                 DX_LOG(Fatal, "Texture", "Texture description with invalid data.");
                 return;
             }
 
-            m_dx11Texture = static_cast<ID3D11Resource*>(desc.m_data);
+            m_dx11Texture = static_cast<ID3D11Resource*>(desc.m_initialData);
         }
         else if (desc.m_variant == TextureVariant::Texture1D)
         {
@@ -52,14 +52,14 @@ namespace DX
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
-            if (desc.m_data)
+            if (desc.m_initialData)
             {
                 uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
                 uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(desc.m_data);
+                std::byte* head = static_cast<std::byte*>(desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
@@ -113,14 +113,14 @@ namespace DX
             textureDesc.MiscFlags = (desc.m_variant == TextureVariant::TextureCube) ? D3D11_RESOURCE_MISC_TEXTURECUBE : 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
-            if (desc.m_data)
+            if (desc.m_initialData)
             {
                 uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
                 uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(desc.m_data);
+                std::byte* head = static_cast<std::byte*>(desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
@@ -167,14 +167,14 @@ namespace DX
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
-            if (desc.m_data)
+            if (desc.m_initialData)
             {
                 uint32_t mipLevels = std::max<uint32_t>(desc.m_mipLevels, 1);
                 uint32_t arraySize = std::max<uint32_t>(desc.m_arraySize, 1);
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(desc.m_data);
+                std::byte* head = static_cast<std::byte*>(desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)

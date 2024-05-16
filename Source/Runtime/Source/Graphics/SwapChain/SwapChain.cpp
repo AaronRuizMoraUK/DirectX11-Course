@@ -80,8 +80,8 @@ namespace DX
             backBufferTextureDesc.m_arraySize = dx11BackBufferDesc.ArraySize;
             backBufferTextureDesc.m_sampleCount = dx11BackBufferDesc.SampleDesc.Count;
             backBufferTextureDesc.m_sampleQuality = dx11BackBufferDesc.SampleDesc.Quality;
-            backBufferTextureDesc.m_dataIsNativeResource = true;
-            backBufferTextureDesc.m_data = dx11BackBuffer.Get();
+            backBufferTextureDesc.m_initialDataIsNativeResource = true;
+            backBufferTextureDesc.m_initialData = dx11BackBuffer.Get();
 
             m_backBufferTexture = m_ownerDevice->CreateTexture(backBufferTextureDesc);
         }

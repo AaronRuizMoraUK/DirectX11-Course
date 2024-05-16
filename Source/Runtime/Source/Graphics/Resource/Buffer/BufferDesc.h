@@ -35,6 +35,6 @@ namespace DX
         BufferBindFlag m_bindFlag;
         ResourceCPUAccess m_cpuAccess;
 
-        void* m_data;
+        void* m_initialData;
     };
 } // namespace DX
