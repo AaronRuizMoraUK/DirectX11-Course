@@ -52,7 +52,7 @@ namespace DX
     static D3D11_RENDER_TARGET_VIEW_DESC ToDX11RenderTargetViewDesc(const Texture& texture, const RenderTargetViewDesc& desc)
     {
         D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-        rtvDesc.Format = ToDX11ResourceFormat(texture.GetTextureDesc().m_format);
+        rtvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         rtvDesc.ViewDimension = ToDX11RenderTargetViewDimension(texture);
 
         // View boundaries to the texture
@@ -105,7 +105,7 @@ namespace DX
     static D3D11_RENDER_TARGET_VIEW_DESC ToDX11RenderTargetViewDesc(const Buffer& buffer, const RenderTargetViewDesc& desc)
     {
         D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-        rtvDesc.Format = ToDX11ResourceFormat(buffer.GetBufferDesc().m_format);
+        rtvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;
 
         // View boundaries to the buffer

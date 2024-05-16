@@ -56,7 +56,7 @@ namespace DX
     static D3D11_SHADER_RESOURCE_VIEW_DESC ToDX11ShaderResourceViewDesc(const Texture& texture, const ShaderResourceViewDesc& desc)
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = ToDX11ResourceFormat(texture.GetTextureDesc().m_format);
+        srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         srvDesc.ViewDimension = ToDX11ShaderResourceViewDimension(texture);
 
         // View boundaries to the texture
@@ -124,7 +124,7 @@ namespace DX
     static D3D11_SHADER_RESOURCE_VIEW_DESC ToDX11ShaderResourceViewDesc(const Buffer& buffer, const ShaderResourceViewDesc& desc)
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = ToDX11ResourceFormat(buffer.GetBufferDesc().m_format);
+        srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
         
         // View boundaries to the buffer

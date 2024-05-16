@@ -42,6 +42,7 @@ namespace DX
         {
             RenderTargetViewDesc rtvDesc = {};
             rtvDesc.m_resource = m_colorTexture;
+            rtvDesc.m_viewFormat = m_colorTexture->GetTextureDesc().m_format;
             rtvDesc.m_firstMip =0;
             rtvDesc.m_firstArray = 0;
             rtvDesc.m_arraySize = m_colorTexture->GetTextureDesc().m_arraySize;
@@ -55,6 +56,7 @@ namespace DX
         {
             DepthStencilViewDesc dsvDesc = {};
             dsvDesc.m_texture = m_depthStencilTexture;
+            dsvDesc.m_viewFormat = m_depthStencilTexture->GetTextureDesc().m_format;
             dsvDesc.m_firstMip = 0;
             dsvDesc.m_firstArray = 0;
             dsvDesc.m_arraySize = m_depthStencilTexture->GetTextureDesc().m_arraySize;

@@ -53,7 +53,7 @@ namespace DX
     static D3D11_DEPTH_STENCIL_VIEW_DESC ToDX11DepthStencilViewDesc(const Texture& texture, const DepthStencilViewDesc& desc)
     {
         D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = ToDX11ResourceFormat(texture.GetTextureDesc().m_format);
+        dsvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         dsvDesc.ViewDimension = ToDX11DepthStencilViewDimension(texture);
 
         // View boundaries to the texture

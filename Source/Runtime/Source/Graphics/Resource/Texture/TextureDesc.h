@@ -17,8 +17,15 @@ namespace DX
         Count
     };
 
-    // Allows bitwise operations on TextureBindFlag
-    // Texture format set inside the resource and the views, they must be compatible.
+    //------------------------------------------------------------------------
+    // Texture Format
+    // 
+    // Texture format is set explicitly inside the resource.
+    // All its usages are views where the format must is specified too.
+    // The texture format and the view format must be compatible.
+    //------------------------------------------------------------------------
+
+    // Bitwise operations on ResourceBindFlag are allowed.
     enum TextureBindFlag
     {
         TextureBind_ShaderResource = 1 << 0,

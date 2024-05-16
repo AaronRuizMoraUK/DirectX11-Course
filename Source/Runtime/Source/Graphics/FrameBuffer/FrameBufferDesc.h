@@ -1,12 +1,9 @@
 #pragma once
 
-#include <Graphics/Resource/ResourceFlags.h>
-
 #include <memory>
 
 namespace DX
 {
-    class SwapChain;
     class Texture;
 
     struct FrameBufferDesc

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Graphics/Resource/ResourceFlags.h>
+
 #include <variant>
 #include <memory>
 
@@ -13,6 +15,12 @@ namespace DX
     {
         using Resource = std::variant<std::shared_ptr<Texture>, std::shared_ptr<Buffer>>;
         Resource m_resource;
+
+        // Format used by the view to read the resource.
+        // Needs to be compatible with resource's underneath format,
+        // explicitly set in textures and implicit in case of buffers.
+        // For more details see TextureDesc.h and BufferDesc.h files.
+        ResourceFormat m_viewFormat;
 
         // Only for textures
         uint32_t m_firstMip; // Index of the first mipmap level to use.

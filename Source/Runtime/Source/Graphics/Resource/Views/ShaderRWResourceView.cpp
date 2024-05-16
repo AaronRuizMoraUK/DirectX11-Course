@@ -45,7 +45,7 @@ namespace DX
     static D3D11_UNORDERED_ACCESS_VIEW_DESC ToDX11UnorderedAccessViewDesc(const Texture& texture, const ShaderRWResourceViewDesc& desc)
     {
         D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-        uavDesc.Format = ToDX11ResourceFormat(texture.GetTextureDesc().m_format);
+        uavDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         uavDesc.ViewDimension = ToDX11UnorderedAccessViewDimension(texture);
 
         // View boundaries to the texture
@@ -89,7 +89,7 @@ namespace DX
     static D3D11_UNORDERED_ACCESS_VIEW_DESC ToDX11UnorderedAccessViewDesc(const Buffer& buffer, const ShaderRWResourceViewDesc& desc)
     {
         D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-        uavDesc.Format = ToDX11ResourceFormat(buffer.GetBufferDesc().m_format);
+        uavDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 
         // View boundaries to the buffer

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Graphics/Resource/ResourceFlags.h>
+
 #include <memory>
 
 namespace DX
@@ -10,6 +12,11 @@ namespace DX
     struct DepthStencilViewDesc
     {
         std::shared_ptr<Texture> m_texture;
+
+        // Format used by the view to read the resource.
+        // Needs to be compatible with texture's format.
+        // For more details see TextureDesc.h file.
+        ResourceFormat m_viewFormat;
 
         // Index of the first mipmap level to use.
         uint32_t m_firstMip;
