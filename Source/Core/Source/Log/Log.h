@@ -4,6 +4,7 @@
 // Usage:
 //
 // DX_LOG(Info, "Title", "My message %d", 123);
+// DX_LOG(Verbose, "Title", "My message %d", 123);
 // DX_LOG(Warning, "Title", "My message %d", 123);
 // DX_LOG(Error, "Title", "My message %d", 123);
 // DX_LOG(Fatal, "Title", "My message %d", 123);

@@ -8,7 +8,7 @@
 
 namespace DX
 {
-    static const char* GetTextureDimStr(TextureType textureType)
+    static const char* TextureDimStr(TextureType textureType)
     {
         switch (textureType)
         {
@@ -151,7 +151,7 @@ namespace DX
 
             if (FAILED(result))
             {
-                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", GetTextureDimStr(desc.m_textureType));
+                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", TextureDimStr(desc.m_textureType));
                 return;
             }
 
@@ -219,7 +219,7 @@ namespace DX
         }
 
         DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array created.",
-            GetTextureDimStr(desc.m_textureType), desc.m_dimensions.x, desc.m_dimensions.y, desc.m_dimensions.z, desc.m_mipCount, desc.m_arrayCount);
+            TextureDimStr(desc.m_textureType), desc.m_dimensions.x, desc.m_dimensions.y, desc.m_dimensions.z, desc.m_mipCount, desc.m_arrayCount);
     }
 
     Texture::~Texture()
@@ -227,7 +227,7 @@ namespace DX
         if (m_dx11Texture)
         {
             DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array destroyed.",
-                GetTextureDimStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
+                TextureDimStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
         }
     }
 

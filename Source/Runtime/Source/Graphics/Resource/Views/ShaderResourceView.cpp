@@ -128,6 +128,10 @@ namespace DX
 
         switch (buffer.GetBufferDesc().m_bufferType)
         {
+        case BufferType::None:
+            DX_LOG(Error, "ShaderResourceView", "Unexpected Buffer type None for Shader Resource View.");
+            break;
+
         case BufferType::Typed:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 
@@ -154,7 +158,6 @@ namespace DX
             srvDesc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
             break;
 
-        case BufferType::Unknown:
         default:
             DX_LOG(Error, "ShaderResourceView", "Unknown buffer type %d", buffer.GetBufferDesc().m_bufferType);
             break;

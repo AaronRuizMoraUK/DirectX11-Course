@@ -88,6 +88,11 @@ namespace DX
 
     static D3D11_UNORDERED_ACCESS_VIEW_DESC ToDX11UnorderedAccessViewDesc(const Buffer& buffer, const ShaderRWResourceViewDesc& desc)
     {
+        if (buffer.GetBufferDesc().m_bufferType == BufferType::None)
+        {
+            DX_LOG(Error, "ShaderRWResourceView", "Unexpected Buffer type None for Shader RW Resource View.");
+        }
+
         D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
         uavDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;

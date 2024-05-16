@@ -104,6 +104,11 @@ namespace DX
 
     static D3D11_RENDER_TARGET_VIEW_DESC ToDX11RenderTargetViewDesc(const Buffer& buffer, const RenderTargetViewDesc& desc)
     {
+        if (buffer.GetBufferDesc().m_bufferType == BufferType::None)
+        {
+            DX_LOG(Error, "RenderTargetView", "Unexpected Buffer type None for Render Target View.");
+        }
+
         D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
         rtvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
         rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_BUFFER;

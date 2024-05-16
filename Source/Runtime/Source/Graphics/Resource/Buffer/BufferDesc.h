@@ -32,8 +32,7 @@ namespace DX
     // Type of buffer when used in a shader or render target.
     enum class BufferType
     {
-        Unknown,
-
+        None = 0, // Not a buffer for a shader or render target.
         Typed, // Buffer where each element is a basic types: float, int or unsigned int
         Structured, // Buffer where each element is a struct
         Raw, // Buffer where each element is a byte
