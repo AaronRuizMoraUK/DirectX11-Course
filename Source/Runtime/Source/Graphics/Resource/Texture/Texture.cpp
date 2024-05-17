@@ -29,6 +29,18 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
+        if (desc.m_bindFlags == 0)
+        {
+            DX_LOG(Fatal, "Texture", "Texture description with no texture bind flag set.");
+            return;
+        }
+
+        if (desc.m_arrayCount == 0)
+        {
+            DX_LOG(Fatal, "Texture", "Texture description with array count 0. Array count needs to be > 1.");
+            return;
+        }
+
         if (desc.m_initialDataIsNativeResource)
         {
             if (!desc.m_initialData)
@@ -47,15 +59,15 @@ namespace DX
             textureDesc.ArraySize = desc.m_arrayCount;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
-            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.BindFlags = ToDX11TextureBindFlags(desc.m_bindFlags);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
+                const uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                const uint32_t arraySize = desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);
 
@@ -108,7 +120,7 @@ namespace DX
             textureDesc.SampleDesc.Count = desc.m_sampleCount;
             textureDesc.SampleDesc.Quality = desc.m_sampleQuality;
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
-            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.BindFlags = ToDX11TextureBindFlags(desc.m_bindFlags);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
             if (desc.m_textureType == TextureType::TextureCube)
@@ -119,8 +131,8 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
+                const uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                const uint32_t arraySize = desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);
 
@@ -166,15 +178,15 @@ namespace DX
             textureDesc.MipLevels = desc.m_mipCount;
             textureDesc.Format = ToDX11ResourceFormat(desc.m_format);
             textureDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
-            textureDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+            textureDesc.BindFlags = ToDX11TextureBindFlags(desc.m_bindFlags);
             textureDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
             textureDesc.MiscFlags = 0;
 
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (desc.m_initialData)
             {
-                uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
-                uint32_t arraySize = std::max<uint32_t>(desc.m_arrayCount, 1);
+                const uint32_t mipLevels = std::max<uint32_t>(desc.m_mipCount, 1);
+                const uint32_t arraySize = desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);
 

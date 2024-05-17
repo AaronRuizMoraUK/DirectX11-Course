@@ -21,7 +21,7 @@ namespace DX
         // Index of the first mipmap level to use.
         uint32_t m_firstMip;
 
-        // Only for textures 1D, 2D and Cube with array > 0
+        // Only for textures 1D, 2D and Cube with array > 1
         uint32_t m_firstArray; // Index of the first texture to use in an array of textures.
         uint32_t m_arrayCount; // Number of arrays in the textures to use, starting from m_firstArray.
     };

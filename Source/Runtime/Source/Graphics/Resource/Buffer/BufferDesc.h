@@ -17,6 +17,17 @@ namespace DX
     // - As StreamOutput: format is always 32-bit values coming from the output declarations of the shader stages.
     //------------------------------------------------------------------------
 
+    // Type of buffer when used in a shader or render target.
+    enum class BufferType
+    {
+        None = 0, // Not a buffer for a shader or render target.
+        Typed, // Buffer where each element is a basic types: float, int or unsigned int
+        Structured, // Buffer where each element is a struct
+        Raw, // Buffer where each element is a byte
+
+        Total
+    };
+
     // Bitwise operations on ResourceBindFlag are allowed.
     enum BufferBindFlag
     {
@@ -29,29 +40,25 @@ namespace DX
         BufferBind_StreamOutput = 1 << 6,
     };
 
-    // Type of buffer when used in a shader or render target.
-    enum class BufferType
+    namespace Internal
     {
-        None = 0, // Not a buffer for a shader or render target.
-        Typed, // Buffer where each element is a basic types: float, int or unsigned int
-        Structured, // Buffer where each element is a struct
-        Raw, // Buffer where each element is a byte
-
-        Total
-    };
+        template<typename Tag>
+        using BufferBindFlagsType = uint32_t;
+    }
+    using BufferBindFlags = Internal::BufferBindFlagsType<struct BufferBindFlagsTag>;
 
     struct BufferDesc
     {
-        uint32_t m_sizeInBytes;
-        ResourceUsage m_usage;
-        BufferBindFlag m_bindFlag;
-        ResourceCPUAccess m_cpuAccess;
-
-        // Only relevant when using one of the following binding options:
+        // Type needs to be different than None when using the following bindings:
         // - BufferBind_ShaderResource
         // - BufferBind_ShaderRWResource
         // - BufferBind_RenderTarget
         BufferType m_bufferType;
+
+        uint32_t m_sizeInBytes;
+        ResourceUsage m_usage;
+        BufferBindFlags m_bindFlags; // Bitwise operation of BufferBindFlag
+        ResourceCPUAccess m_cpuAccess;
 
         // Only when using Structured buffer type. This is the size of the struct.
         uint32_t m_structSizeInBytes;

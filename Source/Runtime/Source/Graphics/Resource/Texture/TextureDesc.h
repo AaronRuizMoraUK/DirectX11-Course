@@ -25,7 +25,6 @@ namespace DX
     // The texture format and the view format must be compatible.
     //------------------------------------------------------------------------
 
-    // Bitwise operations on ResourceBindFlag are allowed.
     enum TextureBindFlag
     {
         TextureBind_ShaderResource = 1 << 0,
@@ -34,6 +33,14 @@ namespace DX
         TextureBind_DepthStencil = 1 << 3,
     };
 
+    namespace Internal
+    {
+        template<typename Tag>
+        using TextureBindFlagsType = uint32_t;
+    }
+    using TextureBindFlags = Internal::TextureBindFlagsType<struct TextureBindFlagsTag>;
+
+
     struct TextureDesc
     {
         TextureType m_textureType;
@@ -41,10 +48,10 @@ namespace DX
         uint32_t m_mipCount; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
         ResourceFormat m_format;
         ResourceUsage m_usage;
-        TextureBindFlag m_bindFlag;
+        TextureBindFlags m_bindFlags; // Bitwise operation of TextureBindFlag
         ResourceCPUAccess m_cpuAccess;
 
-        // With Texture1D, Texture2D: 0 to not be a texture array, > 0 to be an array. Avoid using 1 as it'll expect a texture array of size 1.
+        // With Texture1D, Texture2D: 1 to not be a texture array, > 1 to be an array.
         // With TextureCube: 6 to not be a texture array, multiples of 6 to be an array.
         uint32_t m_arrayCount;
 

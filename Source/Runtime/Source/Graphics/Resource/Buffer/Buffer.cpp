@@ -12,8 +12,25 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
+        if (desc.m_bindFlags == 0)
+        {
+            DX_LOG(Fatal, "Buffer", "Buffer description with no texture bind flag set.");
+            return;
+        }
+
+        if ((desc.m_bindFlags & BufferBind_ShaderResource) ||
+            (desc.m_bindFlags & BufferBind_ShaderRWResource) ||
+            (desc.m_bindFlags & BufferBind_RenderTarget))
+        {
+            if (desc.m_bufferType == BufferType::None)
+            {
+                DX_LOG(Fatal, "Buffer", "Buffer description with binding flags ShaderResource, ShaderRWResource or RenderTarget cannot have type None.");
+                return;
+            }
+        }
+
         // NOTE: In DirectX 12 this was increased to multiples of 256 bytes, equivalent to 4 matrices.
-        if ((desc.m_bindFlag & BufferBind_ConstantBuffer) &&
+        if ((desc.m_bindFlags & BufferBind_ConstantBuffer) &&
             desc.m_sizeInBytes % 16 != 0)
         {
             DX_LOG(Fatal, "Buffer", "Failed to create buffer. Constant buffers size must be multiples of 16, but passed %d.", desc.m_sizeInBytes);
@@ -23,7 +40,7 @@ namespace DX
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.ByteWidth = desc.m_sizeInBytes;
         bufferDesc.Usage = ToDX11ResourceUsage(desc.m_usage);
-        bufferDesc.BindFlags = ToDX11ResourceBindFlag(desc.m_bindFlag);
+        bufferDesc.BindFlags = ToDX11BufferBindFlags(desc.m_bindFlags);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(desc.m_cpuAccess);
         bufferDesc.MiscFlags = 0;
         switch (desc.m_bufferType)

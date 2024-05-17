@@ -21,18 +21,18 @@ namespace DX
             break;
 
         case TextureType::Texture1D:
-            dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE1DARRAY : D3D11_DSV_DIMENSION_TEXTURE1D;
+            dsvDimension = (desc.m_arrayCount > 1) ? D3D11_DSV_DIMENSION_TEXTURE1DARRAY : D3D11_DSV_DIMENSION_TEXTURE1D;
             break;
 
         case TextureType::Texture2D:
         case TextureType::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             if (desc.m_sampleCount > 1)
             {
-                dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D11_DSV_DIMENSION_TEXTURE2DMS;
+                dsvDimension = (desc.m_arrayCount > 1) ? D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D11_DSV_DIMENSION_TEXTURE2DMS;
             }
             else
             {
-                dsvDimension = (desc.m_arrayCount > 0) ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
+                dsvDimension = (desc.m_arrayCount > 1) ? D3D11_DSV_DIMENSION_TEXTURE2DARRAY : D3D11_DSV_DIMENSION_TEXTURE2D;
             }
             break;
 

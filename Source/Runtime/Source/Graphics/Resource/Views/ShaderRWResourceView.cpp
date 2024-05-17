@@ -22,12 +22,12 @@ namespace DX
             break;
 
         case TextureType::Texture1D:
-            uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE1DARRAY : D3D11_UAV_DIMENSION_TEXTURE1D;
+            uavDimension = (desc.m_arrayCount > 1) ? D3D11_UAV_DIMENSION_TEXTURE1DARRAY : D3D11_UAV_DIMENSION_TEXTURE1D;
             break;
 
         case TextureType::Texture2D:
         case TextureType::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
-            uavDimension = (desc.m_arrayCount > 0) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
+            uavDimension = (desc.m_arrayCount > 1) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
             break;
 
         case TextureType::Texture3D:
@@ -99,7 +99,7 @@ namespace DX
 
         // View boundaries to the buffer
         uavDesc.Buffer.FirstElement = desc.m_firstElement;
-        uavDesc.Buffer.NumElements = desc.m_numElements;
+        uavDesc.Buffer.NumElements = desc.m_elementCount;
         uavDesc.Buffer.Flags = 0;
         if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw)
         {

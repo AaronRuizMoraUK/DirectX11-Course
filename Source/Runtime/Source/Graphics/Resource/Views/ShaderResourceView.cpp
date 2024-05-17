@@ -22,17 +22,17 @@ namespace DX
             break;
         
         case TextureType::Texture1D:
-            srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE1DARRAY : D3D11_SRV_DIMENSION_TEXTURE1D;
+            srvDimension = (desc.m_arrayCount > 1) ? D3D11_SRV_DIMENSION_TEXTURE1DARRAY : D3D11_SRV_DIMENSION_TEXTURE1D;
             break;
         
         case TextureType::Texture2D:
             if (desc.m_sampleCount > 1)
             {
-                srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D11_SRV_DIMENSION_TEXTURE2DMS;
+                srvDimension = (desc.m_arrayCount > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY : D3D11_SRV_DIMENSION_TEXTURE2DMS;
             }
             else
             {
-                srvDimension = (desc.m_arrayCount > 0) ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
+                srvDimension = (desc.m_arrayCount > 1) ? D3D11_SRV_DIMENSION_TEXTURE2DARRAY : D3D11_SRV_DIMENSION_TEXTURE2D;
             }
             break;
 
@@ -137,7 +137,7 @@ namespace DX
 
             // View boundaries to the buffer
             srvDesc.Buffer.FirstElement = desc.m_firstElement;
-            srvDesc.Buffer.NumElements = desc.m_numElements;
+            srvDesc.Buffer.NumElements = desc.m_elementCount;
             break;
 
         case BufferType::Structured:
@@ -145,7 +145,7 @@ namespace DX
 
             // View boundaries to the buffer
             srvDesc.BufferEx.FirstElement = desc.m_firstElement;
-            srvDesc.BufferEx.NumElements = desc.m_numElements;
+            srvDesc.BufferEx.NumElements = desc.m_elementCount;
             srvDesc.BufferEx.Flags = 0;
             break;
 
@@ -154,7 +154,7 @@ namespace DX
 
             // View boundaries to the buffer
             srvDesc.BufferEx.FirstElement = desc.m_firstElement;
-            srvDesc.BufferEx.NumElements = desc.m_numElements;
+            srvDesc.BufferEx.NumElements = desc.m_elementCount;
             srvDesc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
             break;
 

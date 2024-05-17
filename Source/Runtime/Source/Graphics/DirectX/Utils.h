@@ -25,7 +25,7 @@ namespace DX
         }
     }
 
-    static uint32_t ToDX11ResourceBindFlag(TextureBindFlag bindFlag)
+    static uint32_t ToDX11TextureBindFlags(TextureBindFlags bindFlag)
     {
         uint32_t dx11BindFlags = 0;
 
@@ -37,7 +37,7 @@ namespace DX
         return dx11BindFlags;
     }
 
-    static uint32_t ToDX11ResourceBindFlag(BufferBindFlag bindFlag)
+    static uint32_t ToDX11BufferBindFlags(BufferBindFlags bindFlag)
     {
         uint32_t dx11BindFlags = 0;
 
