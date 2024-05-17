@@ -9,8 +9,6 @@ namespace DX
     {
         switch (format)
         {
-        case ResourceFormat::Unknown:                     return 0;
-
         case ResourceFormat::R32G32B32A32_TYPELESS:       return elementCount * 16;
         case ResourceFormat::R32G32B32A32_FLOAT:          return elementCount * 16;
         case ResourceFormat::R32G32B32A32_UINT:           return elementCount * 16;
@@ -96,22 +94,6 @@ namespace DX
         case ResourceFormat::R8G8_B8G8_UNORM:             return elementCount * 0;
         case ResourceFormat::G8R8_G8B8_UNORM:             return elementCount * 0;
 
-        case ResourceFormat::BC1_TYPELESS:                return elementCount * 8;
-        case ResourceFormat::BC1_UNORM:                   return elementCount * 8;
-        case ResourceFormat::BC1_UNORM_SRGB:              return elementCount * 8;
-        case ResourceFormat::BC2_TYPELESS:                return elementCount * 16;
-        case ResourceFormat::BC2_UNORM:                   return elementCount * 16;
-        case ResourceFormat::BC2_UNORM_SRGB:              return elementCount * 16;
-        case ResourceFormat::BC3_TYPELESS:                return elementCount * 16;
-        case ResourceFormat::BC3_UNORM:                   return elementCount * 16;
-        case ResourceFormat::BC3_UNORM_SRGB:              return elementCount * 16;
-        case ResourceFormat::BC4_TYPELESS:                return elementCount * 8;
-        case ResourceFormat::BC4_UNORM:                   return elementCount * 8;
-        case ResourceFormat::BC4_SNORM:                   return elementCount * 8;
-        case ResourceFormat::BC5_TYPELESS:                return elementCount * 16;
-        case ResourceFormat::BC5_UNORM:                   return elementCount * 16;
-        case ResourceFormat::BC5_SNORM:                   return elementCount * 16;
-
         case ResourceFormat::B5G6R5_UNORM:                return elementCount * 2;
         case ResourceFormat::B5G5R5A1_UNORM:              return elementCount * 2;
         case ResourceFormat::B8G8R8A8_UNORM:              return elementCount * 4;
@@ -122,16 +104,41 @@ namespace DX
         case ResourceFormat::B8G8R8X8_TYPELESS:           return elementCount * 4;
         case ResourceFormat::B8G8R8X8_UNORM_SRGB:         return elementCount * 4;
 
-        case ResourceFormat::BC6H_TYPELESS:               return elementCount * 16;
-        case ResourceFormat::BC6H_UF16:                   return elementCount * 16;
-        case ResourceFormat::BC6H_SF16:                   return elementCount * 16;
-        case ResourceFormat::BC7_TYPELESS:                return elementCount * 16;
-        case ResourceFormat::BC7_UNORM:                   return elementCount * 16;
-        case ResourceFormat::BC7_UNORM_SRGB:              return elementCount * 16;
+        default:
+            DX_LOG(Error, "ResourceFormat", "Unknown size for resource format %d", format);
+            return 0;
+        }
+    }
+
+    bool IsCompressedResourceFormat(ResourceFormat format)
+    {
+        switch (format)
+        {
+        case ResourceFormat::BC1_TYPELESS:
+        case ResourceFormat::BC1_UNORM:
+        case ResourceFormat::BC1_UNORM_SRGB:
+        case ResourceFormat::BC2_TYPELESS:
+        case ResourceFormat::BC2_UNORM:
+        case ResourceFormat::BC2_UNORM_SRGB:
+        case ResourceFormat::BC3_TYPELESS:
+        case ResourceFormat::BC3_UNORM:
+        case ResourceFormat::BC3_UNORM_SRGB:
+        case ResourceFormat::BC4_TYPELESS:
+        case ResourceFormat::BC4_UNORM:
+        case ResourceFormat::BC4_SNORM:
+        case ResourceFormat::BC5_TYPELESS:
+        case ResourceFormat::BC5_UNORM:
+        case ResourceFormat::BC5_SNORM:
+        case ResourceFormat::BC6H_TYPELESS:
+        case ResourceFormat::BC6H_UF16:
+        case ResourceFormat::BC6H_SF16:
+        case ResourceFormat::BC7_TYPELESS:
+        case ResourceFormat::BC7_UNORM:
+        case ResourceFormat::BC7_UNORM_SRGB:
+            return true;
 
         default:
-            DX_LOG(Error, "ResourceFormat", "Unknown resource format %d", format);
-            return 0;
+            return false;
         }
     }
 } // namespace DX

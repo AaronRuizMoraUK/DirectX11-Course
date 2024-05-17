@@ -163,4 +163,6 @@ namespace DX
     };
 
     int ResourceFormatSize(ResourceFormat format, int elementCount = 1);
+
+    bool IsCompressedResourceFormat(ResourceFormat format);
 } // namespace DX
