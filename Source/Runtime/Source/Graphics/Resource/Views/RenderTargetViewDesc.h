@@ -31,7 +31,7 @@ namespace DX
 
         // Only for 3D textures
         uint32_t m_firstDepth; // First depth level to use.
-        int m_depthCount; // Number of depth levels to use, starting from m_firstDepth. -1 for all depths starting from m_firstDepth.
+        uint32_t m_depthCount; // Number of depth levels to use, starting from m_firstDepth.
 
         // Only for Buffers.
         // Note it's the number of elements in the buffer, not bytes.
