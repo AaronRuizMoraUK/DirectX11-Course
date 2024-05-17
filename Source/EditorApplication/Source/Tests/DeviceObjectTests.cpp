@@ -219,8 +219,8 @@ namespace UnitTest
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Typed;
         bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(float);
-        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
-        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
+        bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource | DX::BufferBind_RenderTarget;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         bufferDesc.m_initialData = bufferData.data();
 
@@ -245,8 +245,8 @@ namespace UnitTest
         bufferRTVDesc.m_elementCount = bufferData.size();
 
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
-        //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
-        //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
+        auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
+        auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
     }
 
     void DeviceObjectTests::TestStructuredBuffer()
@@ -270,8 +270,8 @@ namespace UnitTest
         bufferDesc.m_bufferType = DX::BufferType::Structured;
         bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(MyBuffer);
         bufferDesc.m_structSizeInBytes = sizeof(MyBuffer);
-        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
-        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
+        bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         bufferDesc.m_initialData = bufferData.data();
 
@@ -296,8 +296,8 @@ namespace UnitTest
         bufferRTVDesc.m_elementCount = bufferData.size();
 
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
-        //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
-        //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
+        auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
+        // RenderTargetView is not supported for structured buffers
     }
 
     void DeviceObjectTests::TestRawBuffer()
@@ -320,8 +320,8 @@ namespace UnitTest
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Raw;
         bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(std::byte);
-        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
-        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
+        bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         bufferDesc.m_initialData = bufferData.data();
 
@@ -346,7 +346,7 @@ namespace UnitTest
         bufferRTVDesc.m_elementCount = bufferSize;
 
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
-        //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
-        //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
+        auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
+        // RenderTargetView is not supported for raw buffers
     }
 }
