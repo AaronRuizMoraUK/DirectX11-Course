@@ -40,12 +40,7 @@ namespace DX
         BufferBind_StreamOutput = 1 << 6,
     };
 
-    namespace Internal
-    {
-        template<typename Tag>
-        using BufferBindFlagsType = uint32_t;
-    }
-    using BufferBindFlags = Internal::BufferBindFlagsType<struct BufferBindFlagsTag>;
+    using BufferBindFlags = uint32_t;
 
     struct BufferDesc
     {

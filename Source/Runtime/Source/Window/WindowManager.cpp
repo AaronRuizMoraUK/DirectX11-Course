@@ -11,7 +11,7 @@ namespace DX
 {
     std::unique_ptr<WindowManager> WindowManager::Instance;
 
-    WindowId WindowManager::NextWindowId = 0;
+    WindowId WindowManager::NextWindowId = DefaultWindowId;
 
     WindowManager& WindowManager::Get()
     {
@@ -54,7 +54,8 @@ namespace DX
         }
 
         auto result = m_windows.emplace(NextWindowId, std::move(newWindow));
-        ++NextWindowId;
+
+        NextWindowId = WindowId(NextWindowId.GetValue() + 1);
 
         // Result's first is the iterator to the newly inserted element (pair),
         // its second is the value of the element (unique_ptr<Window>).
@@ -63,8 +64,11 @@ namespace DX
 
     void WindowManager::DestroyWindow(WindowId windowId)
     {
-        // Removing the window from the map will destroy it.
-        m_windows.erase(windowId);
+        if (windowId != DefaultWindowId)
+        {
+            // Removing the window from the map will destroy it.
+            m_windows.erase(windowId);
+        }
     }
 
     Window* WindowManager::GetWindow(WindowId windowId)

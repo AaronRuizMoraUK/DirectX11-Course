@@ -6,7 +6,7 @@ namespace DX
 {
     std::unique_ptr<DeviceManager> DeviceManager::Instance;
 
-    DeviceId DeviceManager::NextDeviceId = 0;
+    DeviceId DeviceManager::NextDeviceId = DefaultDeviceId;
 
     DeviceManager& DeviceManager::Get()
     {
@@ -38,22 +38,26 @@ namespace DX
     {
         auto newDevice = std::make_unique<Device>(NextDeviceId, desc);
         auto result = m_devices.emplace(NextDeviceId, std::move(newDevice));
-        ++NextDeviceId;
+
+        NextDeviceId = DeviceId(NextDeviceId.GetValue() + 1);
 
         // Result's first is the iterator to the newly inserted element (pair),
         // its second is the value of the element (unique_ptr<Device>).
         return result.first->second.get();
     }
 
-    void DeviceManager::DestroyDevice(DeviceId rendererId)
+    void DeviceManager::DestroyDevice(DeviceId deviceId)
     {
-        // Removing the devices from the map will destroy it.
-        m_devices.erase(rendererId);
+        if (deviceId != DefaultDeviceId)
+        {
+            // Removing the devices from the map will destroy it.
+            m_devices.erase(deviceId);
+        }
     }
 
-    Device* DeviceManager::GetDevice(DeviceId rendererId)
+    Device* DeviceManager::GetDevice(DeviceId deviceId)
     {
-        if (auto it = m_devices.find(rendererId);
+        if (auto it = m_devices.find(deviceId);
             it != m_devices.end())
         {
             return it->second.get();

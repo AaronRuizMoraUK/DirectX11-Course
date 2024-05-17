@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Graphics/Device/DeviceDesc.h>
+#include <GenericId/GenericId.h>
 
 #include <vector>
 #include <memory>
@@ -40,13 +41,7 @@ namespace DX
     struct ResourceLayoutDesc;
     struct CommandListDesc;
 
-    namespace Internal
-    {
-        template<typename Tag>
-        using DeviceIdType = uint32_t;
-    }
-    using DeviceId = Internal::DeviceIdType<struct DeviceIdTag>;
-    static const DeviceId InvalidDeviceId = 0xFFFFFFFF;
+    using DeviceId = GenericId<struct DeviceIdTag>;
 
     class Device
     {
@@ -84,7 +79,7 @@ namespace DX
     private:
         using DeviceObjects = std::vector<std::shared_ptr<DeviceObject>>;
 
-        const DeviceId m_deviceId = InvalidDeviceId;
+        const DeviceId m_deviceId;
         DeviceObjects m_deviceObjects;
         //std::shared_ptr<SwapChain> m_swapChain;
 

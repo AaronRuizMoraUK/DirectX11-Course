@@ -13,6 +13,10 @@ namespace DX
         static WindowManager& Get();
         static void Destroy();
 
+        // First window created will become the default one.
+        // Default window cannot be destroyed with DestroyWindow.
+        static inline const WindowId DefaultWindowId{ 1 };
+
         ~WindowManager();
 
         // Delete copy constructor and assignment operator to prevent copying
@@ -22,7 +26,7 @@ namespace DX
         Window* CreateWindowWithTitle(std::string title, const mathfu::Vector2Int& size, int refreshRate = 60, bool fullScreen = false, bool vSync = false);
         void DestroyWindow(WindowId windowId);
 
-        Window* GetWindow(WindowId windowId);
+        Window* GetWindow(WindowId windowId = DefaultWindowId);
 
         void PollEvents();
 

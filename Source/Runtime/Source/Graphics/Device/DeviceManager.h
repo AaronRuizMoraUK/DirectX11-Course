@@ -13,6 +13,10 @@ namespace DX
         static DeviceManager& Get();
         static void Destroy();
 
+        // First device created will become the default one.
+        // Default device cannot be destroyed with DestroyDevice.
+        static inline const DeviceId DefaultDeviceId{ 1 };
+
         ~DeviceManager();
 
         // Delete copy constructor and assignment operator to prevent copying
@@ -22,7 +26,7 @@ namespace DX
         Device* CreateDevice(const DeviceDesc& desc);
         void DestroyDevice(DeviceId rendererId);
 
-        Device* GetDevice(DeviceId rendererId);
+        Device* GetDevice(DeviceId rendererId = DefaultDeviceId);
 
     private:
         DeviceManager();

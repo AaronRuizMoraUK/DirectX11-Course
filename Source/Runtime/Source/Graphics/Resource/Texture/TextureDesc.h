@@ -33,13 +33,7 @@ namespace DX
         TextureBind_DepthStencil = 1 << 3,
     };
 
-    namespace Internal
-    {
-        template<typename Tag>
-        using TextureBindFlagsType = uint32_t;
-    }
-    using TextureBindFlags = Internal::TextureBindFlagsType<struct TextureBindFlagsTag>;
-
+    using TextureBindFlags = uint32_t;
 
     struct TextureDesc
     {

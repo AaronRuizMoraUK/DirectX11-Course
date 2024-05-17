@@ -44,7 +44,7 @@ namespace UnitTest
 
     void TestsDeviceObjects()
     {
-        DeviceObjectTests tests(DX::DeviceManager::Get().GetDevice(0));
+        DeviceObjectTests tests(DX::DeviceManager::Get().GetDevice());
 
         tests.TestShader();
         tests.TestSampler();

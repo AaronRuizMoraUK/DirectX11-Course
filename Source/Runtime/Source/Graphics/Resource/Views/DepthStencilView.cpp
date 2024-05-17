@@ -2,6 +2,7 @@
 
 #include <Graphics/Device/Device.h>
 #include <Graphics/Resource/Texture/Texture.h>
+#include <Log/Log.h>
 
 #include <d3d11.h>
 #include <Graphics/DirectX/Utils.h>

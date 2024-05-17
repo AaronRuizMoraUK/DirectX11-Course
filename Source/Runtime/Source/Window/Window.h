@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GenericId/GenericId.h>
 #include <Math/Vector2.h>
 
 #include <string>
@@ -9,13 +10,7 @@ typedef struct HWND__* HWND;
 
 namespace DX
 {
-    namespace Internal
-    {
-        template<typename Tag>
-        using WindowIdType = uint32_t;
-    }
-    using WindowId = Internal::WindowIdType<struct WindowIdTag>;
-    static const WindowId InvalidWindowId = 0xFFFFFFFF;
+    using WindowId = GenericId<struct WindowIdTag>;
 
     class Window
     {
@@ -46,7 +41,7 @@ namespace DX
         void PollEvents();
 
     private:
-        const WindowId m_windowId = InvalidWindowId;
+        const WindowId m_windowId;
         std::string m_title;
         mathfu::Vector2Int m_size;
         int m_refreshRate = 60;

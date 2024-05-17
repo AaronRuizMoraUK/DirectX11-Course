@@ -66,8 +66,8 @@ namespace DX
 
     void Camera::Update(float deltaTime)
     {
-        Window* window = WindowManager::Get().GetWindow(0);
-        DX_ASSERT(window, "Camera", "Window 0 not found");
+        Window* window = WindowManager::Get().GetWindow();
+        DX_ASSERT(window, "Camera", "Default window not found");
 
         auto* windowHandler = window->GetWindowHandler();
 
@@ -179,8 +179,8 @@ namespace DX
 
     mathfu::Matrix4x4 Camera::GetProjectionMatrix() const
     {
-        Window* window = WindowManager::Get().GetWindow(0);
-        DX_ASSERT(window, "Camera", "Window 0 not found");
+        Window* window = WindowManager::Get().GetWindow();
+        DX_ASSERT(window, "Camera", "Default window not found");
 
         const float fovY = 74.0f * mathfu::kDegreesToRadians;
         const float aspectRatio = static_cast<float>(window->GetSize().x) / static_cast<float>(window->GetSize().y);
