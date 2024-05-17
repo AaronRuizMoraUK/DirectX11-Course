@@ -1,40 +1,11 @@
 #pragma once
 
-#include <Math/Vector3.h>
+#include <Graphics/Resource/Texture/TextureFlags.h>
 #include <Graphics/Resource/ResourceFlags.h>
+#include <Math/Vector3.h>
 
 namespace DX
 {
-    enum class TextureType
-    {
-        Unknown = 0,
-
-        Texture1D,
-        Texture2D,
-        TextureCube, // A two dimensional texture array with 6 sub-resources
-        Texture3D,
-
-        Count
-    };
-
-    //------------------------------------------------------------------------
-    // Texture Format
-    // 
-    // Texture format is set explicitly inside the resource.
-    // All its usages are views where the format must is specified too.
-    // The texture format and the view format must be compatible.
-    //------------------------------------------------------------------------
-
-    enum TextureBindFlag
-    {
-        TextureBind_ShaderResource = 1 << 0,
-        TextureBind_ShaderRWResource = 1 << 1,
-        TextureBind_RenderTarget = 1 << 2,
-        TextureBind_DepthStencil = 1 << 3,
-    };
-
-    using TextureBindFlags = uint32_t;
-
     struct TextureDesc
     {
         TextureType m_textureType;

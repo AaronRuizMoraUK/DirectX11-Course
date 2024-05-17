@@ -1,24 +1,12 @@
 #pragma once
 
+#include <Graphics/Shader/ShaderFlags.h>
+
 #include <string>
 
 namespace DX
 {
     class ShaderBytecode;
-
-    enum class ShaderType
-    {
-        Unknown = 0,
-
-        Vertex,
-        Hull,
-        Domain,
-        Geometry,
-        Pixel,
-        Compute,
-
-        Count
-    };
 
     struct ShaderInfo
     {
