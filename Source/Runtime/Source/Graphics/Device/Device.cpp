@@ -28,11 +28,16 @@ namespace DX
     {
         const std::array<D3D_FEATURE_LEVEL, 1> featureLevels = { D3D_FEATURE_LEVEL_11_1 };
 
+        uint32_t flags = 0;
+#ifdef _DEBUG
+        flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
         auto result = D3D11CreateDevice(
             nullptr, // IDXIGAdapter
             D3D_DRIVER_TYPE_HARDWARE,
             nullptr, // Software
-            0, // Flags
+            flags,
             featureLevels.data(),
             featureLevels.size(),
             D3D11_SDK_VERSION,
