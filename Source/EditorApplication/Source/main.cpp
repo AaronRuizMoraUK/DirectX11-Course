@@ -8,26 +8,14 @@
 #include <Graphics/Device/DeviceManager.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
-#include <Graphics/Shader/Shader.h>
-#include <Graphics/Shader/ShaderCompiler.h>
-#include <Graphics/Sampler/Sampler.h>
-#include <Graphics/Resource/Texture/Texture.h>
-#include <Graphics/Resource/Buffer/Buffer.h>
-#include <Graphics/Resource/Views/RenderTargetView.h>
-#include <Graphics/Resource/Views/ShaderResourceView.h>
-#include <Graphics/Resource/Views/ShaderRWResourceView.h>
 #endif
 
 #include <Window/WindowManager.h>
 #include <Log/Log.h>
 #include <Math/Color.h>
-#include <Math/Vector2.h>
-#include <Math/Vector3.h>
-#include <File/FileUtils.h>
+#include <Tests/UnitTests.h>
 
-#include <array>
 #include <memory>
-#include <numeric>
 
 int main()
 {
@@ -86,7 +74,7 @@ int main()
         // ------
         // Render
         // ------
-        const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+        const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
         renderer->ClearColor(clearColor);
 
         renderer->SetPipeline();
@@ -123,73 +111,7 @@ int main()
         auto swapChain = device->CreateSwapChain({ window, 1, DX::ResourceFormat::R8G8B8A8_UNORM });
         auto frameBuffer = device->CreateFrameBuffer({ swapChain->GetBackBufferTexture(), nullptr, true /*Create Depth Stencil*/});
 
-        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType::Vertex, "Shaders/VertexShader.hlsl", "main" };
-        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType::Pixel, "Shaders/PixelShader.hlsl", "main" };
-
-        auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
-        auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
-
-        auto vertexShader = device->CreateShader({ vertexShaderInfo, vertexShaderByteCode.get() });
-        auto pixelShader = device->CreateShader({ pixelShaderInfo, pixelShaderByteCode.get() });
-
-        auto sampler = device->CreateSampler({});
-
-        mathfu::Vector2Int textureSize;
-        auto* textureData = DX::LoadTexture("Textures/Wall_Stone_Albedo.png", textureSize);
-
-        DX::TextureDesc textureDesc = {};
-        textureDesc.m_textureType = DX::TextureType::Texture2D;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0.0);
-        textureDesc.m_mipCount = 1;
-        textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
-        textureDesc.m_usage = DX::ResourceUsage::Immutable;
-        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource;
-        textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
-        textureDesc.m_arrayCount = 1;
-        textureDesc.m_sampleCount = 1;
-        textureDesc.m_sampleQuality = 0;
-        textureDesc.m_initialData = textureData;
-
-        auto texture = device->CreateTexture(textureDesc);
-
-        auto textureSRV = device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
-        //auto textureSRWRV = device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
-        //auto textureRTV = device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
-
-        std::vector<float> bufferData(10);
-        std::iota(bufferData.begin(), bufferData.end(), 1.0f);
-
-        DX::BufferDesc bufferDesc = {};
-        bufferDesc.m_bufferType = DX::BufferType::Typed;
-        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(float);
-        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
-        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
-        bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
-        bufferDesc.m_initialData = bufferData.data();
-
-        auto buffer = device->CreateBuffer(bufferDesc);
-
-        DX::ShaderResourceViewDesc bufferSRVDesc = {};
-        bufferSRVDesc.m_resource = buffer;
-        bufferSRVDesc.m_viewFormat = DX::ResourceFormat::R32_FLOAT;
-        bufferSRVDesc.m_firstElement = 0;
-        bufferSRVDesc.m_elementCount = bufferData.size();
-
-        DX::ShaderRWResourceViewDesc bufferSRWRVDesc = {};
-        bufferSRWRVDesc.m_resource = buffer;
-        bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::R32_FLOAT;
-        bufferSRWRVDesc.m_firstElement = 0;
-        bufferSRWRVDesc.m_elementCount = bufferData.size();
-
-        DX::RenderTargetViewDesc bufferRTVDesc = {};
-        bufferRTVDesc.m_resource = buffer;
-        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::R32_FLOAT;
-        bufferRTVDesc.m_firstElement = 0;
-        bufferRTVDesc.m_elementCount = bufferData.size();
-
-        auto bufferRSV = device->CreateShaderResourceView(bufferSRVDesc);
-        //auto bufferSRWRSV = device->CreateShaderRWResourceView(bufferSRWRVDesc);
-        //auto bufferRTV = device->CreateRenderTargetView(bufferRTVDesc);
+        UnitTest::TestsDeviceObjects();
 
         while (window->IsOpen())
         {
