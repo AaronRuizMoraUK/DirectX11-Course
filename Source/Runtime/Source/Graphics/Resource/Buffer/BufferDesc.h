@@ -8,7 +8,7 @@ namespace DX
     // Buffer Format
     // 
     // Buffer format is implicit and not set inside the description.
-    // The format of the buffer is set later depending on what's used for (bind):
+    // The format of the buffer is set later depending on what's used for (binding):
     // 
     // - As VertexBuffer: format is specified with an InputLayout, which is set with DeviceContext->IASetInputLayout() call.
     // - As IndexBuffer: format is specified in DeviceContext->IASetIndexBuffer() call.
@@ -22,8 +22,8 @@ namespace DX
     {
         None = 0, // Not a buffer for a shader or render target.
         Typed, // Buffer where each element is a basic types: float, int or unsigned int
-        Structured, // Buffer where each element is a struct
-        Raw, // Buffer where each element is a byte
+        Structured, // Buffer where each element is a struct. Format must be Unknown.
+        Raw, // Buffer where each element is 4 bytes. Format must R32_TYPELESS.
 
         Total
     };
