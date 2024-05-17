@@ -37,6 +37,13 @@ namespace DX
             return;
         }
 
+        if (desc.m_bufferType == BufferType::Structured &&
+            desc.m_structSizeInBytes == 0)
+        {
+            DX_LOG(Fatal, "Buffer", "Failed to create buffer. Structured buffer require that m_structSizeInBytes must be greater than 0.");
+            return;
+        }
+
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.ByteWidth = desc.m_sizeInBytes;
         bufferDesc.Usage = ToDX11ResourceUsage(desc.m_usage);

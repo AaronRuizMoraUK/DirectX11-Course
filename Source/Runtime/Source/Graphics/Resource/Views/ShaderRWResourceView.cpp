@@ -93,6 +93,16 @@ namespace DX
         {
             DX_LOG(Error, "ShaderRWResourceView", "Unexpected Buffer type None for Shader RW Resource View.");
         }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Structured &&
+            desc.m_viewFormat != ResourceFormat::Unknown)
+        {
+            DX_LOG(Error, "ShaderRWResourceView", "Structured buffer view format must be Unknown.");
+        }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw &&
+            desc.m_viewFormat != ResourceFormat::R32_TYPELESS)
+        {
+            DX_LOG(Error, "ShaderRWResourceView", "Raw buffer view format must not be R32_TYPELESS.");
+        }
 
         D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
         uavDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);

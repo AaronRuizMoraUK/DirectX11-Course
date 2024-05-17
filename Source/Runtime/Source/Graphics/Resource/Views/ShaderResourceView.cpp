@@ -124,13 +124,27 @@ namespace DX
 
     static D3D11_SHADER_RESOURCE_VIEW_DESC ToDX11ShaderResourceViewDesc(const Buffer& buffer, const ShaderResourceViewDesc& desc)
     {
+        if (buffer.GetBufferDesc().m_bufferType == BufferType::None)
+        {
+            DX_LOG(Error, "ShaderResourceView", "Unexpected Buffer type None for Shader Resource View.");
+        }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Structured &&
+            desc.m_viewFormat != ResourceFormat::Unknown)
+        {
+            DX_LOG(Error, "ShaderResourceView", "Structured buffer view format must be Unknown.");
+        }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw &&
+                 desc.m_viewFormat != ResourceFormat::R32_TYPELESS)
+        {
+            DX_LOG(Error, "ShaderResourceView", "Raw buffer view format must not be R32_TYPELESS.");
+        }
+
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
 
         switch (buffer.GetBufferDesc().m_bufferType)
         {
         case BufferType::None:
-            DX_LOG(Error, "ShaderResourceView", "Unexpected Buffer type None for Shader Resource View.");
             break;
 
         case BufferType::Typed:

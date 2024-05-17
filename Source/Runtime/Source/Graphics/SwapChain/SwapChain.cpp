@@ -35,6 +35,13 @@ namespace DX
         swapChainDesc.BufferCount = 1;
         swapChainDesc.OutputWindow = desc.m_window->GetWindowNativeHandler();
         swapChainDesc.Windowed = !desc.m_window->IsFullScreen();
+        // Blt vs Flip:
+        // - Blt will copy each back to front buffer. Slower.
+        // - Flip will use 2+ bufferCount and no copy is required since it'll just alter which is the front and back buffer. Faster.
+        // 
+        // Discard vs Sequential
+        // - Discard will disregard the buffer after presented. Good when entire frames are generated (for example, in games).
+        // - Sequential will keep the buffer in case only portion of the buffer has changed. Good if only portions of the buffer change.
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
         swapChainDesc.Flags = 0;
 
@@ -56,6 +63,8 @@ namespace DX
 
         // Create a texture with the back buffer of the swap chain.
         // TODO: What happens when desc.m_bufferCount > 1
+        // For example, when using DXGI_SWAP_EFFECT_FLIP_DISCARD, 2 buffers are required
+        // and we need to alter on each frame which buffer to render to.
         {
             // Get back buffer
             ComPtr<ID3D11Texture2D> dx11BackBuffer;

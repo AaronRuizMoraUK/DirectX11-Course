@@ -33,6 +33,7 @@ namespace UnitTest
         void TestTexure2D();
         void TestTexure2DArray();
         void TestTexureCube();
+        void TestTexureCubeArray();
         void TestTexure3D();
         void TestTypedBuffer();
         void TestStructuredBuffer();
@@ -53,6 +54,7 @@ namespace UnitTest
         tests.TestTexure2D();
         tests.TestTexure2DArray();
         tests.TestTexureCube();
+        tests.TestTexureCubeArray();
         tests.TestTexure3D();
         tests.TestTypedBuffer();
         tests.TestStructuredBuffer();
@@ -102,8 +104,8 @@ namespace UnitTest
         textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
-        textureDesc.m_usage = DX::ResourceUsage::Immutable;
-        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource;
+        textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource | DX::TextureBind_ShaderRWResource | DX::TextureBind_RenderTarget;
         textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         textureDesc.m_arrayCount = 1;
         textureDesc.m_sampleCount = 1;
@@ -113,8 +115,8 @@ namespace UnitTest
         auto texture = m_device->CreateTexture(textureDesc);
 
         auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
-        //auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
-        //auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
+        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
+        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
     }
 
     void DeviceObjectTests::TestTexure1DArray()
@@ -134,8 +136,8 @@ namespace UnitTest
         textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
-        textureDesc.m_usage = DX::ResourceUsage::Immutable;
-        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource;
+        textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource | DX::TextureBind_ShaderRWResource | DX::TextureBind_RenderTarget;
         textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         textureDesc.m_arrayCount = 1;
         textureDesc.m_sampleCount = 1;
@@ -145,8 +147,8 @@ namespace UnitTest
         auto texture = m_device->CreateTexture(textureDesc);
 
         auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
-        //auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
-        //auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
+        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
+        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
     }
 
     void DeviceObjectTests::TestTexure2DArray()
@@ -155,6 +157,11 @@ namespace UnitTest
     }
 
     void DeviceObjectTests::TestTexureCube()
+    {
+        // TODO
+    }
+
+    void DeviceObjectTests::TestTexureCubeArray()
     {
         // TODO
     }
@@ -187,8 +194,8 @@ namespace UnitTest
         textureDesc.m_dimensions = textureSize;
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
-        textureDesc.m_usage = DX::ResourceUsage::Immutable;
-        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource;
+        textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource | DX::TextureBind_ShaderRWResource | DX::TextureBind_RenderTarget;
         textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
         textureDesc.m_arrayCount = 1;
         textureDesc.m_sampleCount = 1;
@@ -198,8 +205,8 @@ namespace UnitTest
         auto texture = m_device->CreateTexture(textureDesc);
 
         auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
-        //auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0 });
-        //auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0 });
+        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, 0, 0, -1 });
+        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, 0, 0, -1 });
     }
 
     void DeviceObjectTests::TestTypedBuffer()
@@ -297,7 +304,7 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing RawBuffer -----");
 
-        /*const int components = 4;
+        const int components = 4;
         const int bufferSize = 256;
         std::vector<std::byte> bufferData(components * bufferSize);
         for (int i = 0; i < bufferSize; ++i)
@@ -308,12 +315,6 @@ namespace UnitTest
             bufferData[index + 1] = value;
             bufferData[index + 2] = value;
             bufferData[index + 3] = value;
-        }*/
-
-        std::vector<std::byte> bufferData(256);
-        for (int i = 0; i < bufferData.size(); ++i)
-        {
-            bufferData[i] = static_cast<std::byte>(i % 255);
         }
 
         DX::BufferDesc bufferDesc = {};
@@ -328,23 +329,23 @@ namespace UnitTest
 
         DX::ShaderResourceViewDesc bufferSRVDesc = {};
         bufferSRVDesc.m_resource = buffer;
-        bufferSRVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferSRVDesc.m_viewFormat = DX::ResourceFormat::R32_TYPELESS;
         bufferSRVDesc.m_firstElement = 0;
-        bufferSRVDesc.m_elementCount = bufferData.size();
+        bufferSRVDesc.m_elementCount = bufferSize;
 
         DX::ShaderRWResourceViewDesc bufferSRWRVDesc = {};
         bufferSRWRVDesc.m_resource = buffer;
-        bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::R32_TYPELESS;
         bufferSRWRVDesc.m_firstElement = 0;
-        bufferSRWRVDesc.m_elementCount = bufferData.size();
+        bufferSRWRVDesc.m_elementCount = bufferSize;
 
         DX::RenderTargetViewDesc bufferRTVDesc = {};
         bufferRTVDesc.m_resource = buffer;
-        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::R32_TYPELESS;
         bufferRTVDesc.m_firstElement = 0;
-        bufferRTVDesc.m_elementCount = bufferData.size();
+        bufferRTVDesc.m_elementCount = bufferSize;
 
-        //auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
+        auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
         //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
         //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
     }

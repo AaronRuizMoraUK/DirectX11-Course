@@ -109,6 +109,16 @@ namespace DX
         {
             DX_LOG(Error, "RenderTargetView", "Unexpected Buffer type None for Render Target View.");
         }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Structured &&
+            desc.m_viewFormat != ResourceFormat::Unknown)
+        {
+            DX_LOG(Error, "RenderTargetView", "Structured buffer view format must be Unknown.");
+        }
+        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw &&
+            desc.m_viewFormat != ResourceFormat::R32_TYPELESS)
+        {
+            DX_LOG(Error, "RenderTargetView", "Raw buffer view format must not be R32_TYPELESS.");
+        }
 
         D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
         rtvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
