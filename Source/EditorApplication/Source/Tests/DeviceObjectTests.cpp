@@ -206,7 +206,7 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing TypedBuffer -----");
 
-        std::vector<float> bufferData(10);
+        std::vector<float> bufferData(256);
         std::iota(bufferData.begin(), bufferData.end(), 1.0f);
 
         DX::BufferDesc bufferDesc = {};
@@ -244,11 +244,108 @@ namespace UnitTest
 
     void DeviceObjectTests::TestStructuredBuffer()
     {
-        // TODO
+        DX_LOG(Info, "Test", " ----- Testing StructuredBuffer -----");
+
+        struct MyBuffer
+        {
+            int a, b, c;
+            float d, e, f;
+        };
+
+        std::vector<MyBuffer> bufferData(256);
+        for (int i = 0; i < bufferData.size(); ++i)
+        {
+            const float fpi = static_cast<float>(i);
+            bufferData[i] = MyBuffer{i, i, i, fpi, fpi, fpi};
+        }
+
+        DX::BufferDesc bufferDesc = {};
+        bufferDesc.m_bufferType = DX::BufferType::Structured;
+        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(MyBuffer);
+        bufferDesc.m_structSizeInBytes = sizeof(MyBuffer);
+        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
+        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
+        bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        bufferDesc.m_initialData = bufferData.data();
+
+        auto buffer = m_device->CreateBuffer(bufferDesc);
+
+        DX::ShaderResourceViewDesc bufferSRVDesc = {};
+        bufferSRVDesc.m_resource = buffer;
+        bufferSRVDesc.m_viewFormat = DX::ResourceFormat::Unknown;
+        bufferSRVDesc.m_firstElement = 0;
+        bufferSRVDesc.m_elementCount = bufferData.size();
+
+        DX::ShaderRWResourceViewDesc bufferSRWRVDesc = {};
+        bufferSRWRVDesc.m_resource = buffer;
+        bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::Unknown;
+        bufferSRWRVDesc.m_firstElement = 0;
+        bufferSRWRVDesc.m_elementCount = bufferData.size();
+
+        DX::RenderTargetViewDesc bufferRTVDesc = {};
+        bufferRTVDesc.m_resource = buffer;
+        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::Unknown;
+        bufferRTVDesc.m_firstElement = 0;
+        bufferRTVDesc.m_elementCount = bufferData.size();
+
+        auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
+        //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
+        //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
     }
 
     void DeviceObjectTests::TestRawBuffer()
     {
-        // TODO
+        DX_LOG(Info, "Test", " ----- Testing RawBuffer -----");
+
+        /*const int components = 4;
+        const int bufferSize = 256;
+        std::vector<std::byte> bufferData(components * bufferSize);
+        for (int i = 0; i < bufferSize; ++i)
+        {
+            const std::byte value = static_cast<std::byte>(i % 255);
+            const int index = i * components;
+            bufferData[index + 0] = value;
+            bufferData[index + 1] = value;
+            bufferData[index + 2] = value;
+            bufferData[index + 3] = value;
+        }*/
+
+        std::vector<std::byte> bufferData(256);
+        for (int i = 0; i < bufferData.size(); ++i)
+        {
+            bufferData[i] = static_cast<std::byte>(i % 255);
+        }
+
+        DX::BufferDesc bufferDesc = {};
+        bufferDesc.m_bufferType = DX::BufferType::Raw;
+        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(std::byte);
+        bufferDesc.m_usage = DX::ResourceUsage::Immutable;
+        bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource;
+        bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        bufferDesc.m_initialData = bufferData.data();
+
+        auto buffer = m_device->CreateBuffer(bufferDesc);
+
+        DX::ShaderResourceViewDesc bufferSRVDesc = {};
+        bufferSRVDesc.m_resource = buffer;
+        bufferSRVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferSRVDesc.m_firstElement = 0;
+        bufferSRVDesc.m_elementCount = bufferData.size();
+
+        DX::ShaderRWResourceViewDesc bufferSRWRVDesc = {};
+        bufferSRWRVDesc.m_resource = buffer;
+        bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferSRWRVDesc.m_firstElement = 0;
+        bufferSRWRVDesc.m_elementCount = bufferData.size();
+
+        DX::RenderTargetViewDesc bufferRTVDesc = {};
+        bufferRTVDesc.m_resource = buffer;
+        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::R8_TYPELESS;
+        bufferRTVDesc.m_firstElement = 0;
+        bufferRTVDesc.m_elementCount = bufferData.size();
+
+        //auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
+        //auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
+        //auto bufferRTV = m_device->CreateRenderTargetView(bufferRTVDesc);
     }
 }
