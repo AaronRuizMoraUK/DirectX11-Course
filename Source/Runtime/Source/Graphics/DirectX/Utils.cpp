@@ -24,10 +24,10 @@ namespace DX
     {
         uint32_t dx11BindFlags = 0;
 
-        dx11BindFlags |= (bindFlag & TextureBind_ShaderResource)   ? D3D11_BIND_SHADER_RESOURCE  : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
         dx11BindFlags |= (bindFlag & TextureBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
-        dx11BindFlags |= (bindFlag & TextureBind_RenderTarget)     ? D3D11_BIND_RENDER_TARGET    : 0;
-        dx11BindFlags |= (bindFlag & TextureBind_DepthStencil)     ? D3D11_BIND_DEPTH_STENCIL    : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
+        dx11BindFlags |= (bindFlag & TextureBind_DepthStencil) ? D3D11_BIND_DEPTH_STENCIL : 0;
 
         return dx11BindFlags;
     }
@@ -187,6 +187,156 @@ namespace DX
         default:
             DX_LOG(Error, "Utils", "Unknown resource format %d", format);
             return DXGI_FORMAT_UNKNOWN;
+        }
+    }
+
+    D3D11_FILTER ToDX11FilterSampling(FilterSampling minFilter, FilterSampling magFilter, FilterSampling mipFilter, FilterMode filterMode)
+    {
+        if (minFilter == FilterSampling::Anisotropic ||
+            magFilter == FilterSampling::Anisotropic ||
+            mipFilter == FilterSampling::Anisotropic)
+        {
+            switch(filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_ANISOTROPIC;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_ANISOTROPIC;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_ANISOTROPIC;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_ANISOTROPIC;
+            }
+        }
+        else if (minFilter == FilterSampling::Point ||
+            magFilter == FilterSampling::Point ||
+            mipFilter == FilterSampling::Point)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_MAG_MIP_POINT;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_MAG_MIP_POINT;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_POINT;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+            }
+        }
+        else if (minFilter == FilterSampling::Point ||
+            magFilter == FilterSampling::Linear ||
+            mipFilter == FilterSampling::Point)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+            }
+        }
+        else if (minFilter == FilterSampling::Point ||
+            magFilter == FilterSampling::Point ||
+            mipFilter == FilterSampling::Linear)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR;
+            }
+        }
+        else if (minFilter == FilterSampling::Point ||
+            magFilter == FilterSampling::Linear ||
+            mipFilter == FilterSampling::Linear)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+            }
+        }
+        else if (minFilter == FilterSampling::Linear ||
+            magFilter == FilterSampling::Point ||
+            mipFilter == FilterSampling::Point)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT;
+            }
+        }
+        else if (minFilter == FilterSampling::Linear ||
+            magFilter == FilterSampling::Linear ||
+            mipFilter == FilterSampling::Point)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+            }
+        }
+        else if (minFilter == FilterSampling::Linear ||
+            magFilter == FilterSampling::Point ||
+            mipFilter == FilterSampling::Linear)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+            }
+        }
+        else if (minFilter == FilterSampling::Linear ||
+            magFilter == FilterSampling::Linear ||
+            mipFilter == FilterSampling::Linear)
+        {
+            switch (filterMode)
+            {
+            case FilterMode::Normal: return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR;
+            case FilterMode::Maximum: return D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
+            case FilterMode::Comparison: return D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+            }
+        }
+        return D3D11_FILTER_MIN_MAG_MIP_POINT;
+    }
+
+    D3D11_TEXTURE_ADDRESS_MODE ToDX11AddressMode(AddressMode addressMode)
+    {
+        switch (addressMode)
+        {
+        case AddressMode::Wrap:        return D3D11_TEXTURE_ADDRESS_WRAP;
+        case AddressMode::Mirror:      return D3D11_TEXTURE_ADDRESS_MIRROR;
+        case AddressMode::Clamp:       return D3D11_TEXTURE_ADDRESS_CLAMP;
+        case AddressMode::BorderColor: return D3D11_TEXTURE_ADDRESS_BORDER;
+        case AddressMode::MirrorOnce:  return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
+
+        case AddressMode::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown address mode %d", addressMode);
+            return D3D11_TEXTURE_ADDRESS_WRAP;
+        }
+    }
+
+    D3D11_COMPARISON_FUNC ToDX11ComparisonFunction(ComparisonFunction comparisonFunction)
+    {
+        switch (comparisonFunction)
+        {
+        case ComparisonFunction::Never:        return D3D11_COMPARISON_NEVER;
+        case ComparisonFunction::Less:         return D3D11_COMPARISON_LESS;
+        case ComparisonFunction::Equal:        return D3D11_COMPARISON_EQUAL;
+        case ComparisonFunction::LessEqual:    return D3D11_COMPARISON_LESS_EQUAL;
+        case ComparisonFunction::Greater:      return D3D11_COMPARISON_GREATER;
+        case ComparisonFunction::NotEqual:     return D3D11_COMPARISON_NOT_EQUAL;
+        case ComparisonFunction::GreaterEqual: return D3D11_COMPARISON_GREATER_EQUAL;
+        case ComparisonFunction::Always:       return D3D11_COMPARISON_ALWAYS;
+
+        case ComparisonFunction::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown comparison function %d", comparisonFunction);
+            return D3D11_COMPARISON_NEVER;
         }
     }
 }

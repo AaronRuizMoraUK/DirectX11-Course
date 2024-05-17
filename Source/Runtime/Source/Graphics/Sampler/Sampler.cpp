@@ -4,6 +4,7 @@
 #include <Log/Log.h>
 
 #include <d3d11.h>
+#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {
@@ -11,21 +12,26 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
-        // TODO
-        D3D11_SAMPLER_DESC samplerDesc = {};
-        samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-        samplerDesc.MipLODBias = 0.0f;
-        samplerDesc.MaxAnisotropy = 1;
-        samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-        for (int i = 0; i < 4; ++i)
+        if (desc.m_maxAnisotropy < 1 || desc.m_maxAnisotropy > 16)
         {
-            samplerDesc.BorderColor[i] = 0.0f;
+            DX_LOG(Fatal, "Sampler", "Invalid max anisotropy value %d. It needs to be between 1 and 16.", desc.m_maxAnisotropy);
+            return;
         }
-        samplerDesc.MinLOD = 0;
-        samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+        D3D11_SAMPLER_DESC samplerDesc = {};
+        samplerDesc.Filter = ToDX11FilterSampling(desc.m_minFilter, desc.m_magFilter, desc.m_mipFilter, desc.m_filterMode);
+        samplerDesc.AddressU = ToDX11AddressMode(desc.m_addressU);
+        samplerDesc.AddressV = ToDX11AddressMode(desc.m_addressV);
+        samplerDesc.AddressW = ToDX11AddressMode(desc.m_addressW);
+        samplerDesc.MipLODBias = desc.m_mipBias;
+        samplerDesc.MaxAnisotropy = desc.m_maxAnisotropy;
+        samplerDesc.ComparisonFunc = ToDX11ComparisonFunction(desc.m_comparisonFunction);
+        for (int i = 0; i < desc.m_borderColor.Dims; ++i)
+        {
+            samplerDesc.BorderColor[i] = desc.m_borderColor[i];
+        }
+        samplerDesc.MinLOD = desc.m_mipClamp.x;
+        samplerDesc.MaxLOD = desc.m_mipClamp.y;
 
         auto result =m_ownerDevice->GetDX11Device()->CreateSamplerState(&samplerDesc, m_dx11Sampler.GetAddressOf());
 
