@@ -155,7 +155,7 @@ namespace UnitTest
 
         auto texture = m_device->CreateTexture(textureDesc);
 
-        auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1, 0, arrayCount});
+        auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1, 0, arrayCount });
         auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, arrayCount });
         auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, arrayCount });
     }
@@ -202,7 +202,9 @@ namespace UnitTest
                 for (int row = 0; row < textureSize.x; ++row)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row + col * (textureSize.x) + arrayIndex * (textureSize.x * textureSize.y)) * components;
+                    const int index = (row 
+                        + col * (textureSize.x) 
+                        + arrayIndex * (textureSize.x * textureSize.y)) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
                     textureData[index + 2] = value;
@@ -233,12 +235,103 @@ namespace UnitTest
 
     void DeviceObjectTests::TestTexureCube()
     {
-        // TODO
+        DX_LOG(Info, "Test", " ----- Testing TexureCube -----");
+
+        const int components = 4;
+        mathfu::Vector2Int textureSize(256, 256);
+        const int faceCount = 6;
+        std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * faceCount);
+        for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
+        {
+            for (int col = 0; col < textureSize.y; ++col)
+            {
+                for (int row = 0; row < textureSize.x; ++row)
+                {
+                    const std::byte value = static_cast<std::byte>(row % 255);
+                    const int index = (row 
+                        + col * (textureSize.x) 
+                        + faceIndex * (textureSize.x * textureSize.y)) * components;
+                    textureData[index + 0] = value;
+                    textureData[index + 1] = value;
+                    textureData[index + 2] = value;
+                    textureData[index + 3] = value;
+                }
+            }
+        }
+
+        DX::TextureDesc textureDesc = {};
+        textureDesc.m_textureType = DX::TextureType::TextureCube;
+        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_mipCount = 1;
+        textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
+        textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource | DX::TextureBind_ShaderRWResource | DX::TextureBind_RenderTarget;
+        textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        textureDesc.m_arrayCount = faceCount;
+        textureDesc.m_sampleCount = 1;
+        textureDesc.m_sampleQuality = 0;
+        textureDesc.m_initialData = textureData.data();
+
+        auto texture = m_device->CreateTexture(textureDesc);
+
+        auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
+        // Technically Shader RW Resource View and Render Target View do not support texture Cube,
+        // but we can still create the view to read it as a Texture 2D Array.
+        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount });
+        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount });
     }
 
     void DeviceObjectTests::TestTexureCubeArray()
     {
-        // TODO
+        DX_LOG(Info, "Test", " ----- Testing TexureCube Array -----");
+
+        const int components = 4;
+        mathfu::Vector2Int textureSize(256, 256);
+        const int faceCount = 6;
+        const int arrayCount = 3;
+        std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * faceCount * arrayCount);
+        for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex)
+        {
+            for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
+            {
+                for (int col = 0; col < textureSize.y; ++col)
+                {
+                    for (int row = 0; row < textureSize.x; ++row)
+                    {
+                        const std::byte value = static_cast<std::byte>(row % 255);
+                        const int index = (row
+                            + col * (textureSize.x) 
+                            + faceIndex * (textureSize.x * textureSize.y)
+                            + arrayIndex * (textureSize.x * textureSize.y * faceCount)) * components;
+                        textureData[index + 0] = value;
+                        textureData[index + 1] = value;
+                        textureData[index + 2] = value;
+                        textureData[index + 3] = value;
+                    }
+                }
+            }
+        }
+
+        DX::TextureDesc textureDesc = {};
+        textureDesc.m_textureType = DX::TextureType::TextureCube;
+        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_mipCount = 1;
+        textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
+        textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
+        textureDesc.m_bindFlags = DX::TextureBind_ShaderResource | DX::TextureBind_ShaderRWResource | DX::TextureBind_RenderTarget;
+        textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        textureDesc.m_arrayCount = faceCount * arrayCount;
+        textureDesc.m_sampleCount = 1;
+        textureDesc.m_sampleQuality = 0;
+        textureDesc.m_initialData = textureData.data();
+
+        auto texture = m_device->CreateTexture(textureDesc);
+
+        auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1, 0, arrayCount });
+        // Technically Shader RW Resource View and Render Target View do not support texture Cube Array,
+        // but we can still create the view to read it as a Texture 2D Array.
+        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount * arrayCount });
+        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount * arrayCount });
     }
 
     void DeviceObjectTests::TestTexure3D()
@@ -255,7 +348,9 @@ namespace UnitTest
                 for (int row = 0; row < textureSize.x; ++row)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row + col * (textureSize.x) + depth * (textureSize.x * textureSize.y)) * components;
+                    const int index = (row 
+                        + col * (textureSize.x) 
+                        + depth * (textureSize.x * textureSize.y)) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
                     textureData[index + 2] = value;
@@ -338,7 +433,7 @@ namespace UnitTest
         for (int i = 0; i < bufferData.size(); ++i)
         {
             const float fpi = static_cast<float>(i);
-            bufferData[i] = MyBuffer{i, i, i, fpi, fpi, fpi};
+            bufferData[i] = MyBuffer{ i, i, i, fpi, fpi, fpi };
         }
 
         DX::BufferDesc bufferDesc = {};
