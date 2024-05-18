@@ -88,7 +88,7 @@ namespace UnitTest
         samplerDesc.m_addressV = DX::AddressMode::Wrap;
         samplerDesc.m_addressW = DX::AddressMode::Wrap;
         samplerDesc.m_mipBias = 0.0f;
-        samplerDesc.m_mipClamp = mathfu::Vector2(0.0f, FLT_MAX);
+        samplerDesc.m_mipClamp = DX::NoMipClamping;
         samplerDesc.m_maxAnisotropy = 1;
         samplerDesc.m_borderColor = mathfu::Color(0.0f);
         samplerDesc.m_comparisonFunction = DX::ComparisonFunction::Always;

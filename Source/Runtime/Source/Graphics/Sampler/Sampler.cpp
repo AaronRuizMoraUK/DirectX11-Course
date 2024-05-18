@@ -12,26 +12,40 @@ namespace DX
         : DeviceObject(device)
         , m_desc(desc)
     {
-        if (desc.m_maxAnisotropy < 1 || desc.m_maxAnisotropy > 16)
+        if (m_desc.m_minFilter == FilterSampling::Anisotropic ||
+            m_desc.m_magFilter == FilterSampling::Anisotropic || 
+            m_desc.m_mipFilter == FilterSampling::Anisotropic)
         {
-            DX_LOG(Fatal, "Sampler", "Invalid max anisotropy value %d. It needs to be between 1 and 16.", desc.m_maxAnisotropy);
-            return;
+            if (m_desc.m_minFilter != m_desc.m_magFilter ||
+                m_desc.m_minFilter != m_desc.m_mipFilter)
+            {
+                m_desc.m_minFilter = FilterSampling::Anisotropic;
+                m_desc.m_magFilter = FilterSampling::Anisotropic;
+                m_desc.m_mipFilter = FilterSampling::Anisotropic;
+                DX_LOG(Warning, "Sampler", "All filters will be set to Anisotropic since one of them was set to Anisotropic.");
+            }
+
+            if (m_desc.m_maxAnisotropy < 1 || m_desc.m_maxAnisotropy > 16)
+            {
+                DX_LOG(Fatal, "Sampler", "Invalid max anisotropy value %d. It needs to be between 1 and 16.", m_desc.m_maxAnisotropy);
+                return;
+            }
         }
 
         D3D11_SAMPLER_DESC samplerDesc = {};
-        samplerDesc.Filter = ToDX11FilterSampling(desc.m_minFilter, desc.m_magFilter, desc.m_mipFilter, desc.m_filterMode);
-        samplerDesc.AddressU = ToDX11AddressMode(desc.m_addressU);
-        samplerDesc.AddressV = ToDX11AddressMode(desc.m_addressV);
-        samplerDesc.AddressW = ToDX11AddressMode(desc.m_addressW);
-        samplerDesc.MipLODBias = desc.m_mipBias;
-        samplerDesc.MaxAnisotropy = desc.m_maxAnisotropy;
-        samplerDesc.ComparisonFunc = ToDX11ComparisonFunction(desc.m_comparisonFunction);
-        for (int i = 0; i < desc.m_borderColor.Dims; ++i)
+        samplerDesc.Filter = ToDX11FilterSampling(m_desc.m_minFilter, m_desc.m_magFilter, m_desc.m_mipFilter, m_desc.m_filterMode);
+        samplerDesc.AddressU = ToDX11AddressMode(m_desc.m_addressU);
+        samplerDesc.AddressV = ToDX11AddressMode(m_desc.m_addressV);
+        samplerDesc.AddressW = ToDX11AddressMode(m_desc.m_addressW);
+        samplerDesc.MipLODBias = m_desc.m_mipBias;
+        samplerDesc.MaxAnisotropy = m_desc.m_maxAnisotropy;
+        samplerDesc.ComparisonFunc = ToDX11ComparisonFunction(m_desc.m_comparisonFunction);
+        for (int i = 0; i < m_desc.m_borderColor.Dims; ++i)
         {
-            samplerDesc.BorderColor[i] = desc.m_borderColor[i];
+            samplerDesc.BorderColor[i] = m_desc.m_borderColor[i];
         }
-        samplerDesc.MinLOD = desc.m_mipClamp.x;
-        samplerDesc.MaxLOD = desc.m_mipClamp.y;
+        samplerDesc.MinLOD = m_desc.m_mipClamp.x;
+        samplerDesc.MaxLOD = m_desc.m_mipClamp.y;
 
         auto result =m_ownerDevice->GetDX11Device()->CreateSamplerState(&samplerDesc, m_dx11Sampler.GetAddressOf());
 
