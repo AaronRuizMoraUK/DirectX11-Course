@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace DX
 {
     enum class ShaderType
@@ -14,5 +16,12 @@ namespace DX
         Compute,
 
         Count
+    };
+
+    struct ShaderInfo
+    {
+        ShaderType m_shaderType;
+        std::string m_name;
+        std::string m_entryPoint;
     };
 } // namespace DX

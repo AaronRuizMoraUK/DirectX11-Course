@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/Shader/ShaderDesc.h>
+#include <Graphics/Shader/ShaderFlags.h>
 #include <Graphics/Shader/ShaderBytecode.h>
 
 #include <memory>
