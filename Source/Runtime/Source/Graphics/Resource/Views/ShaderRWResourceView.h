@@ -19,6 +19,8 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::ShaderRWResourceView; }
 
+        ComPtr<ID3D11UnorderedAccessView> GetDX11UnorderedAccessView();
+
     private:
         ShaderRWResourceViewDesc m_desc;
 

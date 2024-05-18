@@ -86,4 +86,14 @@ namespace DX
             m_depthStencilView->Clear(depth, stencil);
         }
     }
+
+    std::shared_ptr<RenderTargetView> FrameBuffer::GetColorRenderTargetView()
+    {
+        return m_colorRenderTargetView;
+    }
+
+    std::shared_ptr<DepthStencilView> FrameBuffer::GetDepthStencilView()
+    {
+        return m_depthStencilView;
+    }
 } // namespace DX

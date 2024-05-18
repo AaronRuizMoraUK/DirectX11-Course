@@ -39,7 +39,6 @@ namespace DX
     struct DepthStencilViewDesc;
     struct PipelineDesc;
     struct ResourceLayoutDesc;
-    struct CommandListDesc;
 
     using DeviceId = GenericId<struct DeviceIdTag>;
 
@@ -69,7 +68,7 @@ namespace DX
         std::shared_ptr<DepthStencilView> CreateDepthStencilView(const DepthStencilViewDesc& desc);
         std::shared_ptr<Pipeline> CreatePipeline(const PipelineDesc& desc);
         std::shared_ptr<ResourceLayout> CreateResourceLayout(const ResourceLayoutDesc& desc);
-        std::shared_ptr<CommandList> CreateCommandList(const CommandListDesc& desc);
+        std::shared_ptr<CommandList> CreateCommandList();
 
         //std::shared_ptr<SwapChain> GetSwapChain() { return m_swapChain; }
 

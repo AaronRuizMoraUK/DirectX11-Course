@@ -27,6 +27,9 @@ namespace DX
 
         void Clear(std::optional<mathfu::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil);
 
+        std::shared_ptr<RenderTargetView> GetColorRenderTargetView();
+        std::shared_ptr<DepthStencilView> GetDepthStencilView();
+
     private:
         std::shared_ptr<Texture> m_colorTexture;
         std::shared_ptr<RenderTargetView> m_colorRenderTargetView;

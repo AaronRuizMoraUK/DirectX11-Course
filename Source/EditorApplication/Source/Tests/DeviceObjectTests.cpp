@@ -402,7 +402,8 @@ namespace UnitTest
 
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Typed;
-        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(float);
+        bufferDesc.m_elementSizeInBytes = sizeof(float);
+        bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
         bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource | DX::BufferBind_RenderTarget;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
@@ -452,8 +453,8 @@ namespace UnitTest
 
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Structured;
-        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(MyBuffer);
-        bufferDesc.m_structSizeInBytes = sizeof(MyBuffer);
+        bufferDesc.m_elementSizeInBytes = sizeof(MyBuffer);
+        bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
         bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
@@ -503,7 +504,8 @@ namespace UnitTest
 
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Raw;
-        bufferDesc.m_sizeInBytes = bufferData.size() * sizeof(std::byte);
+        bufferDesc.m_elementSizeInBytes = sizeof(std::byte) * components;
+        bufferDesc.m_elementCount = bufferData.size() / components;
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
         bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;

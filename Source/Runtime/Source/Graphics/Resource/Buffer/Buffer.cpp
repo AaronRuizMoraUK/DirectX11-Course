@@ -29,23 +29,18 @@ namespace DX
             }
         }
 
+        const uint32_t bufferSizeInBytes = m_desc.m_elementSizeInBytes * m_desc.m_elementCount;
+
         // NOTE: In DirectX 12 this was increased to multiples of 256 bytes, equivalent to 4 matrices.
         if ((m_desc.m_bindFlags & BufferBind_ConstantBuffer) &&
-            m_desc.m_sizeInBytes % 16 != 0)
+            bufferSizeInBytes % 16 != 0)
         {
-            DX_LOG(Fatal, "Buffer", "Failed to create buffer. Constant buffers size must be multiples of 16, but passed %d.", m_desc.m_sizeInBytes);
-            return;
-        }
-
-        if (m_desc.m_bufferType == BufferType::Structured &&
-            m_desc.m_structSizeInBytes == 0)
-        {
-            DX_LOG(Fatal, "Buffer", "Failed to create buffer. Structured buffer require that m_structSizeInBytes must be greater than 0.");
+            DX_LOG(Fatal, "Buffer", "Failed to create buffer. Constant buffers size must be multiples of 16, but passed %d.", bufferSizeInBytes);
             return;
         }
 
         D3D11_BUFFER_DESC bufferDesc = {};
-        bufferDesc.ByteWidth = m_desc.m_sizeInBytes;
+        bufferDesc.ByteWidth = bufferSizeInBytes;
         bufferDesc.Usage = ToDX11ResourceUsage(m_desc.m_usage);
         bufferDesc.BindFlags = ToDX11BufferBindFlags(m_desc.m_bindFlags);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(m_desc.m_cpuAccess);
@@ -58,7 +53,7 @@ namespace DX
         case BufferType::Raw:
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
         }
-        bufferDesc.StructureByteStride = m_desc.m_structSizeInBytes;
+        bufferDesc.StructureByteStride = m_desc.m_elementSizeInBytes;
 
         D3D11_SUBRESOURCE_DATA subresourceData = {};
         subresourceData.pSysMem = m_desc.m_initialData;

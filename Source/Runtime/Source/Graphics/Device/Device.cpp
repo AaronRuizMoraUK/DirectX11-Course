@@ -171,9 +171,9 @@ namespace DX
         return resourceLayout;
     }
 
-    std::shared_ptr<CommandList> Device::CreateCommandList(const CommandListDesc& desc)
+    std::shared_ptr<CommandList> Device::CreateCommandList()
     {
-        auto commandList = std::make_shared<CommandList>(this, desc);
+        auto commandList = std::make_shared<CommandList>(this);
         m_deviceObjects.push_back(commandList);
         return commandList;
     }

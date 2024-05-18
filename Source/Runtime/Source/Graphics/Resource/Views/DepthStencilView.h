@@ -23,6 +23,8 @@ namespace DX
 
         void Clear(std::optional<float> depth, std::optional<uint8_t> stencil);
 
+        ComPtr<ID3D11DepthStencilView> GetDX11DepthStencilView();
+
     private:
         DepthStencilViewDesc m_desc;
 

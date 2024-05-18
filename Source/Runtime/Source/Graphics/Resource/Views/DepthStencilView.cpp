@@ -140,4 +140,9 @@ namespace DX
                 m_dx11DepthStencilView.Get(), flags, depth.value_or(0.0f), stencil.value_or(0));
         }
     }
+
+    ComPtr<ID3D11DepthStencilView> DepthStencilView::GetDX11DepthStencilView()
+    {
+        return m_dx11DepthStencilView;
+    }
 } // namespace DX

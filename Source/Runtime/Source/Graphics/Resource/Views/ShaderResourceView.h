@@ -19,6 +19,8 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::ShaderResourceView; }
 
+        ComPtr<ID3D11ShaderResourceView> GetDXShaderResourceView();
+
     private:
         ShaderResourceViewDesc m_desc;
 

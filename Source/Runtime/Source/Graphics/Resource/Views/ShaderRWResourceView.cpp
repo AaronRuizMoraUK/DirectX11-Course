@@ -183,4 +183,9 @@ namespace DX
     {
         DX_LOG(Verbose, "ShaderRWResourceView", "Shader RW Resource View destroyed.");
     }
+
+    ComPtr<ID3D11UnorderedAccessView> ShaderRWResourceView::GetDX11UnorderedAccessView()
+    {
+        return m_dx11UnorderedAccessView;
+    }
 } // namespace DX

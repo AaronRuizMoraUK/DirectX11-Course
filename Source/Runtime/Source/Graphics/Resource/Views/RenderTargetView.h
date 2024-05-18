@@ -23,6 +23,8 @@ namespace DX
 
         void Clear(const mathfu::Color& color);
 
+        ComPtr<ID3D11RenderTargetView> GetDX11RenderTargetView();
+
     private:
         RenderTargetViewDesc m_desc;
 
