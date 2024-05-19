@@ -178,6 +178,19 @@ namespace DX
         return commandList;
     }
 
+    void Device::ExecuteCommandLists(std::vector<CommandList*> commandLists)
+    {
+        const bool restoreContextState = false;
+        for (auto* commandList : commandLists)
+        {
+            // Immediate context state is cleared before and after a command list is executed.
+            // A command list has no concept of inheritance.
+            m_dx11ImmediateContext->ExecuteCommandList(commandList->GetDX11CommandList().Get(), restoreContextState);
+
+            commandList->ClearCommandList();
+        }
+    }
+
     ComPtr<ID3D11Device> Device::GetDX11Device()
     {
         return m_dx11Device;

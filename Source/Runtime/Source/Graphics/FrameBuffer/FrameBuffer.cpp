@@ -7,6 +7,8 @@
 #include <Graphics/Resource/Views/DepthStencilView.h>
 #include <Log/Log.h>
 
+#include <d3d11.h>
+
 namespace DX
 {
     FrameBuffer::FrameBuffer(Device* device, const FrameBufferDesc& desc)
@@ -78,12 +80,19 @@ namespace DX
     {
         if (m_colorRenderTargetView && color.has_value())
         {
-            m_colorRenderTargetView->Clear(*color);
+            m_ownerDevice->GetDX11ImmediateContext()->ClearRenderTargetView(
+                m_colorRenderTargetView->GetDX11RenderTargetView().Get(), mathfu::ColorPacked(*color).data_);
         }
 
         if (m_depthStencilView)
         {
-            m_depthStencilView->Clear(depth, stencil);
+            if (depth.has_value() || stencil.has_value())
+            {
+                uint32_t flags = (depth.has_value() ? D3D11_CLEAR_DEPTH : 0) | (stencil.has_value() ? D3D11_CLEAR_STENCIL : 0);
+
+                m_ownerDevice->GetDX11ImmediateContext()->ClearDepthStencilView(
+                    m_depthStencilView->GetDX11DepthStencilView().Get(), flags, depth.value_or(1.0f), stencil.value_or(0));
+            }
         }
     }
 

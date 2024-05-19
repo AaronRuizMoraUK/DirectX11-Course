@@ -185,12 +185,6 @@ namespace DX
         DX_LOG(Verbose, "RenderTargetView", "Render Target View destroyed.");
     }
 
-    void RenderTargetView::Clear(const mathfu::Color& color)
-    {
-        m_ownerDevice->GetDX11ImmediateContext()->ClearRenderTargetView(
-            m_dx11RenderTargetView.Get(), mathfu::ColorPacked(color).data_);
-    }
-
     ComPtr<ID3D11RenderTargetView> RenderTargetView::GetDX11RenderTargetView()
     {
         return m_dx11RenderTargetView;

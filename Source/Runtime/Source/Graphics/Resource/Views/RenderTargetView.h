@@ -21,8 +21,6 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::RenderTargetView; }
 
-        void Clear(const mathfu::Color& color);
-
         ComPtr<ID3D11RenderTargetView> GetDX11RenderTargetView();
 
     private:

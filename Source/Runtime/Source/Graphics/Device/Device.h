@@ -70,7 +70,7 @@ namespace DX
         std::shared_ptr<ResourceLayout> CreateResourceLayout(const ResourceLayoutDesc& desc);
         std::shared_ptr<CommandList> CreateCommandList();
 
-        //std::shared_ptr<SwapChain> GetSwapChain() { return m_swapChain; }
+        void ExecuteCommandLists(std::vector<CommandList*> commandLists);
 
         ComPtr<ID3D11Device> GetDX11Device();
         ComPtr<ID3D11DeviceContext> GetDX11ImmediateContext();
@@ -80,7 +80,6 @@ namespace DX
 
         const DeviceId m_deviceId;
         DeviceObjects m_deviceObjects;
-        //std::shared_ptr<SwapChain> m_swapChain;
 
     private:
         ComPtr<ID3D11Device> m_dx11Device;

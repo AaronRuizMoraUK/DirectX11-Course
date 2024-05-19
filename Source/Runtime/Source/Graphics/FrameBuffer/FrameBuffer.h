@@ -25,7 +25,11 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::FrameBuffer; }
 
-        void Clear(std::optional<mathfu::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil);
+        // Clears the frame buffer using the immediate context from the graphics device.
+        void Clear(
+            std::optional<mathfu::Color> color,
+            std::optional<float> depth = std::nullopt,
+            std::optional<uint8_t> stencil = std::nullopt);
 
         std::shared_ptr<RenderTargetView> GetColorRenderTargetView();
         std::shared_ptr<DepthStencilView> GetDepthStencilView();

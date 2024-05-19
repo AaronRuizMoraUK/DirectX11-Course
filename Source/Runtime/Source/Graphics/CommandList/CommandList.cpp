@@ -55,12 +55,16 @@ namespace DX
         m_dx11DeferredContext->RSSetViewports(1, &viewport);
     }
 
-    void CommandList::BindVertexBuffer(Buffer& vertexBuffer)
+    void CommandList::BindVertexBuffers(const std::vector<Buffer*>& vertexBuffers)
     {
-        const uint32_t vertexBufferStride = vertexBuffer.GetBufferDesc().m_elementSizeInBytes;
-        const uint32_t vertexBufferOffset = 0;
+        for (int i = 0; i < vertexBuffers.size(); ++i)
+        {
+            const uint32_t vertexBufferStride = vertexBuffers[i]->GetBufferDesc().m_elementSizeInBytes;
+            const uint32_t vertexBufferOffset = 0;
 
-        m_dx11DeferredContext->IASetVertexBuffers(0, 1, vertexBuffer.GetDX11Buffer().GetAddressOf(), &vertexBufferStride, &vertexBufferOffset);
+            m_dx11DeferredContext->IASetVertexBuffers(
+                i, 1, vertexBuffers[i]->GetDX11Buffer().GetAddressOf(), &vertexBufferStride, &vertexBufferOffset);
+        }
     }
 
     void CommandList::BindIndexBuffer(Buffer& indexBuffer)
@@ -91,19 +95,65 @@ namespace DX
         std::optional<float> depth,
         std::optional<uint8_t> stencil)
     {
-        // Bad idea as it has to add the command to the command list.
-        frameBuffer.Clear(color, depth, stencil); // TODO: remove clear function in frame buffer and views.
+        if (auto rtv = frameBuffer.GetColorRenderTargetView();
+            rtv&& color.has_value())
+        {
+            m_dx11DeferredContext->ClearRenderTargetView(
+                rtv->GetDX11RenderTargetView().Get(), mathfu::ColorPacked(*color).data_);
+        }
+
+        if (auto dsv = frameBuffer.GetDepthStencilView())
+        {
+            if (depth.has_value() || stencil.has_value())
+            {
+                uint32_t flags = (depth.has_value() ? D3D11_CLEAR_DEPTH : 0) | (stencil.has_value() ? D3D11_CLEAR_STENCIL : 0);
+
+                m_dx11DeferredContext->ClearDepthStencilView(
+                    dsv->GetDX11DepthStencilView().Get(), flags, depth.value_or(1.0f), stencil.value_or(0));
+            }
+        }
     }
 
-    void CommandList::DrawIndexed(uint32_t indexCount)
+    void CommandList::DrawIndexed(uint32_t indexCount, uint32_t indexOffset, uint32_t vertexOffset)
     {
+        m_dx11DeferredContext->DrawIndexed(indexCount, indexOffset, vertexOffset);
     }
 
     void CommandList::UpdateDynamicBuffer(Buffer& buffer, const void* data, uint32_t dataSize)
     {
+        D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
+        m_dx11DeferredContext->Map(buffer.GetDX11Buffer().Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+        memcpy(mappedSubresource.pData, data, dataSize);
+        m_dx11DeferredContext->Unmap(buffer.GetDX11Buffer().Get(), 0);
+    }
+
+    void CommandList::FinishCommandList()
+    {
+        const bool restoreDeferredContextState = false;
+
+        // This will create the command list from the deferred context and record commands into it.
+        // When the method returns, a command list is created containing all the render commands.
+        auto result = m_dx11DeferredContext->FinishCommandList(
+            restoreDeferredContextState, m_dx11CommandList.GetAddressOf());
+
+        if (FAILED(result))
+        {
+            DX_LOG(Error, "CommandList", "Failed to created the command list from the deferred context.");
+        }
     }
 
     void CommandList::ClearCommandList()
     {
+        m_dx11CommandList.Reset();
+    }
+
+    ComPtr<ID3D11CommandList> CommandList::GetDX11CommandList()
+    {
+        return m_dx11CommandList;
+    }
+
+    ComPtr<ID3D11DeviceContext> CommandList::GetDX11DeferredContext()
+    {
+        return m_dx11DeferredContext;
     }
 } // namespace DX

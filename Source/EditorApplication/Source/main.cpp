@@ -8,6 +8,7 @@
 #include <Graphics/Device/DeviceManager.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
+#include <Graphics/CommandList/CommandList.h>
 #endif
 
 #include <Window/WindowManager.h>
@@ -16,6 +17,8 @@
 #include <Tests/UnitTests.h>
 
 #include <memory>
+#include <thread>
+#include <future>
 
 int main()
 {
@@ -113,6 +116,10 @@ int main()
 
         UnitTest::TestsDeviceObjects();
 
+        auto commandList = device->CreateCommandList();
+
+        auto t0 = std::chrono::system_clock::now();
+
         while (window->IsOpen())
         {
             windowManager.PollEvents();
@@ -120,12 +127,37 @@ int main()
             // ------
             // Update
             // ------
+            const auto t1 = std::chrono::system_clock::now();
+            const float deltaTime = std::chrono::duration<float>(t1 - t0).count();
+            t0 = t1;
+            //DX_LOG(Verbose, "Main", "Delta time: %f FPS: %0.1f", deltaTime, 1.0f / deltaTime);
 
             // ------
             // Render
             // ------
-            const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
-            frameBuffer->Clear(clearColor, 0.0f, 0);
+            std::future drawTriangle = std::async(std::launch::async, [&]()
+                {
+
+                    const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+                    commandList->ClearFrameBuffer(*frameBuffer, clearColor);
+
+                    //commandList->BindFrameBuffer(*frameBuffer);
+                    //commandList->BindViewport(mathfu::Vector2(0.0f, 0.0f), mathfu::Vector2(window->GetSize()));
+
+                    //commandList->BindPipeline();
+
+                    //commandList->VertexBuffer();
+                    //commandList->IndexBuffer();
+                    //commandList->Resource();
+
+                    //commandList->DrawIndexed();
+
+                    commandList->FinishCommandList();
+                });
+
+            drawTriangle.wait();
+
+            device->ExecuteCommandLists({ commandList.get() });
 
             swapChain->Present();
         }
