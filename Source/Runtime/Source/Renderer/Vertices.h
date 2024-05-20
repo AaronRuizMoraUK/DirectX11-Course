@@ -10,13 +10,13 @@ namespace DX
 
     struct VertexPC
     {
-        mathfu::Vector3Packed m_position;
-        mathfu::ColorPacked m_color;
+        Math::Vector3Packed m_position;
+        Math::ColorPacked m_color;
     };
 
     struct VertexPUV
     {
-        mathfu::Vector3Packed m_position;
-        mathfu::Vector2Packed m_uv;
+        Math::Vector3Packed m_position;
+        Math::Vector2Packed m_uv;
     };
 } // namespace DX

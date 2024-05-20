@@ -80,7 +80,7 @@ namespace DX
 
             TextureDesc backBufferTextureDesc = {};
             backBufferTextureDesc.m_textureType = TextureType::Texture2D;
-            backBufferTextureDesc.m_dimensions = mathfu::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
+            backBufferTextureDesc.m_dimensions = Math::Vector3Int(dx11BackBufferDesc.Width, dx11BackBufferDesc.Height, 0);
             backBufferTextureDesc.m_mipCount = dx11BackBufferDesc.MipLevels;
             backBufferTextureDesc.m_format = desc.m_bufferFormat;
             backBufferTextureDesc.m_usage = ResourceUsage::Default;

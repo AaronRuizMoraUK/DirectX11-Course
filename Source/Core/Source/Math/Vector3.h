@@ -2,15 +2,15 @@
 
 #include "mathfu/vector.h"
 
-namespace mathfu
+namespace Math
 {
     // Vector3 size might differ depending on platform and build configuration of mathfu (SIMD, padding, etc).
     // To serialize and deserialize as a flat array, use Vector3Packed, which is a POD version of Vector3.
-    using Vector3 = Vector<float, 3>;
-    using Vector3Packed = VectorPacked<float, 3>;
+    using Vector3 = mathfu::Vector<float, 3>;
+    using Vector3Packed = mathfu::VectorPacked<float, 3>;
 
     // This is always stored as POD.
-    using Vector3Int = Vector<int, 3>;
+    using Vector3Int = mathfu::Vector<int, 3>;
 
     /// @brief Calculate the cross product of two Vector3.
     ///
@@ -38,4 +38,4 @@ namespace mathfu
         return v1.Normalized();
     }
 
-}  // namespace mathfu
+}  // namespace Math

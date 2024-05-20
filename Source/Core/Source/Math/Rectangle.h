@@ -2,8 +2,8 @@
 
 #include "mathfu/rect.h"
 
-namespace mathfu
+namespace Math
 {
-    using Rectangle = Rect<float>;
-    using RectangleInt = Rect<int>;
-}  // namespace mathfu
+    using Rectangle = mathfu::Rect<float>;
+    using RectangleInt = mathfu::Rect<int>;
+}  // namespace Math

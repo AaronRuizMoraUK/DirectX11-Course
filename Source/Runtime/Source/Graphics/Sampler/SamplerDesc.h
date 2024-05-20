@@ -19,11 +19,11 @@ namespace DX
         AddressMode m_addressW;
 
         float m_mipBias;
-        mathfu::Vector2 m_mipClamp; // 0 is the largest mipmap. For no clamping use DX::NoMipClamping.
+        Math::Vector2 m_mipClamp; // 0 is the largest mipmap. For no clamping use DX::NoMipClamping.
 
         uint32_t m_maxAnisotropy; // Valid values are 1 to 16.
 
-        mathfu::Color m_borderColor;
+        Math::Color m_borderColor;
         ComparisonFunction m_comparisonFunction;
     };
 } // namespace DX

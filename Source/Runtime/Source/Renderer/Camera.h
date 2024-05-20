@@ -15,16 +15,16 @@ namespace DX
     {
     public:
         Camera();
-        Camera(const mathfu::Vector3& position, const mathfu::Vector3& lookAtPosition);
-        explicit Camera(const mathfu::Transform& transform);
+        Camera(const Math::Vector3& position, const Math::Vector3& lookAtPosition);
+        explicit Camera(const Math::Transform& transform);
         ~Camera();
 
         void Update(float deltaTime);
 
-        mathfu::Transform GetTransform() const { return m_transform; }
+        Math::Transform GetTransform() const { return m_transform; }
 
-        mathfu::Matrix4x4 GetViewMatrix() const;
-        mathfu::Matrix4x4 GetProjectionMatrix() const;
+        Math::Matrix4x4 GetViewMatrix() const;
+        Math::Matrix4x4 GetProjectionMatrix() const;
 
         void SetBuffers();
 
@@ -33,15 +33,15 @@ namespace DX
         float m_moveSpeed = 4.0f;
         float m_rotationSensitivity = 3.0f;
 
-        mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
+        Math::Transform m_transform = Math::Transform::CreateIdentity();
 
     private:
         void CreateBuffers();
 
         struct ViewProjBuffer
         {
-            mathfu::Matrix4x4Packed m_viewMatrix;
-            mathfu::Matrix4x4Packed m_projMatrix;
+            Math::Matrix4x4Packed m_viewMatrix;
+            Math::Matrix4x4Packed m_projMatrix;
         };
 
         ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;

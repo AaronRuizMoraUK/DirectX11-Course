@@ -45,7 +45,7 @@ namespace DX
         glfwTerminate();
     }
 
-    Window* WindowManager::CreateWindowWithTitle(std::string title, const mathfu::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync)
+    Window* WindowManager::CreateWindowWithTitle(std::string title, const Math::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync)
     {
         auto newWindow = std::make_unique<Window>(NextWindowId, std::move(title), size, refreshRate, fullScreen, vSync);
         if (!newWindow->Initialize())

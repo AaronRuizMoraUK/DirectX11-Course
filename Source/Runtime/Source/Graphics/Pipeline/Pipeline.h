@@ -26,6 +26,11 @@ namespace DX
         PipelineDesc m_desc;
 
     private:
+        bool CreateInputLayout();
+        bool CreateRasterizerState();
+        bool CreateBlendState();
+        bool CreateDepthStencilState();
+
         ComPtr<ID3D11InputLayout> m_dx11InputLayout;
         ComPtr<ID3D11RasterizerState> m_dx11RasterizerState;
         ComPtr<ID3D11BlendState> m_dx11BlendState;

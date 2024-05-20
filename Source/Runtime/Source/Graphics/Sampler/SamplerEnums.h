@@ -61,5 +61,5 @@ namespace DX
     };
 
     static const float MaxMipLevel = 3.402823466e+38f;
-    static const mathfu::Vector2 NoMipClamping = mathfu::Vector2(0.0f, MaxMipLevel);
+    static const Math::Vector2 NoMipClamping = Math::Vector2(0.0f, MaxMipLevel);
 } // namespace DX

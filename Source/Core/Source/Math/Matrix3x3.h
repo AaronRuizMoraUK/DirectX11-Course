@@ -4,9 +4,9 @@
 
 #include "mathfu/matrix.h"
 
-namespace mathfu
+namespace Math
 {
-    using Matrix3x3 = Matrix<float, 3, 3>;
+    using Matrix3x3 = mathfu::Matrix<float, 3, 3>;
 
     inline Matrix3x3 CreateMatrix3x3FromBasis(const Vector3& basisX, const Vector3& basisY, const Vector3& basisZ)
     {
@@ -16,4 +16,4 @@ namespace mathfu
         rotation.GetColumn(2) = basisZ;
         return rotation;
     }
-}  // namespace mathfu
+}  // namespace Math

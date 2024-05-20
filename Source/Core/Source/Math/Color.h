@@ -2,12 +2,12 @@
 
 #include "mathfu/vector.h"
 
-namespace mathfu
+namespace Math
 {
     // Color size might differ depending on platform and build configuration of mathfu (SIMD, padding, etc).
     // To serialize and deserialize as a flat array, use ColorPacked, which is a POD version of Color.
-    using Color = Vector<float, 4>;
-    using ColorPacked = VectorPacked<float, 4>;
+    using Color = mathfu::Vector<float, 4>;
+    using ColorPacked = mathfu::VectorPacked<float, 4>;
 
     namespace Colors
     {
@@ -33,4 +33,4 @@ namespace mathfu
         return Color(static_cast<float>(r), static_cast<float>(g),
                      static_cast<float>(b), static_cast<float>(a)) / 255.0f;
     }
-}  // namespace mathfu
+}  // namespace Math

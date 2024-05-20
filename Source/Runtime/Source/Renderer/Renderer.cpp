@@ -178,9 +178,9 @@ namespace DX
         return true;
     }
 
-    void Renderer::ClearColor(const mathfu::Color& color)
+    void Renderer::ClearColor(const Math::Color& color)
     {
-        m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), mathfu::ColorPacked(color).data_);
+        m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), Math::ColorPacked(color).data_);
     }
 
     void Renderer::Present()

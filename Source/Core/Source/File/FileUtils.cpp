@@ -38,7 +38,7 @@ namespace DX
         }
     }
 
-    uint8_t* LoadTexture(const std::string& fileName, mathfu::Vector2Int& textureSizeOut)
+    uint8_t* LoadTexture(const std::string& fileName, Math::Vector2Int& textureSizeOut)
     {
         auto fileNamePath = GetAssetPath() / fileName;
         if (!std::filesystem::exists(fileNamePath))

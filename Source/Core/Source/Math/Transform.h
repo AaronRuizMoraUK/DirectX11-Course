@@ -1,32 +1,32 @@
 #pragma once
 
 #include <Math/Vector3.h>
-#include <Math/Quat.h>
+#include <Math/Quaternion.h>
 #include <Math/Matrix4x4.h>
 
-namespace mathfu
+namespace Math
 {
     class Transform
     {
     public:
         static Transform CreateIdentity();
-        static Transform CreateFromMatrix(const mathfu::Matrix4x4& matrix);
+        static Transform CreateFromMatrix(const Matrix4x4& matrix);
 
         Transform() = default; // Does not initialize members
 
         Transform(
-            const mathfu::Vector3& position, 
-            const mathfu::Quat& rotation = mathfu::Quat::identity, 
-            const mathfu::Vector3& scale = mathfu::Vector3(1.0f));
+            const Vector3& position, 
+            const Quaternion& rotation = Quaternion::identity, 
+            const Vector3& scale = Vector3(1.0f));
 
-        mathfu::Vector3 GetBasisX() const;
-        mathfu::Vector3 GetBasisY() const;
-        mathfu::Vector3 GetBasisZ() const;
+        Vector3 GetBasisX() const;
+        Vector3 GetBasisY() const;
+        Vector3 GetBasisZ() const;
 
-        mathfu::Matrix4x4 ToMatrix() const;
+        Matrix4x4 ToMatrix() const;
 
-        mathfu::Vector3 m_position;
-        mathfu::Quat m_rotation;
-        mathfu::Vector3 m_scale;
+        Vector3 m_position;
+        Quaternion m_rotation;
+        Vector3 m_scale;
     };
-} // namespace mathfu
+} // namespace Math

@@ -3,7 +3,7 @@
 #include "mathfu/matrix.h"
 #include "Math/Vector4.h"
 
-namespace mathfu
+namespace Math
 {
     // Handedness values used in mathfu.
     struct CoordinateSystem
@@ -58,7 +58,7 @@ namespace mathfu
     // 
     // HLSL matrices (float4x4) are also column major by default.
 
-    using Matrix4x4 = Matrix<float, 4, 4>;
+    using Matrix4x4 = mathfu::Matrix<float, 4, 4>;
 
     // Packed version of Matrix4x4
     struct Matrix4x4Packed
@@ -77,4 +77,4 @@ namespace mathfu
 
         Vector4Packed columns[4];
     };
-}  // namespace mathfu
+}  // namespace Math

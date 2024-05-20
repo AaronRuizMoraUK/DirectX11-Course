@@ -27,7 +27,7 @@ namespace DX
 
         // Clears the frame buffer using the immediate context from the graphics device.
         void Clear(
-            std::optional<mathfu::Color> color,
+            std::optional<Math::Color> color,
             std::optional<float> depth = std::nullopt,
             std::optional<uint8_t> stencil = std::nullopt);
 

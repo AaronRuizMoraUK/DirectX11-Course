@@ -14,7 +14,7 @@ namespace DX
 
     // Loads a texture from a file.
     // The filename is relative to the assets folder.
-    uint8_t* LoadTexture(const std::string& fileName, mathfu::Vector2Int& textureSizeOut);
+    uint8_t* LoadTexture(const std::string& fileName, Math::Vector2Int& textureSizeOut);
 
     // Returns the path to the assets folder.
     std::filesystem::path GetAssetPath();

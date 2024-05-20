@@ -23,7 +23,7 @@ namespace DX
         WindowManager(const WindowManager&) = delete;
         WindowManager& operator=(const WindowManager&) = delete;
 
-        Window* CreateWindowWithTitle(std::string title, const mathfu::Vector2Int& size, int refreshRate = 60, bool fullScreen = false, bool vSync = false);
+        Window* CreateWindowWithTitle(std::string title, const Math::Vector2Int& size, int refreshRate = 60, bool fullScreen = false, bool vSync = false);
         void DestroyWindow(WindowId windowId);
 
         Window* GetWindow(WindowId windowId = DefaultWindowId);

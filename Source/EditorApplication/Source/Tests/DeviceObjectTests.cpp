@@ -90,7 +90,7 @@ namespace UnitTest
         samplerDesc.m_mipBias = 0.0f;
         samplerDesc.m_mipClamp = DX::NoMipClamping;
         samplerDesc.m_maxAnisotropy = 1;
-        samplerDesc.m_borderColor = mathfu::Color(0.0f);
+        samplerDesc.m_borderColor = Math::Color(0.0f);
         samplerDesc.m_comparisonFunction = DX::ComparisonFunction::Always;
 
         auto sampler = m_device->CreateSampler(samplerDesc);
@@ -115,7 +115,7 @@ namespace UnitTest
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::Texture1D;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -156,7 +156,7 @@ namespace UnitTest
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::Texture1D;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -178,12 +178,12 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing Texure2D -----");
 
-        mathfu::Vector2Int textureSize;
+        Math::Vector2Int textureSize;
         auto* textureData = DX::LoadTexture("Textures/Wall_Stone_Albedo.png", textureSize);
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::Texture2D;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -206,7 +206,7 @@ namespace UnitTest
         DX_LOG(Info, "Test", " ----- Testing Texure2D Array -----");
 
         const int components = 4;
-        mathfu::Vector2Int textureSize(256, 256);
+        Math::Vector2Int textureSize(256, 256);
         const int arrayCount = 3;
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * arrayCount);
         for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex)
@@ -229,7 +229,7 @@ namespace UnitTest
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::Texture2D;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -252,7 +252,7 @@ namespace UnitTest
         DX_LOG(Info, "Test", " ----- Testing TexureCube -----");
 
         const int components = 4;
-        mathfu::Vector2Int textureSize(256, 256);
+        Math::Vector2Int textureSize(256, 256);
         const int faceCount = 6;
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * faceCount);
         for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
@@ -275,7 +275,7 @@ namespace UnitTest
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::TextureCube;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -300,7 +300,7 @@ namespace UnitTest
         DX_LOG(Info, "Test", " ----- Testing TexureCube Array -----");
 
         const int components = 4;
-        mathfu::Vector2Int textureSize(256, 256);
+        Math::Vector2Int textureSize(256, 256);
         const int faceCount = 6;
         const int arrayCount = 3;
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * faceCount * arrayCount);
@@ -328,7 +328,7 @@ namespace UnitTest
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::TextureCube;
-        textureDesc.m_dimensions = mathfu::Vector3Int(textureSize, 0);
+        textureDesc.m_dimensions = Math::Vector3Int(textureSize, 0);
         textureDesc.m_mipCount = 1;
         textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
         textureDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -353,7 +353,7 @@ namespace UnitTest
         DX_LOG(Info, "Test", " ----- Testing Texure3D -----");
 
         const int components = 4;
-        mathfu::Vector3Int textureSize(256, 256, 256);
+        Math::Vector3Int textureSize(256, 256, 256);
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * textureSize.z);
         for (int depth = 0; depth < textureSize.z; ++depth)
         {

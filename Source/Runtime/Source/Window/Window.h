@@ -15,7 +15,7 @@ namespace DX
     class Window
     {
     public:
-        Window(WindowId windowId, std::string title, const mathfu::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync);
+        Window(WindowId windowId, std::string title, const Math::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync);
         ~Window();
 
         Window(const Window&) = delete;
@@ -27,7 +27,7 @@ namespace DX
         WindowId GetId() const { return m_windowId; }
 
         bool IsOpen() const;
-        const mathfu::Vector2Int& GetSize() const { return m_size; }
+        const Math::Vector2Int& GetSize() const { return m_size; }
         int GetRefreshRate() const { return m_refreshRate; }
         bool IsFullScreen() const { return m_fullScreen; }
         bool IsVSyncEnabled() const { return m_vSync; }
@@ -43,7 +43,7 @@ namespace DX
     private:
         const WindowId m_windowId;
         std::string m_title;
-        mathfu::Vector2Int m_size;
+        Math::Vector2Int m_size;
         int m_refreshRate = 60;
         bool m_fullScreen = false;
         bool m_vSync = true;

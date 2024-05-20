@@ -48,7 +48,7 @@ namespace DX
         ComPtr<ID3D11Device> GetDevice();
         ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
-        void ClearColor(const mathfu::Color& color);
+        void ClearColor(const Math::Color& color);
         void Present();
 
         void SetPipeline();

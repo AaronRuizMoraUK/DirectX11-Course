@@ -9,7 +9,7 @@ namespace DX
     struct TextureDesc
     {
         TextureType m_textureType;
-        mathfu::Vector3Int m_dimensions;
+        Math::Vector3Int m_dimensions;
         uint32_t m_mipCount; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
         ResourceFormat m_format;
         ResourceUsage m_usage;

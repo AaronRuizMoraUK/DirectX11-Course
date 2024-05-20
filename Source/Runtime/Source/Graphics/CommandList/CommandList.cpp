@@ -42,10 +42,10 @@ namespace DX
     {
     }
 
-    void CommandList::BindViewports(const std::vector<mathfu::Rectangle>& rectangles)
+    void CommandList::BindViewports(const std::vector<Math::Rectangle>& rectangles)
     {
         std::vector<D3D11_VIEWPORT> viewports(rectangles.size());
-        std::ranges::transform(rectangles, viewports.begin(), [](const mathfu::Rectangle& rectangle)
+        std::ranges::transform(rectangles, viewports.begin(), [](const Math::Rectangle& rectangle)
         {
             D3D11_VIEWPORT viewport = {};
             viewport.TopLeftX = rectangle.pos.x;
@@ -60,10 +60,10 @@ namespace DX
         m_dx11DeferredContext->RSSetViewports(viewports.size(), viewports.data());
     }
 
-    void CommandList::BindScissors(const std::vector<mathfu::RectangleInt>& rectangles)
+    void CommandList::BindScissors(const std::vector<Math::RectangleInt>& rectangles)
     {
         std::vector<D3D11_RECT> scissorRects(rectangles.size());
-        std::ranges::transform(rectangles, scissorRects.begin(), [](const mathfu::RectangleInt& rectangle)
+        std::ranges::transform(rectangles, scissorRects.begin(), [](const Math::RectangleInt& rectangle)
             {
                 D3D11_RECT rect = {};
                 rect.left = rectangle.pos.x;
@@ -112,7 +112,7 @@ namespace DX
     }
 
     void CommandList::ClearFrameBuffer(FrameBuffer& frameBuffer,
-        std::optional<mathfu::Color> color,
+        std::optional<Math::Color> color,
         std::optional<float> depth,
         std::optional<uint8_t> stencil)
     {
@@ -120,7 +120,7 @@ namespace DX
             rtv&& color.has_value())
         {
             m_dx11DeferredContext->ClearRenderTargetView(
-                rtv->GetDX11RenderTargetView().Get(), mathfu::ColorPacked(*color).data_);
+                rtv->GetDX11RenderTargetView().Get(), Math::ColorPacked(*color).data_);
         }
 
         if (auto dsv = frameBuffer.GetDepthStencilView())

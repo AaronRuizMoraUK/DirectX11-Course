@@ -21,12 +21,12 @@
 
 int main()
 {
-    //const mathfu::Vector2Int windowSize{ 3440, 1440 };
+    //const Math::Vector2Int windowSize{ 3440, 1440 };
     //const int refreshRate = 144;
     //const bool fullScreen = true;
     //const bool vSync = true;
 
-    const mathfu::Vector2Int windowSize{ 1280, 720 };
+    const Math::Vector2Int windowSize{ 1280, 720 };
     const int refreshRate = 144;
     const bool fullScreen = false;
     const bool vSync = true;
@@ -50,13 +50,13 @@ int main()
     }
 
     // Camera
-    auto camera = std::make_unique<DX::Camera>(mathfu::Vector3(2.0f, 1.0f, -2.0f), mathfu::Vector3(0.0f));
+    auto camera = std::make_unique<DX::Camera>(Math::Vector3(2.0f, 1.0f, -2.0f), Math::Vector3(0.0f));
 
     // Rendering objects initialization
     std::vector<std::unique_ptr<DX::Object>> objects;
     objects.push_back(std::make_unique<DX::Triangle>());
-    objects.push_back(std::make_unique<DX::Cube>(mathfu::Vector3(1.0f)));
-    objects[0]->SetTransform(mathfu::Vector3(0.0f, 1.0f, 0.0f));
+    objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
+    objects[0]->SetTransform(Math::Vector3(0.0f, 1.0f, 0.0f));
 
     while (window->IsOpen())
     {
@@ -69,14 +69,14 @@ int main()
         camera->Update(deltaTime);
         //for (auto& object : objects)
         //{
-        //    mathfu::Transform& transform = object->GetTransform();
-        //    transform.m_rotation = transform.m_rotation * mathfu::Quat::FromEulerAngles(mathfu::Vector3(0.1f * deltaTime));
+        //    Math::Transform& transform = object->GetTransform();
+        //    transform.m_rotation = transform.m_rotation * Math::Quaternion::FromEulerAngles(Math::Vector3(0.1f * deltaTime));
         //}
 
         // ------
         // Render
         // ------
-        const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+        const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
         renderer->ClearColor(clearColor);
 
         renderer->SetPipeline();
@@ -137,11 +137,11 @@ int main()
             std::future drawTriangle = std::async(std::launch::async, [&]()
                 {
 
-                    const mathfu::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+                    const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
                     commandList->ClearFrameBuffer(*frameBuffer, clearColor);
 
                     //commandList->BindFrameBuffer(*frameBuffer);
-                    //commandList->BindViewports({ {{0.0f, 0.0f}, mathfu::Vector2{window->GetSize()}} });
+                    //commandList->BindViewports({ {{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
 
                     //commandList->BindPipeline();
 

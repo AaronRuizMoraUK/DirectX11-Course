@@ -36,15 +36,15 @@ namespace DX
 
         // Which viewport/scissor to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader.
         // When not specified it'll use the first one.
-        void BindViewports(const std::vector<mathfu::Rectangle>& rectangles);
-        void BindScissors(const std::vector<mathfu::RectangleInt>& rectangles); // Only used when scissors enabled in pipeline's rasterizer state
+        void BindViewports(const std::vector<Math::Rectangle>& rectangles);
+        void BindScissors(const std::vector<Math::RectangleInt>& rectangles); // Only used when scissors enabled in pipeline's rasterizer state
 
         void BindVertexBuffers(const std::vector<Buffer*>& vertexBuffers);
         void BindIndexBuffer(Buffer& indexBuffer);
         void BindResources(); // CB, SRV, SRWRV, Samplers. Needs resource layouts filled for each shader.
 
         void ClearFrameBuffer(FrameBuffer& frameBuffer, 
-            std::optional<mathfu::Color> color,
+            std::optional<Math::Color> color,
             std::optional<float> depth = std::nullopt,
             std::optional<uint8_t> stencil = std::nullopt);
 

@@ -53,13 +53,13 @@ namespace DX
         // Constant Buffer
         {
             D3D11_BUFFER_DESC constantBufferDesc = {};
-            constantBufferDesc.ByteWidth = sizeof(mathfu::Matrix4x4Packed);
+            constantBufferDesc.ByteWidth = sizeof(Math::Matrix4x4Packed);
             constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
             constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
             constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
             constantBufferDesc.MiscFlags = 0;
 
-            const mathfu::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
+            const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
 
             D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
             constantSubresourceData.pSysMem = &worldMatrix;
@@ -130,11 +130,11 @@ namespace DX
 
         // Update constant buffer with the latest world matrix.
         {
-            const mathfu::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
+            const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
 
             D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
             renderer->GetDeviceContext()->Map(m_worldMatrixConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-            memcpy(mappedSubresource.pData, &worldMatrix, sizeof(mathfu::Matrix4x4Packed));
+            memcpy(mappedSubresource.pData, &worldMatrix, sizeof(Math::Matrix4x4Packed));
             renderer->GetDeviceContext()->Unmap(m_worldMatrixConstantBuffer.Get(), 0);
         }
 
@@ -154,9 +154,9 @@ namespace DX
 
         m_vertexData =
         {
-            { mathfu::Vector3Packed({-0.5f, -0.5f, 0.0f}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({0.0f,   0.5f, 0.0f}), mathfu::Vector2Packed({0.5f, 1.0f}) },
-            { mathfu::Vector3Packed({0.5f,  -0.5f, 0.0f}), mathfu::Vector2Packed({1.0f, 0.0f}) }
+            { Math::Vector3Packed({-0.5f, -0.5f, 0.0f}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({0.0f,   0.5f, 0.0f}), Math::Vector2Packed({0.5f, 1.0f}) },
+            { Math::Vector3Packed({0.5f,  -0.5f, 0.0f}), Math::Vector2Packed({1.0f, 0.0f}) }
         };
 
         m_indexData = { 0, 1, 2 };
@@ -164,9 +164,9 @@ namespace DX
         CreateBuffers();
     }
 
-    Cube::Cube(const mathfu::Vector3& extends)
+    Cube::Cube(const Math::Vector3& extends)
     {
-        const mathfu::Vector3 half = 0.5f * extends;
+        const Math::Vector3 half = 0.5f * extends;
 
         // 6 faces, 2 triangles each face, 3 vertices each triangle.
         // Clockwise order (CW) - LeftHand
@@ -174,40 +174,40 @@ namespace DX
         m_vertexData =
         {
             // Front face
-            { mathfu::Vector3Packed({-half.x, -half.y, -half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({-half.x,  half.y, -half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y, -half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x, -half.y, -half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y, -half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y, -half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y, -half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Back face
-            { mathfu::Vector3Packed({ half.x, -half.y,  half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y,  half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x,  half.y,  half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x, -half.y,  half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y,  half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y,  half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y,  half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y,  half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Right face
-            { mathfu::Vector3Packed({ half.x, -half.y, -half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y, -half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y,  half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x, -half.y,  half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y, -half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y, -half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y,  half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y,  half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Left face
-            { mathfu::Vector3Packed({-half.x, -half.y,  half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({-half.x,  half.y,  half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x,  half.y, -half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x, -half.y, -half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y,  half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y,  half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y, -half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Top face
-            { mathfu::Vector3Packed({-half.x,  half.y, -half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({-half.x,  half.y,  half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y,  half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({ half.x,  half.y, -half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y, -half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y,  half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y,  half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y, -half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Bottom face
-            { mathfu::Vector3Packed({ half.x, -half.y,  half.z}), mathfu::Vector2Packed({0.0f, 0.0f}) },
-            { mathfu::Vector3Packed({ half.x, -half.y, -half.z}), mathfu::Vector2Packed({0.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x, -half.y, -half.z}), mathfu::Vector2Packed({1.0f, 1.0f}) },
-            { mathfu::Vector3Packed({-half.x, -half.y,  half.z}), mathfu::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y,  half.z}), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y, -half.z}), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y,  half.z}), Math::Vector2Packed({1.0f, 0.0f}) },
         };
 
         m_indexData =

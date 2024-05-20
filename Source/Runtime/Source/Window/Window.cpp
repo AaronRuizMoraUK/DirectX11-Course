@@ -12,7 +12,7 @@
 
 namespace DX
 {
-    Window::Window(WindowId windowId, std::string title, const mathfu::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync)
+    Window::Window(WindowId windowId, std::string title, const Math::Vector2Int& size, int refreshRate, bool fullScreen, bool vSync)
         : m_windowId(windowId)
         , m_title(std::move(title))
         , m_size(size)

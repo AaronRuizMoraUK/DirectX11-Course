@@ -26,9 +26,9 @@ namespace DX
 
         uint32_t GetIndexCount() const { return m_indexData.size(); }
 
-        mathfu::Transform& GetTransform() { return m_transform; }
-        const mathfu::Transform& GetTransform() const { return m_transform; }
-        void SetTransform(const mathfu::Transform& transform) { m_transform = transform; }
+        Math::Transform& GetTransform() { return m_transform; }
+        const Math::Transform& GetTransform() const { return m_transform; }
+        void SetTransform(const Math::Transform& transform) { m_transform = transform; }
 
     protected:
         void CreateBuffers();
@@ -36,7 +36,7 @@ namespace DX
         uint32_t GetVertexSize() const { return sizeof(VertexPUV); }
         uint32_t GetIndexxSize() const { return sizeof(Index); }
 
-        mathfu::Transform m_transform = mathfu::Transform::CreateIdentity();
+        Math::Transform m_transform = Math::Transform::CreateIdentity();
 
         std::vector<VertexPUV> m_vertexData;
         std::vector<Index> m_indexData;
@@ -47,7 +47,7 @@ namespace DX
         ComPtr<ID3D11Buffer> m_worldMatrixConstantBuffer;
 
         uint8_t* m_textureData = nullptr;
-        mathfu::Vector2Int m_textureSize = mathfu::Vector2Int(0);
+        Math::Vector2Int m_textureSize = Math::Vector2Int(0);
 
         ComPtr<ID3D11Texture2D> m_texture;
         ComPtr<ID3D11ShaderResourceView> m_textureView;
@@ -63,6 +63,6 @@ namespace DX
     class Cube : public Object
     {
     public:
-        Cube(const mathfu::Vector3& extends);
+        Cube(const Math::Vector3& extends);
     };
 } // namespace DX

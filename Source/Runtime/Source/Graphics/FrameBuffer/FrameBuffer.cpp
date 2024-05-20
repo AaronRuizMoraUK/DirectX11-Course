@@ -76,12 +76,12 @@ namespace DX
         DX_LOG(Info, "FrameBuffer", "Graphics frame buffer destroyed.");
     }
 
-    void FrameBuffer::Clear(std::optional<mathfu::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil)
+    void FrameBuffer::Clear(std::optional<Math::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil)
     {
         if (m_colorRenderTargetView && color.has_value())
         {
             m_ownerDevice->GetDX11ImmediateContext()->ClearRenderTargetView(
-                m_colorRenderTargetView->GetDX11RenderTargetView().Get(), mathfu::ColorPacked(*color).data_);
+                m_colorRenderTargetView->GetDX11RenderTargetView().Get(), Math::ColorPacked(*color).data_);
         }
 
         if (m_depthStencilView)
