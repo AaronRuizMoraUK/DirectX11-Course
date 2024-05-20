@@ -4,9 +4,10 @@
 #include <Graphics/Shader/ShaderBytecode.h>
 #include <Graphics/Pipeline/InputLayout/InputLayout.h>
 #include <Graphics/Pipeline/RasterizerState/RasterizerState.h>
+#include <Graphics/Pipeline/BlendState/BlendState.h>
 #include <Log/Log.h>
 
-#include <algorithm>
+#include <ranges>
 
 #include <d3d11.h>
 #include <Graphics/DirectX/Utils.h>
@@ -66,8 +67,8 @@ namespace DX
                 inputElement.Format = ToDX11ResourceFormat(element.m_format);
                 inputElement.InputSlot = element.m_inputSlot;
                 inputElement.AlignedByteOffset = element.m_alignedByteOffset;
-                inputElement.InputSlotClass = (element.m_instanceDataStepRate > 0) 
-                    ? D3D11_INPUT_PER_INSTANCE_DATA 
+                inputElement.InputSlotClass = (element.m_instanceDataStepRate > 0)
+                    ? D3D11_INPUT_PER_INSTANCE_DATA
                     : D3D11_INPUT_PER_VERTEX_DATA;
                 inputElement.InstanceDataStepRate = element.m_instanceDataStepRate;
                 return inputElement;
@@ -109,9 +110,22 @@ namespace DX
     bool Pipeline::CreateBlendState()
     {
         D3D11_BLEND_DESC blendDesc = {};
-        //BOOL AlphaToCoverageEnable;
-        //BOOL IndependentBlendEnable;
-        //D3D11_RENDER_TARGET_BLEND_DESC RenderTarget[8];
+        blendDesc.AlphaToCoverageEnable = m_desc.m_blendState.m_alphaToCoverageEnabled;
+        blendDesc.IndependentBlendEnable = m_desc.m_blendState.m_independentBlendEnabled;
+        std::ranges::transform(m_desc.m_blendState.renderTargetBlends, std::begin(blendDesc.RenderTarget),
+            [](const RenderTargetBlend& renderTargetBlend)
+            {
+                D3D11_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc = {};
+                renderTargetBlendDesc.BlendEnable = renderTargetBlend.m_blendEnabled;
+                renderTargetBlendDesc.SrcBlend = ToDX11Blend(renderTargetBlend.m_srcBlend);
+                renderTargetBlendDesc.DestBlend = ToDX11Blend(renderTargetBlend.m_destBlend);
+                renderTargetBlendDesc.BlendOp = ToDX11BlendOperation(renderTargetBlend.m_blendOp);
+                renderTargetBlendDesc.SrcBlendAlpha = ToDX11Blend(renderTargetBlend.m_srcBlendAlpha);
+                renderTargetBlendDesc.DestBlendAlpha = ToDX11Blend(renderTargetBlend.m_destBlendAlpha);
+                renderTargetBlendDesc.BlendOpAlpha = ToDX11BlendOperation(renderTargetBlend.m_blendOpAlpha);
+                renderTargetBlendDesc.RenderTargetWriteMask = renderTargetBlend.m_renderTargetWriteMask;
+                return renderTargetBlendDesc;
+            });
 
         auto result = m_ownerDevice->GetDX11Device()->CreateBlendState(
             &blendDesc,

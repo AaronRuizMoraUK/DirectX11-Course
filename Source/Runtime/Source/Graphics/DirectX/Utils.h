@@ -5,6 +5,7 @@
 #include <Graphics/Resource/Buffer/BufferEnums.h>
 #include <Graphics/Sampler/SamplerEnums.h>
 #include <Graphics/Pipeline/RasterizerState/RasterizerStateEnums.h>
+#include <Graphics/Pipeline/BlendState/BlendStateEnums.h>
 
 #include <d3d11.h>
 
@@ -29,4 +30,8 @@ namespace DX
     D3D11_FILL_MODE ToDX11FillMode(FaceFillMode fillMode);
 
     D3D11_CULL_MODE ToDX11CullMode(FaceCullMode cullMode);
+
+    D3D11_BLEND ToDX11Blend(Blend blend);
+
+    D3D11_BLEND_OP ToDX11BlendOperation(BlendOperation blendOperation);
 }

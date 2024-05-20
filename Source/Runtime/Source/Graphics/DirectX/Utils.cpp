@@ -196,7 +196,7 @@ namespace DX
             magFilter == FilterSampling::Anisotropic ||
             mipFilter == FilterSampling::Anisotropic)
         {
-            switch(filterMode)
+            switch (filterMode)
             {
             case FilterMode::Normal: return D3D11_FILTER_ANISOTROPIC;
             case FilterMode::Minimum: return D3D11_FILTER_MINIMUM_ANISOTROPIC;
@@ -365,6 +365,48 @@ namespace DX
         default:
             DX_LOG(Error, "Utils", "Unknown cull mode %d", cullMode);
             return D3D11_CULL_NONE;
+        }
+    }
+
+    D3D11_BLEND ToDX11Blend(Blend blend)
+    {
+        switch (blend)
+        {
+        case Blend::Zero: return D3D11_BLEND_ZERO;
+        case Blend::One:  return D3D11_BLEND_ONE;
+        case Blend::SrcColor: return D3D11_BLEND_SRC_COLOR;
+        case Blend::InvSrcColor: return D3D11_BLEND_INV_SRC_COLOR;
+        case Blend::SrcAlpha: return D3D11_BLEND_SRC_ALPHA;
+        case Blend::InvSrcAlpha: return D3D11_BLEND_INV_SRC_ALPHA;
+        case Blend::DestAlpha: return D3D11_BLEND_DEST_ALPHA;
+        case Blend::InvDestAlpha: return D3D11_BLEND_INV_DEST_ALPHA;
+        case Blend::DestColor: return D3D11_BLEND_DEST_COLOR;
+        case Blend::InvDestColor: return D3D11_BLEND_INV_DEST_COLOR;
+        case Blend::SrcAlphaSat: return D3D11_BLEND_SRC_ALPHA_SAT;
+        case Blend::BlendFactor: return D3D11_BLEND_BLEND_FACTOR;
+        case Blend::InvBlendFactor: return D3D11_BLEND_INV_BLEND_FACTOR;
+        case Blend::Src1Color: return D3D11_BLEND_SRC1_COLOR;
+        case Blend::InvSrc1Color: return D3D11_BLEND_INV_SRC1_COLOR;
+        case Blend::Src1Alpha: return D3D11_BLEND_SRC1_ALPHA;
+        case Blend::InvSrc1Alpha: return D3D11_BLEND_INV_SRC1_ALPHA;
+
+        case Blend::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown blend %d", blend);
+            return D3D11_BLEND_ZERO;
+        }
+    }
+
+    D3D11_BLEND_OP ToDX11BlendOperation(BlendOperation blendOperation)
+    {
+        switch (blendOperation)
+        {
+        case BlendOperation::Add: return D3D11_BLEND_OP_ADD;
+
+        case BlendOperation::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown blend operation %d", blendOperation);
+            return D3D11_BLEND_OP_ADD;
         }
     }
 }
