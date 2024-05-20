@@ -59,6 +59,7 @@ namespace UnitTest
         tests.TestTypedBuffer();
         tests.TestStructuredBuffer();
         tests.TestRawBuffer();
+        DX_LOG(Info, "Test", " --------------------------");
     }
 
     void DeviceObjectTests::TestShader()

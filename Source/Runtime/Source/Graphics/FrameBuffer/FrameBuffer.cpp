@@ -7,8 +7,6 @@
 #include <Graphics/Resource/Views/DepthStencilView.h>
 #include <Log/Log.h>
 
-#include <d3d11.h>
-
 namespace DX
 {
     FrameBuffer::FrameBuffer(Device* device, const FrameBufferDesc& desc)
@@ -74,26 +72,6 @@ namespace DX
     FrameBuffer::~FrameBuffer()
     {
         DX_LOG(Info, "FrameBuffer", "Graphics frame buffer destroyed.");
-    }
-
-    void FrameBuffer::Clear(std::optional<Math::Color> color, std::optional<float> depth, std::optional<uint8_t> stencil)
-    {
-        if (m_colorRenderTargetView && color.has_value())
-        {
-            m_ownerDevice->GetDX11ImmediateContext()->ClearRenderTargetView(
-                m_colorRenderTargetView->GetDX11RenderTargetView().Get(), Math::ColorPacked(*color).data_);
-        }
-
-        if (m_depthStencilView)
-        {
-            if (depth.has_value() || stencil.has_value())
-            {
-                uint32_t flags = (depth.has_value() ? D3D11_CLEAR_DEPTH : 0) | (stencil.has_value() ? D3D11_CLEAR_STENCIL : 0);
-
-                m_ownerDevice->GetDX11ImmediateContext()->ClearDepthStencilView(
-                    m_depthStencilView->GetDX11DepthStencilView().Get(), flags, depth.value_or(1.0f), stencil.value_or(0));
-            }
-        }
     }
 
     std::shared_ptr<RenderTargetView> FrameBuffer::GetColorRenderTargetView()

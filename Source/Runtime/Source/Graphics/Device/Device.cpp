@@ -1,5 +1,6 @@
 #include <Graphics/Device/Device.h>
 
+#include <Graphics/Device/DeviceContext.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
 #include <Graphics/Resource/Buffer/Buffer.h>
@@ -33,6 +34,8 @@ namespace DX
         flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
+        ComPtr<ID3D11DeviceContext> dx11DeviceContext;
+
         auto result = D3D11CreateDevice(
             nullptr, // IDXIGAdapter
             D3D_DRIVER_TYPE_HARDWARE,
@@ -43,12 +46,20 @@ namespace DX
             D3D11_SDK_VERSION,
             m_dx11Device.GetAddressOf(),
             nullptr, // Feature level selected
-            m_dx11ImmediateContext.GetAddressOf()
+            dx11DeviceContext.GetAddressOf()
         );
 
         if (FAILED(result))
         {
             DX_LOG(Fatal, "Device", "Failed to create D3D11 device.");
+            return;
+        }
+
+        // Create the immediate context.
+        m_immediateContext = std::make_unique<DeviceContext>(this, DeviceContextType::Immediate, dx11DeviceContext.Get());
+        if (!m_immediateContext)
+        {
+            DX_LOG(Fatal, "Device", "Failed to create immediate device context.");
             return;
         }
 
@@ -83,6 +94,8 @@ namespace DX
 #endif
 
         m_deviceObjects.clear();
+
+        m_immediateContext.reset();
 
         DX_LOG(Info, "Device", "Graphics device %u destroyed.", m_deviceId);
     }
@@ -185,19 +198,20 @@ namespace DX
         {
             // Immediate context state is cleared before and after a command list is executed.
             // A command list has no concept of inheritance.
-            m_dx11ImmediateContext->ExecuteCommandList(commandList->GetDX11CommandList().Get(), restoreContextState);
+            m_immediateContext->GetDX11DeviceContext()->ExecuteCommandList(
+                commandList->GetDX11CommandList().Get(), restoreContextState);
 
             commandList->ClearCommandList();
         }
     }
 
+    DeviceContext& Device::GetImmediateContext()
+    {
+        return *m_immediateContext;
+    }
+
     ComPtr<ID3D11Device> Device::GetDX11Device()
     {
         return m_dx11Device;
-    }
-
-    ComPtr<ID3D11DeviceContext> Device::GetDX11ImmediateContext()
-    {
-        return m_dx11ImmediateContext;
     }
 } // namespace DX

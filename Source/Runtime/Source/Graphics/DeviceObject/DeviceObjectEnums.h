@@ -6,6 +6,7 @@ namespace DX
     {
         Invalid = 0,
 
+        DeviceContext,
         SwapChain,
         FrameBuffer,
         Buffer,

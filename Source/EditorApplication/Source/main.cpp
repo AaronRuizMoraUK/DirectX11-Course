@@ -6,6 +6,7 @@
 #include <Renderer/Camera.h>
 #else
 #include <Graphics/Device/DeviceManager.h>
+#include <Graphics/Device/DeviceContext.h>
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
 #include <Graphics/CommandList/CommandList.h>
@@ -115,7 +116,8 @@ int main()
 
         UnitTest::TestsDeviceObjects();
 
-        auto commandList = device->CreateCommandList();
+        auto cmdListTriangle = device->CreateCommandList();
+        auto cmdListCube = device->CreateCommandList();
 
         auto t0 = std::chrono::system_clock::now();
 
@@ -134,29 +136,42 @@ int main()
             // ------
             // Render
             // ------
-            std::future drawTriangle = std::async(std::launch::async, [&]()
+            const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
+            device->GetImmediateContext().ClearFrameBuffer(*frameBuffer, clearColor);
+
+            device->GetImmediateContext().BindFrameBuffer(*frameBuffer);
+            device->GetImmediateContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
+
+            std::future drawTriangle = std::async(std::launch::async, [cmdListTriangle]()
                 {
+                    //cmdListTriangle->GetDeferredContext().BindPipeline();
 
-                    const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
-                    commandList->ClearFrameBuffer(*frameBuffer, clearColor);
+                    //cmdListTriangle->GetDeferredContext().BindPVertexBuffer();
+                    //cmdListTriangle->GetDeferredContext().BindPIndexBuffer();
+                    //cmdListTriangle->GetDeferredContext().BindPResource();
 
-                    //commandList->BindFrameBuffer(*frameBuffer);
-                    //commandList->BindViewports({ {{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
+                    //cmdListTriangle->GetDeferredContext().DrawIndexed();
 
-                    //commandList->BindPipeline();
+                    cmdListTriangle->FinishCommandList();
+                });
 
-                    //commandList->VertexBuffer();
-                    //commandList->IndexBuffer();
-                    //commandList->Resource();
+            std::future drawCube = std::async(std::launch::async, [cmdListCube]()
+                {
+                    //cmdListCube->GetDeferredContext().BindPipeline();
 
-                    //commandList->DrawIndexed();
+                    //cmdListCube->GetDeferredContext().BindPVertexBuffer();
+                    //cmdListCube->GetDeferredContext().BindPIndexBuffer();
+                    //cmdListCube->GetDeferredContext().BindPResource();
 
-                    commandList->FinishCommandList();
+                    //cmdListCube->DrawIndexed();
+
+                    cmdListCube->FinishCommandList();
                 });
 
             drawTriangle.wait();
+            drawCube.wait();
 
-            device->ExecuteCommandLists({ commandList.get() });
+            device->ExecuteCommandLists({ cmdListTriangle.get(), cmdListCube.get() });
 
             swapChain->Present();
         }

@@ -8,11 +8,11 @@
 
 #include <Graphics/DirectX/ComPtr.h>
 class ID3D11Device;
-class ID3D11DeviceContext;
 
 namespace DX
 {
     class DeviceObject;
+    class DeviceContext;
     class SwapChain;
     class FrameBuffer;
     class Buffer;
@@ -72,8 +72,9 @@ namespace DX
 
         void ExecuteCommandLists(std::vector<CommandList*> commandLists);
 
+        DeviceContext& GetImmediateContext();
+
         ComPtr<ID3D11Device> GetDX11Device();
-        ComPtr<ID3D11DeviceContext> GetDX11ImmediateContext();
 
     private:
         using DeviceObjects = std::vector<std::shared_ptr<DeviceObject>>;
@@ -81,8 +82,9 @@ namespace DX
         const DeviceId m_deviceId;
         DeviceObjects m_deviceObjects;
 
+        std::unique_ptr<DeviceContext> m_immediateContext;
+
     private:
         ComPtr<ID3D11Device> m_dx11Device;
-        ComPtr<ID3D11DeviceContext> m_dx11ImmediateContext;
     };
 } // namespace DX
