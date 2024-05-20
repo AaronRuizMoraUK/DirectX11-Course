@@ -20,29 +20,29 @@ namespace DX
         }
     }
 
-    uint32_t ToDX11TextureBindFlags(TextureBindFlags bindFlag)
+    uint32_t ToDX11TextureBindFlags(TextureBindFlags bindFlags)
     {
         uint32_t dx11BindFlags = 0;
 
-        dx11BindFlags |= (bindFlag & TextureBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
-        dx11BindFlags |= (bindFlag & TextureBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
-        dx11BindFlags |= (bindFlag & TextureBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
-        dx11BindFlags |= (bindFlag & TextureBind_DepthStencil) ? D3D11_BIND_DEPTH_STENCIL : 0;
+        dx11BindFlags |= (bindFlags & TextureBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
+        dx11BindFlags |= (bindFlags & TextureBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+        dx11BindFlags |= (bindFlags & TextureBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
+        dx11BindFlags |= (bindFlags & TextureBind_DepthStencil) ? D3D11_BIND_DEPTH_STENCIL : 0;
 
         return dx11BindFlags;
     }
 
-    uint32_t ToDX11BufferBindFlags(BufferBindFlags bindFlag)
+    uint32_t ToDX11BufferBindFlags(BufferBindFlags bindFlags)
     {
         uint32_t dx11BindFlags = 0;
 
-        dx11BindFlags |= (bindFlag & BufferBind_VertexBuffer) ? D3D11_BIND_VERTEX_BUFFER : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_IndexBuffer) ? D3D11_BIND_INDEX_BUFFER : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_ConstantBuffer) ? D3D11_BIND_CONSTANT_BUFFER : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
-        dx11BindFlags |= (bindFlag & BufferBind_StreamOutput) ? D3D11_BIND_STREAM_OUTPUT : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_VertexBuffer) ? D3D11_BIND_VERTEX_BUFFER : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_IndexBuffer) ? D3D11_BIND_INDEX_BUFFER : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_ConstantBuffer) ? D3D11_BIND_CONSTANT_BUFFER : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_ShaderResource) ? D3D11_BIND_SHADER_RESOURCE : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_ShaderRWResource) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_RenderTarget) ? D3D11_BIND_RENDER_TARGET : 0;
+        dx11BindFlags |= (bindFlags & BufferBind_StreamOutput) ? D3D11_BIND_STREAM_OUTPUT : 0;
 
         return dx11BindFlags;
     }
@@ -414,6 +414,18 @@ namespace DX
         }
     }
 
+    uint8_t ToDX11ColorWriteMask(ColorWriteMask colorWriteMask)
+    {
+        uint8_t dx11ColorWriteMask = 0;
+
+        dx11ColorWriteMask |= (colorWriteMask & ColorWrite_Red) ? D3D11_COLOR_WRITE_ENABLE_RED : 0;
+        dx11ColorWriteMask |= (colorWriteMask & ColorWrite_Green) ? D3D11_COLOR_WRITE_ENABLE_GREEN : 0;
+        dx11ColorWriteMask |= (colorWriteMask & ColorWrite_Blue) ? D3D11_COLOR_WRITE_ENABLE_BLUE : 0;
+        dx11ColorWriteMask |= (colorWriteMask & ColorWrite_Alpha) ? D3D11_COLOR_WRITE_ENABLE_ALPHA : 0;
+
+        return dx11ColorWriteMask;
+    }
+
     D3D11_STENCIL_OP ToDX11StencilOp(StencilOp stencilOp)
     {
         switch (stencilOp)
@@ -442,6 +454,34 @@ namespace DX
         desc.StencilPassOp = ToDX11StencilOp(stencilBehaviour.m_stencilPassOp);
         desc.StencilFunc = ToDX11ComparisonFunction(stencilBehaviour.m_stencilComparisonFunction);
         return desc;
+    }
+
+    const char* ToDX11InputSemanticName(InputSemantic semantic, const char* semanticCustomName)
+    {
+        switch (semantic)
+        {
+        case InputSemantic::Position: return "SV_Position";
+        case InputSemantic::Normal: return "NORMAL";
+        case InputSemantic::Tangent: return "TANGENT";
+        case InputSemantic::Binormal: return "BINORMAL";
+        case InputSemantic::TexCoord: return "TEXCOORD";
+        case InputSemantic::Color: return "COLOR";
+        case InputSemantic::BlendIndices: return "BLENDINDICES";
+        case InputSemantic::BlendWeight: return "BLENDWEIGHT";
+
+        case InputSemantic::CustomName:
+            if (semanticCustomName == nullptr)
+            {
+                DX_LOG(Error, "Utils", "Semantic custom name is null");
+                return "UNDEFINED";
+            }
+            return semanticCustomName;
+
+        case InputSemantic::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown semantic %d", semantic);
+            return "UNDEFINED";
+        }
     }
 
     D3D11_PRIMITIVE_TOPOLOGY ToDX11PrimitiveTopology(PrimitiveTopology primitiveTopology, uint32_t controlPointPatchListCount)

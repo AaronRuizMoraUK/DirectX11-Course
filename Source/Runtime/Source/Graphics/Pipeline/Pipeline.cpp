@@ -60,10 +60,11 @@ namespace DX
         }
 
         std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc(m_desc.m_inputLayout.m_inputElements.size());
-        std::ranges::transform(m_desc.m_inputLayout.m_inputElements, inputLayoutDesc.begin(), [](const InputElement& element)
+        std::ranges::transform(m_desc.m_inputLayout.m_inputElements, inputLayoutDesc.begin(), 
+            [](const InputElement& element)
             {
                 D3D11_INPUT_ELEMENT_DESC inputElement = {};
-                inputElement.SemanticName = element.m_semanticName.c_str();
+                inputElement.SemanticName = ToDX11InputSemanticName(element.m_semantic, element.m_semanticCustomName.c_str());
                 inputElement.SemanticIndex = element.m_semanticIndex;
                 inputElement.Format = ToDX11ResourceFormat(element.m_format);
                 inputElement.InputSlot = element.m_inputSlot;
@@ -124,7 +125,7 @@ namespace DX
                 renderTargetBlendDesc.SrcBlendAlpha = ToDX11Blend(renderTargetBlend.m_srcBlendAlpha);
                 renderTargetBlendDesc.DestBlendAlpha = ToDX11Blend(renderTargetBlend.m_destBlendAlpha);
                 renderTargetBlendDesc.BlendOpAlpha = ToDX11BlendOperation(renderTargetBlend.m_blendOpAlpha);
-                renderTargetBlendDesc.RenderTargetWriteMask = renderTargetBlend.m_renderTargetWriteMask;
+                renderTargetBlendDesc.RenderTargetWriteMask = ToDX11ColorWriteMask(renderTargetBlend.m_colorWriteMask);
                 return renderTargetBlendDesc;
             });
 
@@ -156,27 +157,27 @@ namespace DX
         return SUCCEEDED(result);
     }
 
-    PipelineShaders& Pipeline::GetPipelineShaders()
+    const PipelineShaders& Pipeline::GetPipelineShaders() const
     {
         return m_desc.m_shaders;
     }
 
-    ComPtr<ID3D11InputLayout> Pipeline::GetInputLayout()
+    ComPtr<ID3D11InputLayout> Pipeline::GetDX11InputLayout()
     {
         return m_dx11InputLayout;
     }
 
-    ComPtr<ID3D11RasterizerState> Pipeline::GetRasterizerState()
+    ComPtr<ID3D11RasterizerState> Pipeline::GetDX11RasterizerState()
     {
         return m_dx11RasterizerState;
     }
 
-    ComPtr<ID3D11BlendState> Pipeline::GetBlendState()
+    ComPtr<ID3D11BlendState> Pipeline::GetDX11BlendState()
     {
         return m_dx11BlendState;
     }
 
-    ComPtr<ID3D11DepthStencilState> Pipeline::GetDepthStencilState()
+    ComPtr<ID3D11DepthStencilState> Pipeline::GetDX11DepthStencilState()
     {
         return m_dx11DepthStencilState;
     }

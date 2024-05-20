@@ -15,7 +15,8 @@ namespace DX
         Blend m_srcBlendAlpha;
         Blend m_destBlendAlpha;
         BlendOperation m_blendOpAlpha;
-        uint8_t m_renderTargetWriteMask;
+
+        ColorWriteMask m_colorWriteMask; // Bitwise operation of ColorWrite
     };
 
     struct BlendState

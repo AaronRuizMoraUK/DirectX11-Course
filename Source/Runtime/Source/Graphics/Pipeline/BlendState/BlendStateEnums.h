@@ -39,4 +39,18 @@ namespace DX
 
         Count
     };
+
+    // Bitwise operations on ResourceBindFlag are allowed.
+    enum ColorWrite
+    {
+        ColorWrite_Red = 1 << 0,
+        ColorWrite_Green = 1 << 1,
+        ColorWrite_Blue = 1 << 2,
+        ColorWrite_Alpha = 1 << 3,
+
+        ColorWrite_All = ColorWrite_Red | ColorWrite_Green | ColorWrite_Blue | ColorWrite_Alpha,
+    };
+
+    using ColorWriteMask = uint8_t;
+
 } // namespace DX

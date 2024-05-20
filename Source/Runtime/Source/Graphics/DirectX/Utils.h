@@ -15,9 +15,9 @@ namespace DX
 {
     D3D11_USAGE ToDX11ResourceUsage(ResourceUsage usage);
 
-    uint32_t ToDX11TextureBindFlags(TextureBindFlags bindFlag);
+    uint32_t ToDX11TextureBindFlags(TextureBindFlags bindFlags);
 
-    uint32_t ToDX11BufferBindFlags(BufferBindFlags bindFlag);
+    uint32_t ToDX11BufferBindFlags(BufferBindFlags bindFlags);
 
     uint32_t ToDX11ResourceCPUAccess(ResourceCPUAccess cpuAccess);
 
@@ -37,9 +37,13 @@ namespace DX
 
     D3D11_BLEND_OP ToDX11BlendOperation(BlendOperation blendOperation);
 
+    uint8_t ToDX11ColorWriteMask(ColorWriteMask colorWriteMask);
+
     D3D11_STENCIL_OP ToDX11StencilOp(StencilOp stencilOp);
 
     D3D11_DEPTH_STENCILOP_DESC ToDX11StencipBehaviour(StencilBehaviour stencilBehaviour);
+
+    const char* ToDX11InputSemanticName(InputSemantic semantic, const char* semanticCustomName = nullptr);
 
     D3D11_PRIMITIVE_TOPOLOGY ToDX11PrimitiveTopology(PrimitiveTopology primitiveTopology, uint32_t controlPointPatchListCount = 0);
 }

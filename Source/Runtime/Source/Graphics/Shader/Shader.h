@@ -27,6 +27,17 @@ namespace DX
         DeviceObjectType GetType() const override { return DeviceObjectType::Shader; }
 
         const ShaderDesc& GetShaderDesc() const { return m_desc; }
+        ShaderType GetShaderType() const { return m_desc.m_shaderInfo.m_shaderType; }
+
+        // Pass one of the DX11 shader types as the template parameter to get the DX11 shader.
+        // If the shader is holding another shader type, the result is nullptr.
+        // For example: GetDX11ShaderAs<ID3D11VertexShader>()
+        template<typename T>
+        T* GetDX11ShaderAs() const
+        {
+            auto* dx11Shader = std::get_if<ComPtr<T>>(&m_dx11Shader);
+            return (dx11Shader) ? dx11Shader->Get() : nullptr;
+        }
 
     private:
         ShaderDesc m_desc;

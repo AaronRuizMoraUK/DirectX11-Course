@@ -2,9 +2,27 @@
 
 namespace DX
 {
+    enum class InputSemantic
+    {
+        Unknown = 0,
+
+        Position,
+        Normal,
+        Tangent,
+        Binormal,
+        TexCoord,
+        Color,
+        BlendIndices,
+        BlendWeight,
+
+        CustomName,
+
+        Count
+    };
+
     enum class PrimitiveTopology
     {
-        Undefined,
+        Undefined = 0,
         PointList,
         LineList,
         LineStrip,

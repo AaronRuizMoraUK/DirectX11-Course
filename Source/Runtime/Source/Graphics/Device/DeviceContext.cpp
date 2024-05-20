@@ -75,12 +75,58 @@ namespace DX
 
     void DeviceContext::BindPipeline(Pipeline& pipeline)
     {
+        for (auto& shader : pipeline.GetPipelineShaders())
+        {
+            switch (shader->GetShaderType())
+            {
+            case ShaderType_Unknown:
+                break;
+
+            case ShaderType_Vertex:
+                m_dx11DeviceContext->VSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11VertexShader>() : nullptr, nullptr, 0);
+                break;
+
+            case ShaderType_Hull:
+                m_dx11DeviceContext->HSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11HullShader>() : nullptr, nullptr, 0);
+                break;
+
+            case ShaderType_Domain:
+                m_dx11DeviceContext->DSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11DomainShader>() : nullptr, nullptr, 0);
+                break;
+
+            case ShaderType_Geometry:
+                m_dx11DeviceContext->GSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11GeometryShader>() : nullptr, nullptr, 0);
+                break;
+
+            case ShaderType_Pixel:
+                m_dx11DeviceContext->PSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11PixelShader>() : nullptr, nullptr, 0);
+                break;
+
+            case ShaderType_Compute:
+                m_dx11DeviceContext->CSSetShader(shader ? shader->GetDX11ShaderAs<ID3D11ComputeShader>() : nullptr, nullptr, 0);
+                break;
+
+            default:
+                DX_LOG(Fatal, "DeviceContext", "Unknown shader type %d", shader->GetShaderType());
+                break;
+            }
+        }
+
+        m_dx11DeviceContext->IASetInputLayout(pipeline.GetDX11InputLayout().Get());
+        m_dx11DeviceContext->IASetPrimitiveTopology(ToDX11PrimitiveTopology(
+            pipeline.GetPipelineDesc().m_inputLayout.m_primitiveTopology,
+            pipeline.GetPipelineDesc().m_inputLayout.m_controlPointPatchListCount));
+
+        m_dx11DeviceContext->RSSetState(pipeline.GetDX11RasterizerState().Get());
+        m_dx11DeviceContext->OMSetBlendState(pipeline.GetDX11BlendState().Get(), nullptr, 0xFFFFFFFF);
+        m_dx11DeviceContext->OMSetDepthStencilState(pipeline.GetDX11DepthStencilState().Get(), 0);
     }
 
     void DeviceContext::BindViewports(const std::vector<Math::Rectangle>& rectangles)
     {
         std::vector<D3D11_VIEWPORT> viewports(rectangles.size());
-        std::ranges::transform(rectangles, viewports.begin(), [](const Math::Rectangle& rectangle)
+        std::ranges::transform(rectangles, viewports.begin(), 
+            [](const Math::Rectangle& rectangle)
             {
                 D3D11_VIEWPORT viewport = {};
                 viewport.TopLeftX = rectangle.pos.x;
@@ -98,7 +144,8 @@ namespace DX
     void DeviceContext::BindScissors(const std::vector<Math::RectangleInt>& rectangles)
     {
         std::vector<D3D11_RECT> scissorRects(rectangles.size());
-        std::ranges::transform(rectangles, scissorRects.begin(), [](const Math::RectangleInt& rectangle)
+        std::ranges::transform(rectangles, scissorRects.begin(),
+            [](const Math::RectangleInt& rectangle)
             {
                 D3D11_RECT rect = {};
                 rect.left = rectangle.pos.x;
@@ -144,6 +191,7 @@ namespace DX
 
     void DeviceContext::BindResources()
     {
+        // TODO: Bind resources to shaders: CB, SRV, UAV and Sampler.
     }
 
     void DeviceContext::ClearFrameBuffer(FrameBuffer& frameBuffer,

@@ -44,7 +44,8 @@ namespace DX
 
     struct InputElement
     {
-        std::string m_semanticName;
+        InputSemantic m_semantic;
+        std::string m_semanticCustomName; // When using InputSemanticName::CustomName
         uint32_t m_semanticIndex;
         ResourceFormat m_format;
         uint32_t m_inputSlot; // [0, 15]
