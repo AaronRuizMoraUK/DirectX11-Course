@@ -12,6 +12,6 @@ namespace DX
     {
         ShaderInfo m_shaderInfo;
 
-        std::shared_ptr<ShaderBytecode> m_bytecode;
+        std::shared_ptr<const ShaderBytecode> m_bytecode;
     };
 } // namespace DX

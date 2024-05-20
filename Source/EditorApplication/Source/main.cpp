@@ -10,9 +10,14 @@
 #include <Graphics/SwapChain/SwapChain.h>
 #include <Graphics/FrameBuffer/FrameBuffer.h>
 #include <Graphics/CommandList/CommandList.h>
+#include <Graphics/Pipeline/Pipeline.h>
+#include <Graphics/Shader/ShaderCompiler/ShaderCompiler.h>
+#include <Graphics/Resource/Buffer/Buffer.h>
 #endif
 
 #include <Window/WindowManager.h>
+#include <Math/Vector3.h>
+#include <Math/Color.h>
 #include <Log/Log.h>
 #include <Tests/UnitTests.h>
 
@@ -110,14 +115,84 @@ int main()
     }
 
     // Tests creating all device objects
+    UnitTest::TestsDeviceObjects();
+
+    struct Vertex
+    {
+        Math::Vector3Packed position;
+        Math::ColorPacked color;
+    };
+
+    // Clockwise order (CW) - LeftHand
+
+    const Vertex triangleVertices[]  =
+    {
+        { Math::Vector3Packed({-0.5f, -0.5f, 0.0f}), Math::ColorPacked(Math::Colors::Red) },
+        { Math::Vector3Packed({0.0f,   0.5f, 0.0f}), Math::ColorPacked(Math::Colors::Green) },
+        { Math::Vector3Packed({0.5f,  -0.5f, 0.0f}), Math::ColorPacked(Math::Colors::Blue) }
+    };
+
+    const uint32_t triangleIndices[] =
+    {
+        0, 1, 2
+    };
+
     {
         auto swapChain = device->CreateSwapChain({ window, 1, DX::ResourceFormat::R8G8B8A8_UNORM });
         auto frameBuffer = device->CreateFrameBuffer({ swapChain->GetBackBufferTexture(), nullptr, true /*Create Depth Stencil*/});
 
-        UnitTest::TestsDeviceObjects();
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "mainColor" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "mainColor" };
+        auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
+        auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
+        auto vertexShader = device->CreateShader({ vertexShaderInfo, vertexShaderByteCode });
+        auto pixelShader = device->CreateShader({ pixelShaderInfo, pixelShaderByteCode });
+
+        DX::PipelineDesc pipelineDesc = {};
+        pipelineDesc.m_shaders[DX::ShaderType_Vertex] = vertexShader;
+        pipelineDesc.m_shaders[DX::ShaderType_Pixel] = pixelShader;
+        pipelineDesc.m_inputLayout.m_inputElements =
+        {
+            DX::InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
+            DX::InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
+        };
+        pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
+        pipelineDesc.m_rasterizerState = {
+            .m_faceFrontOrder = DX::FaceFrontOrder::Clockwise,
+            .m_faceCullMode = DX::FaceCullMode::BackFace,
+            .m_faceFillMode = DX::FaceFillMode::Solid,
+        };
+        pipelineDesc.m_blendState.renderTargetBlends[0] = {
+            .m_blendEnabled = false,
+            .m_colorWriteMask = DX::ColorWrite_All
+        };
+        pipelineDesc.m_depthStencilState = {
+            .m_depthEnabled = true,
+            .m_depthTestFunc = DX::ComparisonFunction::Less,
+            .m_depthWriteEnabled = true,
+            .m_stencilEnabled = false
+        };
+        auto pipelineTriangle = device->CreatePipeline(pipelineDesc);
 
         auto cmdListTriangle = device->CreateCommandList();
-        auto cmdListCube = device->CreateCommandList();
+
+        DX::BufferDesc vertexBufferDesc = {};
+        vertexBufferDesc.m_elementSizeInBytes = sizeof(Vertex);
+        vertexBufferDesc.m_elementCount = 3;
+        vertexBufferDesc.m_usage = DX::ResourceUsage::Immutable;
+        vertexBufferDesc.m_bindFlags = DX::BufferBind_VertexBuffer;
+        vertexBufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        vertexBufferDesc.m_initialData = triangleVertices;
+        auto vertexBuffer = device->CreateBuffer(vertexBufferDesc);
+
+        DX::BufferDesc indexBufferDesc = {};
+        indexBufferDesc.m_elementSizeInBytes = sizeof(uint32_t);
+        indexBufferDesc.m_elementCount = 3;
+        indexBufferDesc.m_usage = DX::ResourceUsage::Immutable;
+        indexBufferDesc.m_bindFlags = DX::BufferBind_IndexBuffer;
+        indexBufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        indexBufferDesc.m_initialData = triangleIndices;
+        auto indexBuffer = device->CreateBuffer(indexBufferDesc);
 
         auto t0 = std::chrono::system_clock::now();
 
@@ -137,41 +212,26 @@ int main()
             // Render
             // ------
             const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
-            device->GetImmediateContext().ClearFrameBuffer(*frameBuffer, clearColor);
+            device->GetImmediateContext().ClearFrameBuffer(*frameBuffer, clearColor, 1.0f, 0);
 
-            device->GetImmediateContext().BindFrameBuffer(*frameBuffer);
-            device->GetImmediateContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
-
-            std::future drawTriangle = std::async(std::launch::async, [cmdListTriangle]()
+            std::future drawTriangle = std::async(std::launch::async, [&]()
                 {
-                    //cmdListTriangle->GetDeferredContext().BindPipeline();
+                    cmdListTriangle->GetDeferredContext().BindFrameBuffer(*frameBuffer);
+                    cmdListTriangle->GetDeferredContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
 
-                    //cmdListTriangle->GetDeferredContext().BindPVertexBuffer();
-                    //cmdListTriangle->GetDeferredContext().BindPIndexBuffer();
-                    //cmdListTriangle->GetDeferredContext().BindPResource();
+                    cmdListTriangle->GetDeferredContext().BindPipeline(*pipelineTriangle);
 
-                    //cmdListTriangle->GetDeferredContext().DrawIndexed();
+                    cmdListTriangle->GetDeferredContext().BindVertexBuffers({ vertexBuffer.get() });
+                    cmdListTriangle->GetDeferredContext().BindIndexBuffer(*indexBuffer);
+
+                    cmdListTriangle->GetDeferredContext().DrawIndexed(indexBuffer->GetBufferDesc().m_elementCount);
 
                     cmdListTriangle->FinishCommandList();
                 });
 
-            std::future drawCube = std::async(std::launch::async, [cmdListCube]()
-                {
-                    //cmdListCube->GetDeferredContext().BindPipeline();
-
-                    //cmdListCube->GetDeferredContext().BindPVertexBuffer();
-                    //cmdListCube->GetDeferredContext().BindPIndexBuffer();
-                    //cmdListCube->GetDeferredContext().BindPResource();
-
-                    //cmdListCube->DrawIndexed();
-
-                    cmdListCube->FinishCommandList();
-                });
-
             drawTriangle.wait();
-            drawCube.wait();
 
-            device->ExecuteCommandLists({ cmdListTriangle.get(), cmdListCube.get() });
+            device->ExecuteCommandLists({ cmdListTriangle.get() });
 
             swapChain->Present();
         }

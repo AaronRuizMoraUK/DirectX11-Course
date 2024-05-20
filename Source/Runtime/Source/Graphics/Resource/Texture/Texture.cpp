@@ -49,7 +49,7 @@ namespace DX
                 return;
             }
 
-            m_dx11Texture = static_cast<ID3D11Resource*>(m_desc.m_initialData);
+            m_dx11Texture = static_cast<ID3D11Resource*>(const_cast<void*>(m_desc.m_initialData));
         }
         else if (m_desc.m_textureType == TextureType::Texture1D)
         {
@@ -71,7 +71,7 @@ namespace DX
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(m_desc.m_initialData);
+                const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
@@ -136,7 +136,7 @@ namespace DX
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(m_desc.m_initialData);
+                const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
@@ -190,7 +190,7 @@ namespace DX
 
                 subresourceData.resize(mipLevels * arraySize);
 
-                std::byte* head = static_cast<std::byte*>(m_desc.m_initialData);
+                const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
                 for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
                     for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)

@@ -15,7 +15,7 @@ namespace DX
         DX_ASSERT(m_dx11Blob.Get()->GetBufferPointer() != nullptr, "DX11ShaderBytecode", "DX11 Blob has invalid data");
     }
 
-    void* DX11ShaderBytecode::GetData() const
+    const void* DX11ShaderBytecode::GetData() const
     {
         return m_dx11Blob->GetBufferPointer();
     }

@@ -9,7 +9,7 @@ namespace DX
         Unknown = 0,
 
         Default,
-        Immutable,
+        Immutable, // Immutable resources are not expected to be updated. Its data is only set when creating the resource.
         Dynamic,
         Staging,
 

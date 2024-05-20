@@ -10,7 +10,7 @@ namespace DX
         ShaderBytecode() = default;
         virtual ~ShaderBytecode() = default;
 
-        virtual void* GetData() const = 0;
+        virtual const void* GetData() const = 0;
         virtual uint32_t GetSize() const = 0;
     };
 } // namespace DX

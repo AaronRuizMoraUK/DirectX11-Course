@@ -69,15 +69,20 @@ namespace DX
     void DeviceContext::BindFrameBuffer(FrameBuffer& frameBuffer)
     {
         m_dx11DeviceContext->OMSetRenderTargets(1,
-            frameBuffer.GetColorRenderTargetView()->GetDX11RenderTargetView().GetAddressOf(),
-            frameBuffer.GetDepthStencilView()->GetDX11DepthStencilView().Get());
+            frameBuffer.GetColorRenderTargetView() 
+                ? frameBuffer.GetColorRenderTargetView()->GetDX11RenderTargetView().GetAddressOf() 
+                : nullptr,
+            frameBuffer.GetDepthStencilView() 
+                ? frameBuffer.GetDepthStencilView()->GetDX11DepthStencilView().Get() 
+                : nullptr);
     }
 
     void DeviceContext::BindPipeline(Pipeline& pipeline)
     {
-        for (auto& shader : pipeline.GetPipelineShaders())
+        for (int i = 0; i< ShaderType_Count; ++i)
         {
-            switch (shader->GetShaderType())
+            std::shared_ptr<Shader> shader = pipeline.GetPipelineShader(static_cast<ShaderType>(i));
+            switch (i)
             {
             case ShaderType_Unknown:
                 break;

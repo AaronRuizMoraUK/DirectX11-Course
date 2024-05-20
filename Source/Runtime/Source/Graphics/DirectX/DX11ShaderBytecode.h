@@ -17,7 +17,7 @@ namespace DX
         DX11ShaderBytecode(const DX11ShaderBytecode&) = delete;
         DX11ShaderBytecode& operator=(const DX11ShaderBytecode&) = delete;
 
-        void* GetData() const override;
+        const void* GetData() const override;
         uint32_t GetSize() const override;
 
     private:

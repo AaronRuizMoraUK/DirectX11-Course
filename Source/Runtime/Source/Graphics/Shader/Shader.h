@@ -33,7 +33,7 @@ namespace DX
         // If the shader is holding another shader type, the result is nullptr.
         // For example: GetDX11ShaderAs<ID3D11VertexShader>()
         template<typename T>
-        T* GetDX11ShaderAs() const
+        T* GetDX11ShaderAs()
         {
             auto* dx11Shader = std::get_if<ComPtr<T>>(&m_dx11Shader);
             return (dx11Shader) ? dx11Shader->Get() : nullptr;

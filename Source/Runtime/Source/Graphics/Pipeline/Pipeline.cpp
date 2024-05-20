@@ -185,9 +185,9 @@ namespace DX
         return SUCCEEDED(result);
     }
 
-    const PipelineShaders& Pipeline::GetPipelineShaders() const
+    std::shared_ptr<Shader> Pipeline::GetPipelineShader(ShaderType shaderType)
     {
-        return m_desc.m_shaders;
+        return m_desc.m_shaders[shaderType];
     }
 
     ComPtr<ID3D11InputLayout> Pipeline::GetDX11InputLayout()

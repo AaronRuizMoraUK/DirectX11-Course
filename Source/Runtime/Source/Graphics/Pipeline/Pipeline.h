@@ -23,7 +23,8 @@ namespace DX
         DeviceObjectType GetType() const override { return DeviceObjectType::Pipeline; }
 
         const PipelineDesc& GetPipelineDesc() const { return m_desc; }
-        const PipelineShaders& GetPipelineShaders() const;
+
+        std::shared_ptr<Shader> GetPipelineShader(ShaderType shaderType);
 
         ComPtr<ID3D11InputLayout> GetDX11InputLayout();
         ComPtr<ID3D11RasterizerState> GetDX11RasterizerState();

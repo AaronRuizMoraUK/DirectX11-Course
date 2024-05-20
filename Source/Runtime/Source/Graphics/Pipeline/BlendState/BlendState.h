@@ -21,7 +21,10 @@ namespace DX
 
     struct BlendState
     {
-        std::array<RenderTargetBlend, 8> renderTargetBlends;
+        static constexpr int MaxRenderTargets = 8;
+        using RenderTargetBlends = std::array<RenderTargetBlend, MaxRenderTargets>;
+
+        RenderTargetBlends renderTargetBlends;
         bool m_independentBlendEnabled; // When false only first render target is used
         bool m_alphaToCoverageEnabled;
     };

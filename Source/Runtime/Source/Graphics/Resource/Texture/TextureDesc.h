@@ -27,6 +27,6 @@ namespace DX
         // When true the native resource is passed in the initial data.
         // When false the initial data is copied into the native texture.
         bool m_initialDataIsNativeResource;
-        void* m_initialData;
+        const void* m_initialData;
     };
 } // namespace DX

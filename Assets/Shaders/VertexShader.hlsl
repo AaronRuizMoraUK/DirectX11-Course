@@ -33,6 +33,7 @@ VertexOut mainColor(VertexInColor vertexIn)
     VertexOut vertexOut;
     vertexOut.position = float4(vertexIn.position, 1.0);
     vertexOut.color = vertexIn.color;
+    vertexOut.uv = float2(0.0f, 0.0f);
 
     return vertexOut;
 }
