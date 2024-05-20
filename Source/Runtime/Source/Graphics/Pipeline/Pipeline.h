@@ -22,6 +22,14 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::Pipeline; }
 
+        const PipelineDesc& GetPipelineDesc() const { return m_desc; }
+
+        PipelineShaders& GetPipelineShaders();
+        ComPtr<ID3D11InputLayout> GetInputLayout();
+        ComPtr<ID3D11RasterizerState> GetRasterizerState();
+        ComPtr<ID3D11BlendState> GetBlendState();
+        ComPtr<ID3D11DepthStencilState> GetDepthStencilState();
+
     private:
         PipelineDesc m_desc;
 

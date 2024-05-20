@@ -11,10 +11,10 @@
 
 namespace DX
 {
+    using PipelineShaders = std::array<std::shared_ptr<Shader>, ShaderType_Count>;
+
     struct PipelineDesc
     {
-        using PipelineShaders = std::array<std::shared_ptr<Shader>, ShaderType_Count>;
-
         PipelineShaders m_shaders;
         InputLayout m_inputLayout;
         RasterizerState m_rasterizerState;

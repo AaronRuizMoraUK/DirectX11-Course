@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Graphics/Pipeline/InputLayout/InputLayoutEnums.h>
 #include <Graphics/Resource/ResourceEnums.h>
 
 #include <vector>
@@ -51,6 +52,12 @@ namespace DX
         uint32_t m_instanceDataStepRate;
     };
 
-    using InputLayout = std::vector<InputElement>;
+    struct InputLayout
+    {
+        std::vector<InputElement> m_inputElements;
+
+        PrimitiveTopology m_primitiveTopology;
+        uint32_t m_controlPointPatchListCount; // [1, 32] when using PrimitiveTopology::ControlPointPatchList
+    };
 
 } // namespace DX

@@ -443,4 +443,35 @@ namespace DX
         desc.StencilFunc = ToDX11ComparisonFunction(stencilBehaviour.m_stencilComparisonFunction);
         return desc;
     }
+
+    D3D11_PRIMITIVE_TOPOLOGY ToDX11PrimitiveTopology(PrimitiveTopology primitiveTopology, uint32_t controlPointPatchListCount)
+    {
+        switch (primitiveTopology)
+        {
+        case PrimitiveTopology::Undefined: return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+        case PrimitiveTopology::PointList: return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+        case PrimitiveTopology::LineList: return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+        case PrimitiveTopology::LineStrip: return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+        case PrimitiveTopology::TriangleList: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        case PrimitiveTopology::TriangleStrip: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+        case PrimitiveTopology::LineListAdjacency: return D3D11_PRIMITIVE_TOPOLOGY_LINELIST_ADJ;
+        case PrimitiveTopology::LineStripAdjacency: return D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ;
+        case PrimitiveTopology::TriangleListAdjacency: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ;
+        case PrimitiveTopology::TriangleStripAdjacency: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
+
+        case PrimitiveTopology::ControlPointPatchList:
+        {
+            if (controlPointPatchListCount < 1 || controlPointPatchListCount > 32)
+            {
+                DX_LOG(Error, "Utils", "Control point patch list count must be between 1 and 32. Passed %d", controlPointPatchListCount);
+                return D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST;
+            }
+            return static_cast<D3D11_PRIMITIVE_TOPOLOGY>(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST + controlPointPatchListCount - 1);
+        }
+
+        default:
+            DX_LOG(Error, "Utils", "Unknown primitive topology %d", primitiveTopology);
+            return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+        }
+    }
 }

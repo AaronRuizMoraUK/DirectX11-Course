@@ -7,6 +7,7 @@
 #include <Graphics/Pipeline/RasterizerState/RasterizerStateEnums.h>
 #include <Graphics/Pipeline/BlendState/BlendStateEnums.h>
 #include <Graphics/Pipeline/DepthStencilState/DepthStencilStateEnums.h>
+#include <Graphics/Pipeline/InputLayout/InputLayoutEnums.h>
 
 #include <d3d11.h>
 
@@ -39,4 +40,6 @@ namespace DX
     D3D11_STENCIL_OP ToDX11StencilOp(StencilOp stencilOp);
 
     D3D11_DEPTH_STENCILOP_DESC ToDX11StencipBehaviour(StencilBehaviour stencilBehaviour);
+
+    D3D11_PRIMITIVE_TOPOLOGY ToDX11PrimitiveTopology(PrimitiveTopology primitiveTopology, uint32_t controlPointPatchListCount = 0);
 }

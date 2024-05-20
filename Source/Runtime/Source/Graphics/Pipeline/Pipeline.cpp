@@ -59,8 +59,8 @@ namespace DX
             return false;
         }
 
-        std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc(m_desc.m_inputLayout.size());
-        std::ranges::transform(m_desc.m_inputLayout, inputLayoutDesc.begin(), [](const InputElement& element)
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc(m_desc.m_inputLayout.m_inputElements.size());
+        std::ranges::transform(m_desc.m_inputLayout.m_inputElements, inputLayoutDesc.begin(), [](const InputElement& element)
             {
                 D3D11_INPUT_ELEMENT_DESC inputElement = {};
                 inputElement.SemanticName = element.m_semanticName.c_str();
@@ -139,8 +139,8 @@ namespace DX
     {
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         depthStencilDesc.DepthEnable = m_desc.m_depthStencilState.m_depthEnabled;
-        depthStencilDesc.DepthWriteMask = m_desc.m_depthStencilState.m_depthWriteEnabled 
-            ? D3D11_DEPTH_WRITE_MASK_ALL 
+        depthStencilDesc.DepthWriteMask = m_desc.m_depthStencilState.m_depthWriteEnabled
+            ? D3D11_DEPTH_WRITE_MASK_ALL
             : D3D11_DEPTH_WRITE_MASK_ZERO;
         depthStencilDesc.DepthFunc = ToDX11ComparisonFunction(m_desc.m_depthStencilState.m_depthTestFunc);
         depthStencilDesc.StencilEnable = m_desc.m_depthStencilState.m_stencilEnabled;
@@ -154,5 +154,30 @@ namespace DX
             m_dx11DepthStencilState.GetAddressOf());
 
         return SUCCEEDED(result);
+    }
+
+    PipelineShaders& Pipeline::GetPipelineShaders()
+    {
+        return m_desc.m_shaders;
+    }
+
+    ComPtr<ID3D11InputLayout> Pipeline::GetInputLayout()
+    {
+        return m_dx11InputLayout;
+    }
+
+    ComPtr<ID3D11RasterizerState> Pipeline::GetRasterizerState()
+    {
+        return m_dx11RasterizerState;
+    }
+
+    ComPtr<ID3D11BlendState> Pipeline::GetBlendState()
+    {
+        return m_dx11BlendState;
+    }
+
+    ComPtr<ID3D11DepthStencilState> Pipeline::GetDepthStencilState()
+    {
+        return m_dx11DepthStencilState;
     }
 } // namespace DX
