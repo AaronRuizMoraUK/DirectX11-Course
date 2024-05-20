@@ -4,6 +4,7 @@
 #include <Graphics/Resource/Texture/TextureEnums.h>
 #include <Graphics/Resource/Buffer/BufferEnums.h>
 #include <Graphics/Sampler/SamplerEnums.h>
+#include <Graphics/Pipeline/RasterizerState/RasterizerStateEnums.h>
 
 #include <d3d11.h>
 
@@ -24,4 +25,8 @@ namespace DX
     D3D11_TEXTURE_ADDRESS_MODE ToDX11AddressMode(AddressMode addressMode);
 
     D3D11_COMPARISON_FUNC ToDX11ComparisonFunction(ComparisonFunction comparisonFunction);
+
+    D3D11_FILL_MODE ToDX11FillMode(FaceFillMode fillMode);
+
+    D3D11_CULL_MODE ToDX11CullMode(FaceCullMode cullMode);
 }

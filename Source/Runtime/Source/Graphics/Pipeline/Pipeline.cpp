@@ -3,6 +3,7 @@
 #include <Graphics/Device/Device.h>
 #include <Graphics/Shader/ShaderBytecode.h>
 #include <Graphics/Pipeline/InputLayout/InputLayout.h>
+#include <Graphics/Pipeline/RasterizerState/RasterizerState.h>
 #include <Log/Log.h>
 
 #include <algorithm>
@@ -87,16 +88,16 @@ namespace DX
     bool Pipeline::CreateRasterizerState()
     {
         D3D11_RASTERIZER_DESC rasterizerDesc = {};
-        //D3D11_FILL_MODE FillMode;
-        //D3D11_CULL_MODE CullMode;
-        //BOOL FrontCounterClockwise;
-        //INT DepthBias;
-        //FLOAT DepthBiasClamp;
-        //FLOAT SlopeScaledDepthBias;
-        //BOOL DepthClipEnable;
-        //BOOL ScissorEnable;
-        //BOOL MultisampleEnable;
-        //BOOL AntialiasedLineEnable;
+        rasterizerDesc.FillMode = ToDX11FillMode(m_desc.m_rasterizerState.m_faceFillMode);
+        rasterizerDesc.CullMode = ToDX11CullMode(m_desc.m_rasterizerState.m_faceCullMode);
+        rasterizerDesc.FrontCounterClockwise = (m_desc.m_rasterizerState.m_faceFrontOrder == FaceFrontOrder::CounterClockwise);
+        rasterizerDesc.DepthBias = m_desc.m_rasterizerState.m_depthBias;
+        rasterizerDesc.DepthBiasClamp = m_desc.m_rasterizerState.m_depthBiasClamp;
+        rasterizerDesc.SlopeScaledDepthBias = m_desc.m_rasterizerState.m_slopeScaledDepthBias;
+        rasterizerDesc.DepthClipEnable = !m_desc.m_rasterizerState.m_depthClipDisabled;
+        rasterizerDesc.ScissorEnable = m_desc.m_rasterizerState.m_scissorEnabled;
+        rasterizerDesc.MultisampleEnable = m_desc.m_rasterizerState.m_multisampleEnabled;
+        rasterizerDesc.AntialiasedLineEnable = m_desc.m_rasterizerState.m_antialiasedLineEnabled;
 
         auto result = m_ownerDevice->GetDX11Device()->CreateRasterizerState(
             &rasterizerDesc,

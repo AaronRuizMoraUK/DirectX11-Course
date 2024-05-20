@@ -339,4 +339,32 @@ namespace DX
             return D3D11_COMPARISON_NEVER;
         }
     }
+
+    D3D11_FILL_MODE ToDX11FillMode(FaceFillMode fillMode)
+    {
+        switch (fillMode)
+        {
+        case FaceFillMode::Wireframe: return D3D11_FILL_WIREFRAME;
+        case FaceFillMode::Solid:     return D3D11_FILL_SOLID;
+
+        case FaceFillMode::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown fill mode %d", fillMode);
+            return D3D11_FILL_SOLID;
+        }
+    }
+
+    D3D11_CULL_MODE ToDX11CullMode(FaceCullMode cullMode)
+    {
+        switch (cullMode)
+        {
+        case FaceCullMode::None:      return D3D11_CULL_NONE;
+        case FaceCullMode::FrontFace: return D3D11_CULL_FRONT;
+        case FaceCullMode::BackFace:  return D3D11_CULL_BACK;
+
+        default:
+            DX_LOG(Error, "Utils", "Unknown cull mode %d", cullMode);
+            return D3D11_CULL_NONE;
+        }
+    }
 }
