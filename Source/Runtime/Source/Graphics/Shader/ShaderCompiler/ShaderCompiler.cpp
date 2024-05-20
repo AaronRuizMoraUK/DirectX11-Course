@@ -1,4 +1,4 @@
-#include <Graphics/Shader/ShaderCompiler.h>
+#include <Graphics/Shader/ShaderCompiler/ShaderCompiler.h>
 
 #include <File/FileUtils.h>
 #include <Log/Log.h>

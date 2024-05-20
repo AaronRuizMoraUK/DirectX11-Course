@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Graphics/Resource/Buffer/BufferFlags.h>
-#include <Graphics/Resource/ResourceFlags.h>
+#include <Graphics/Resource/Buffer/BufferEnums.h>
+#include <Graphics/Resource/ResourceEnums.h>
 
 namespace DX
 {

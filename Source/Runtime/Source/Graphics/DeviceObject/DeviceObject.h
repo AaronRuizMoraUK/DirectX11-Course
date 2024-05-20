@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/DeviceObject/DeviceObjectType.h>
+#include <Graphics/DeviceObject/DeviceObjectEnums.h>
 
 namespace DX
 {

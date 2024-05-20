@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/Sampler/SamplerFlags.h>
+#include <Graphics/Sampler/SamplerEnums.h>
 #include <Math/Vector2.h>
 #include <Math/Color.h>
 

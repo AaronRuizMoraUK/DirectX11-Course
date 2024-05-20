@@ -1,9 +1,9 @@
 #pragma once
 
-#include <Graphics/Resource/ResourceFlags.h>
-#include <Graphics/Resource/Texture/TextureFlags.h>
-#include <Graphics/Resource/Buffer/BufferFlags.h>
-#include <Graphics/Sampler/SamplerFlags.h>
+#include <Graphics/Resource/ResourceEnums.h>
+#include <Graphics/Resource/Texture/TextureEnums.h>
+#include <Graphics/Resource/Buffer/BufferEnums.h>
+#include <Graphics/Sampler/SamplerEnums.h>
 
 #include <d3d11.h>
 

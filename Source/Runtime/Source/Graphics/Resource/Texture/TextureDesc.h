@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Graphics/Resource/Texture/TextureFlags.h>
-#include <Graphics/Resource/ResourceFlags.h>
+#include <Graphics/Resource/Texture/TextureEnums.h>
+#include <Graphics/Resource/ResourceEnums.h>
 #include <Math/Vector3.h>
 
 namespace DX

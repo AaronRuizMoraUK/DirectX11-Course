@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Graphics/Resource/ResourceFlags.h>
+#include <Graphics/Resource/ResourceEnums.h>
 
 namespace DX
 {
