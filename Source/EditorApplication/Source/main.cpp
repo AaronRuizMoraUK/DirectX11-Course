@@ -13,7 +13,6 @@
 
 #include <Window/WindowManager.h>
 #include <Log/Log.h>
-#include <Math/Color.h>
 #include <Tests/UnitTests.h>
 
 #include <memory>
@@ -142,7 +141,7 @@ int main()
                     commandList->ClearFrameBuffer(*frameBuffer, clearColor);
 
                     //commandList->BindFrameBuffer(*frameBuffer);
-                    //commandList->BindViewport(mathfu::Vector2(0.0f, 0.0f), mathfu::Vector2(window->GetSize()));
+                    //commandList->BindViewports({ {{0.0f, 0.0f}, mathfu::Vector2{window->GetSize()}} });
 
                     //commandList->BindPipeline();
 

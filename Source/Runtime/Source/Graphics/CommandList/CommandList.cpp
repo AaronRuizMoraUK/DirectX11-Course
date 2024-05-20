@@ -42,17 +42,38 @@ namespace DX
     {
     }
 
-    void CommandList::BindViewport(const mathfu::Vector2& topLeft, const mathfu::Vector2& size)
+    void CommandList::BindViewports(const std::vector<mathfu::Rectangle>& rectangles)
     {
-        D3D11_VIEWPORT viewport = {};
-        viewport.TopLeftX = topLeft.x;
-        viewport.TopLeftY = topLeft.y;
-        viewport.Width = size.x;
-        viewport.Height = size.y;
-        viewport.MinDepth = 0.0f;
-        viewport.MaxDepth = 1.0f;
+        std::vector<D3D11_VIEWPORT> viewports(rectangles.size());
+        std::ranges::transform(rectangles, viewports.begin(), [](const mathfu::Rectangle& rectangle)
+        {
+            D3D11_VIEWPORT viewport = {};
+            viewport.TopLeftX = rectangle.pos.x;
+            viewport.TopLeftY = rectangle.pos.y;
+            viewport.Width = rectangle.size.x;
+            viewport.Height = rectangle.size.y;
+            viewport.MinDepth = 0.0f;
+            viewport.MaxDepth = 1.0f;
+            return viewport;
+        });
 
-        m_dx11DeferredContext->RSSetViewports(1, &viewport);
+        m_dx11DeferredContext->RSSetViewports(viewports.size(), viewports.data());
+    }
+
+    void CommandList::BindScissors(const std::vector<mathfu::RectangleInt>& rectangles)
+    {
+        std::vector<D3D11_RECT> scissorRects(rectangles.size());
+        std::ranges::transform(rectangles, scissorRects.begin(), [](const mathfu::RectangleInt& rectangle)
+            {
+                D3D11_RECT rect = {};
+                rect.left = rectangle.pos.x;
+                rect.top = rectangle.pos.y;
+                rect.right = rectangle.pos.x + rectangle.size.x;
+                rect.bottom = rectangle.pos.y + rectangle.size.y;
+                return rect;
+            });
+
+        m_dx11DeferredContext->RSSetScissorRects(scissorRects.size(), scissorRects.data());
     }
 
     void CommandList::BindVertexBuffers(const std::vector<Buffer*>& vertexBuffers)

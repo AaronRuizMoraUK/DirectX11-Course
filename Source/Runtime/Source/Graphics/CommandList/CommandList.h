@@ -2,7 +2,7 @@
 
 #include <Graphics/DeviceObject/DeviceObject.h>
 
-#include <Math/Vector2.h>
+#include <Math/Rectangle.h>
 #include <Math/Color.h>
 #include <optional>
 #include <vector>
@@ -33,8 +33,11 @@ namespace DX
         // --------------------------------------------------------------------
         void BindFrameBuffer(FrameBuffer& frameBuffer);
         void BindPipeline(Pipeline& pipeline);
-        void BindViewport(const mathfu::Vector2& topLeft, const mathfu::Vector2& size);
-        //void BindScissor(const mathfu::Vector2Int& startPos, const mathfu::Vector2Int& size); // TODO
+
+        // Which viewport/scissor to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader.
+        // When not specified it'll use the first one.
+        void BindViewports(const std::vector<mathfu::Rectangle>& rectangles);
+        void BindScissors(const std::vector<mathfu::RectangleInt>& rectangles); // Only used when scissors enabled in pipeline's rasterizer state
 
         void BindVertexBuffers(const std::vector<Buffer*>& vertexBuffers);
         void BindIndexBuffer(Buffer& indexBuffer);
