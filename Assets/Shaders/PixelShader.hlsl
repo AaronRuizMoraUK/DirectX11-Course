@@ -14,6 +14,13 @@ Texture2D tex2D : register(t0);
 
 SamplerState tex2DSamplerState : register(s0);
 
+PixelOut mainColor(PixelIn pixelIn)
+{
+    PixelOut pixelOut;
+    pixelOut.color = pixelIn.color;
+    return pixelOut;
+}
+
 PixelOut main(PixelIn pixelIn)
 {
     PixelOut pixelOut;

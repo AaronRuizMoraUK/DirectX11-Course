@@ -1,3 +1,9 @@
+struct VertexInColor
+{
+    float3 position : SV_Position;
+    float4 color : COLOR;
+};
+
 struct VertexIn
 {
     float3 position : SV_Position;
@@ -21,6 +27,15 @@ cbuffer WorldMatrixConstantBuffer : register(b1)
 {
     float4x4 worldMatrix;
 };
+
+VertexOut mainColor(VertexInColor vertexIn)
+{
+    VertexOut vertexOut;
+    vertexOut.position = float4(vertexIn.position, 1.0);
+    vertexOut.color = vertexIn.color;
+
+    return vertexOut;
+}
 
 VertexOut main(VertexIn vertexIn)
 {

@@ -43,12 +43,12 @@ namespace DX
             return;
         }
 
-        DX_LOG(Info, "Pipeline", "Graphics pipeline created.");
+        DX_LOG(Verbose, "Pipeline", "Graphics pipeline created.");
     }
 
     Pipeline::~Pipeline()
     {
-        DX_LOG(Info, "Pipeline", "Graphics pipeline destroyed.");
+        DX_LOG(Verbose, "Pipeline", "Graphics pipeline destroyed.");
     }
 
     bool Pipeline::CreateInputLayout()
@@ -114,20 +114,42 @@ namespace DX
         D3D11_BLEND_DESC blendDesc = {};
         blendDesc.AlphaToCoverageEnable = m_desc.m_blendState.m_alphaToCoverageEnabled;
         blendDesc.IndependentBlendEnable = m_desc.m_blendState.m_independentBlendEnabled;
-        std::ranges::transform(m_desc.m_blendState.renderTargetBlends, std::begin(blendDesc.RenderTarget),
-            [](const RenderTargetBlend& renderTargetBlend)
+        if (blendDesc.IndependentBlendEnable)
+        {
+            std::ranges::transform(m_desc.m_blendState.renderTargetBlends, std::begin(blendDesc.RenderTarget),
+                [](const RenderTargetBlend& renderTargetBlend)
+                {
+                    D3D11_RENDER_TARGET_BLEND_DESC rtbDesc = {};
+                    rtbDesc.BlendEnable = renderTargetBlend.m_blendEnabled;
+                    if (rtbDesc.BlendEnable)
+                    {
+                        rtbDesc.SrcBlend = ToDX11Blend(renderTargetBlend.m_srcBlend);
+                        rtbDesc.DestBlend = ToDX11Blend(renderTargetBlend.m_destBlend);
+                        rtbDesc.BlendOp = ToDX11BlendOperation(renderTargetBlend.m_blendOp);
+                        rtbDesc.SrcBlendAlpha = ToDX11Blend(renderTargetBlend.m_srcBlendAlpha);
+                        rtbDesc.DestBlendAlpha = ToDX11Blend(renderTargetBlend.m_destBlendAlpha);
+                        rtbDesc.BlendOpAlpha = ToDX11BlendOperation(renderTargetBlend.m_blendOpAlpha);
+                    }
+                    rtbDesc.RenderTargetWriteMask = ToDX11ColorWriteMask(renderTargetBlend.m_colorWriteMask);
+                    return rtbDesc;
+                });
+        }
+        else
+        {
+            const RenderTargetBlend& renderTargetBlend = m_desc.m_blendState.renderTargetBlends[0];
+            D3D11_RENDER_TARGET_BLEND_DESC& rtbDesc = blendDesc.RenderTarget[0];
+            rtbDesc.BlendEnable = renderTargetBlend.m_blendEnabled;
+            if (rtbDesc.BlendEnable)
             {
-                D3D11_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc = {};
-                renderTargetBlendDesc.BlendEnable = renderTargetBlend.m_blendEnabled;
-                renderTargetBlendDesc.SrcBlend = ToDX11Blend(renderTargetBlend.m_srcBlend);
-                renderTargetBlendDesc.DestBlend = ToDX11Blend(renderTargetBlend.m_destBlend);
-                renderTargetBlendDesc.BlendOp = ToDX11BlendOperation(renderTargetBlend.m_blendOp);
-                renderTargetBlendDesc.SrcBlendAlpha = ToDX11Blend(renderTargetBlend.m_srcBlendAlpha);
-                renderTargetBlendDesc.DestBlendAlpha = ToDX11Blend(renderTargetBlend.m_destBlendAlpha);
-                renderTargetBlendDesc.BlendOpAlpha = ToDX11BlendOperation(renderTargetBlend.m_blendOpAlpha);
-                renderTargetBlendDesc.RenderTargetWriteMask = ToDX11ColorWriteMask(renderTargetBlend.m_colorWriteMask);
-                return renderTargetBlendDesc;
-            });
+                rtbDesc.SrcBlend = ToDX11Blend(renderTargetBlend.m_srcBlend);
+                rtbDesc.DestBlend = ToDX11Blend(renderTargetBlend.m_destBlend);
+                rtbDesc.BlendOp = ToDX11BlendOperation(renderTargetBlend.m_blendOp);
+                rtbDesc.SrcBlendAlpha = ToDX11Blend(renderTargetBlend.m_srcBlendAlpha);
+                rtbDesc.DestBlendAlpha = ToDX11Blend(renderTargetBlend.m_destBlendAlpha);
+                rtbDesc.BlendOpAlpha = ToDX11BlendOperation(renderTargetBlend.m_blendOpAlpha);
+            }
+            rtbDesc.RenderTargetWriteMask = ToDX11ColorWriteMask(renderTargetBlend.m_colorWriteMask);
+        }
 
         auto result = m_ownerDevice->GetDX11Device()->CreateBlendState(
             &blendDesc,
@@ -140,15 +162,21 @@ namespace DX
     {
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         depthStencilDesc.DepthEnable = m_desc.m_depthStencilState.m_depthEnabled;
-        depthStencilDesc.DepthWriteMask = m_desc.m_depthStencilState.m_depthWriteEnabled
-            ? D3D11_DEPTH_WRITE_MASK_ALL
-            : D3D11_DEPTH_WRITE_MASK_ZERO;
-        depthStencilDesc.DepthFunc = ToDX11ComparisonFunction(m_desc.m_depthStencilState.m_depthTestFunc);
+        if (depthStencilDesc.DepthEnable)
+        {
+            depthStencilDesc.DepthWriteMask = m_desc.m_depthStencilState.m_depthWriteEnabled
+                ? D3D11_DEPTH_WRITE_MASK_ALL
+                : D3D11_DEPTH_WRITE_MASK_ZERO;
+            depthStencilDesc.DepthFunc = ToDX11ComparisonFunction(m_desc.m_depthStencilState.m_depthTestFunc);
+        }
         depthStencilDesc.StencilEnable = m_desc.m_depthStencilState.m_stencilEnabled;
-        depthStencilDesc.StencilReadMask = m_desc.m_depthStencilState.m_stencilReadMask;
-        depthStencilDesc.StencilWriteMask = m_desc.m_depthStencilState.m_stencilWriteMask;
-        depthStencilDesc.FrontFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_frontFaceStencilBehaviour);
-        depthStencilDesc.BackFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_backFaceStencilBehaviour);
+        if (depthStencilDesc.StencilEnable)
+        {
+            depthStencilDesc.StencilReadMask = m_desc.m_depthStencilState.m_stencilReadMask;
+            depthStencilDesc.StencilWriteMask = m_desc.m_depthStencilState.m_stencilWriteMask;
+            depthStencilDesc.FrontFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_frontFaceStencilBehaviour);
+            depthStencilDesc.BackFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_backFaceStencilBehaviour);
+        }
 
         auto result = m_ownerDevice->GetDX11Device()->CreateDepthStencilState(
             &depthStencilDesc,

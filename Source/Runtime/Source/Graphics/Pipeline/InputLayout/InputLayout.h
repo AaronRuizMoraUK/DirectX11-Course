@@ -45,12 +45,13 @@ namespace DX
     struct InputElement
     {
         InputSemantic m_semantic;
-        std::string m_semanticCustomName; // When using InputSemanticName::CustomName
         uint32_t m_semanticIndex;
         ResourceFormat m_format;
         uint32_t m_inputSlot; // [0, 15]
         uint32_t m_alignedByteOffset; // Offset from the start of the buffer where this element starts
         uint32_t m_instanceDataStepRate;
+
+        std::string m_semanticCustomName; // When using InputSemanticName::CustomName
     };
 
     struct InputLayout

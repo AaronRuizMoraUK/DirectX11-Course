@@ -8,6 +8,7 @@
 #include <Graphics/Resource/Views/RenderTargetView.h>
 #include <Graphics/Resource/Views/ShaderResourceView.h>
 #include <Graphics/Resource/Views/ShaderRWResourceView.h>
+#include <Graphics/Pipeline/Pipeline.h>
 
 #include <Log/Log.h>
 #include <Math/Vector2.h>
@@ -38,6 +39,7 @@ namespace UnitTest
         void TestTypedBuffer();
         void TestStructuredBuffer();
         void TestRawBuffer();
+        void TestPipeline();
 
     private:
         DX::Device* m_device = nullptr;
@@ -59,6 +61,7 @@ namespace UnitTest
         tests.TestTypedBuffer();
         tests.TestStructuredBuffer();
         tests.TestRawBuffer();
+        tests.TestPipeline();
         DX_LOG(Info, "Test", " --------------------------");
     }
 
@@ -217,8 +220,8 @@ namespace UnitTest
                 for (int row = 0; row < textureSize.x; ++row)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row 
-                        + col * (textureSize.x) 
+                    const int index = (row
+                        + col * (textureSize.x)
                         + arrayIndex * (textureSize.x * textureSize.y)) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
@@ -263,8 +266,8 @@ namespace UnitTest
                 for (int row = 0; row < textureSize.x; ++row)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row 
-                        + col * (textureSize.x) 
+                    const int index = (row
+                        + col * (textureSize.x)
                         + faceIndex * (textureSize.x * textureSize.y)) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
@@ -315,7 +318,7 @@ namespace UnitTest
                     {
                         const std::byte value = static_cast<std::byte>(row % 255);
                         const int index = (row
-                            + col * (textureSize.x) 
+                            + col * (textureSize.x)
                             + faceIndex * (textureSize.x * textureSize.y)
                             + arrayIndex * (textureSize.x * textureSize.y * faceCount)) * components;
                         textureData[index + 0] = value;
@@ -363,8 +366,8 @@ namespace UnitTest
                 for (int row = 0; row < textureSize.x; ++row)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row 
-                        + col * (textureSize.x) 
+                    const int index = (row
+                        + col * (textureSize.x)
                         + depth * (textureSize.x * textureSize.y)) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
@@ -535,5 +538,44 @@ namespace UnitTest
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
         auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
         // RenderTargetView is not supported for raw buffers
+    }
+
+    void DeviceObjectTests::TestPipeline()
+    {
+        DX_LOG(Info, "Test", " ----- Testing Pipeline -----");
+
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "mainColor" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "mainColor" };
+        auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
+        auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
+        auto vertexShader = m_device->CreateShader({ vertexShaderInfo, vertexShaderByteCode });
+        auto pixelShader = m_device->CreateShader({ pixelShaderInfo, pixelShaderByteCode });
+
+        DX::PipelineDesc pipelineDesc = {};
+        pipelineDesc.m_shaders[DX::ShaderType_Vertex] = vertexShader;
+        pipelineDesc.m_shaders[DX::ShaderType_Pixel] = pixelShader;
+        pipelineDesc.m_inputLayout.m_inputElements =
+        {
+            DX::InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
+            DX::InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
+        };
+        pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
+        pipelineDesc.m_rasterizerState = {
+            .m_faceFrontOrder = DX::FaceFrontOrder::CounterClockwise,
+            .m_faceCullMode = DX::FaceCullMode::BackFace,
+            .m_faceFillMode = DX::FaceFillMode::Solid,
+        };
+        pipelineDesc.m_blendState.renderTargetBlends[0] = {
+            .m_blendEnabled = false,
+            .m_colorWriteMask = DX::ColorWrite_All
+        };
+        pipelineDesc.m_depthStencilState = {
+            .m_depthEnabled = true,
+            .m_depthTestFunc = DX::ComparisonFunction::Less,
+            .m_depthWriteEnabled = true,
+            .m_stencilEnabled = false
+        };
+
+        auto pipeline = m_device->CreatePipeline(pipelineDesc);
     }
 }
