@@ -11,6 +11,6 @@ namespace DX
     {
     public:
         // The shader name inside ShaderInfo is the filename relative to Assets folder.
-        static std::unique_ptr<ShaderBytecode> Compile(const ShaderInfo& shaderInfo);
+        static std::shared_ptr<ShaderBytecode> Compile(const ShaderInfo& shaderInfo);
     };
 } // namespace DX

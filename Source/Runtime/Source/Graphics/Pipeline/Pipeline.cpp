@@ -1,9 +1,14 @@
 #include <Graphics/Pipeline/Pipeline.h>
 
 #include <Graphics/Device/Device.h>
+#include <Graphics/Shader/ShaderBytecode.h>
+#include <Graphics/Pipeline/InputLayout/InputLayout.h>
 #include <Log/Log.h>
 
+#include <algorithm>
+
 #include <d3d11.h>
+#include <Graphics/DirectX/Utils.h>
 
 namespace DX
 {
@@ -45,12 +50,43 @@ namespace DX
 
     bool Pipeline::CreateInputLayout()
     {
-        return false;
+        if (!m_desc.m_shaders[ShaderType_Vertex])
+        {
+            DX_LOG(Error, "Pipeline", "Vertex shader is not specified in pipeline description.");
+            return false;
+        }
+
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc(m_desc.m_inputLayout.size());
+        std::ranges::transform(m_desc.m_inputLayout, inputLayoutDesc.begin(), [](const InputElement& element)
+            {
+                D3D11_INPUT_ELEMENT_DESC inputElement = {};
+                inputElement.SemanticName = element.m_semanticName.c_str();
+                inputElement.SemanticIndex = element.m_semanticIndex;
+                inputElement.Format = ToDX11ResourceFormat(element.m_format);
+                inputElement.InputSlot = element.m_inputSlot;
+                inputElement.AlignedByteOffset = element.m_alignedByteOffset;
+                inputElement.InputSlotClass = (element.m_instanceDataStepRate > 0) 
+                    ? D3D11_INPUT_PER_INSTANCE_DATA 
+                    : D3D11_INPUT_PER_VERTEX_DATA;
+                inputElement.InstanceDataStepRate = element.m_instanceDataStepRate;
+                return inputElement;
+            });
+
+        // Once an input-layout object is created for a vertex shader signature, the input-layout object can be reused
+        // with any other vertex shader that has an identical input signature (semantics included). 
+        auto result = m_ownerDevice->GetDX11Device()->CreateInputLayout(
+            inputLayoutDesc.data(),
+            inputLayoutDesc.size(),
+            m_desc.m_shaders[ShaderType_Vertex]->GetShaderDesc().m_bytecode->GetData(),
+            m_desc.m_shaders[ShaderType_Vertex]->GetShaderDesc().m_bytecode->GetSize(),
+            m_dx11InputLayout.GetAddressOf());
+
+        return SUCCEEDED(result);
     }
 
     bool Pipeline::CreateRasterizerState()
     {
-        //D3D11_RASTERIZER_DESC rasterizerDesc;
+        D3D11_RASTERIZER_DESC rasterizerDesc = {};
         //D3D11_FILL_MODE FillMode;
         //D3D11_CULL_MODE CullMode;
         //BOOL FrontCounterClockwise;
@@ -61,25 +97,31 @@ namespace DX
         //BOOL ScissorEnable;
         //BOOL MultisampleEnable;
         //BOOL AntialiasedLineEnable;
-        //
-        //ComPtr<ID3D11RasterizerState> m_dx11RasterizerState;
-        return false;
+
+        auto result = m_ownerDevice->GetDX11Device()->CreateRasterizerState(
+            &rasterizerDesc,
+            m_dx11RasterizerState.GetAddressOf());
+
+        return SUCCEEDED(result);
     }
 
     bool Pipeline::CreateBlendState()
     {
-        //D3D11_BLEND_DESC blendDesc;
+        D3D11_BLEND_DESC blendDesc = {};
         //BOOL AlphaToCoverageEnable;
         //BOOL IndependentBlendEnable;
         //D3D11_RENDER_TARGET_BLEND_DESC RenderTarget[8];
-        //
-        //ComPtr<ID3D11BlendState> m_dx11BlendState;
-        return false;
+
+        auto result = m_ownerDevice->GetDX11Device()->CreateBlendState(
+            &blendDesc,
+            m_dx11BlendState.GetAddressOf());
+
+        return SUCCEEDED(result);
     }
 
     bool Pipeline::CreateDepthStencilState()
     {
-        //3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+        D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
         //OOL DepthEnable;
         //3D11_DEPTH_WRITE_MASK DepthWriteMask;
         //3D11_COMPARISON_FUNC DepthFunc;
@@ -88,8 +130,11 @@ namespace DX
         //INT8 StencilWriteMask;
         //3D11_DEPTH_STENCILOP_DESC FrontFace;
         //3D11_DEPTH_STENCILOP_DESC BackFace;
-        //
-        //omPtr<ID3D11DepthStencilState> m_dx11DepthStencilState;
-        return false;
+
+        auto result = m_ownerDevice->GetDX11Device()->CreateDepthStencilState(
+            &depthStencilDesc,
+            m_dx11DepthStencilState.GetAddressOf());
+
+        return SUCCEEDED(result);
     }
 } // namespace DX

@@ -4,18 +4,18 @@
 
 namespace DX
 {
-    enum class ShaderType
+    enum ShaderType
     {
-        Unknown = 0,
+        ShaderType_Unknown = 0,
 
-        Vertex,
-        Hull,
-        Domain,
-        Geometry,
-        Pixel,
-        Compute,
+        ShaderType_Vertex,
+        ShaderType_Hull,
+        ShaderType_Domain,
+        ShaderType_Geometry,
+        ShaderType_Pixel,
+        ShaderType_Compute,
 
-        Count
+        ShaderType_Count
     };
 
     struct ShaderInfo

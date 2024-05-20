@@ -13,12 +13,12 @@ namespace DX
     {
         switch (m_shaderType)
         {
-        case ShaderType::Vertex: return "vs_5_0";
-        case ShaderType::Hull: return "hs_5_0";
-        case ShaderType::Domain: return "ds_5_0";
-        case ShaderType::Geometry: return "gs_5_0";
-        case ShaderType::Compute: return "cs_5_0";
-        case ShaderType::Pixel: return "ps_5_0";
+        case ShaderType_Vertex: return "vs_5_0";
+        case ShaderType_Hull: return "hs_5_0";
+        case ShaderType_Domain: return "ds_5_0";
+        case ShaderType_Geometry: return "gs_5_0";
+        case ShaderType_Compute: return "cs_5_0";
+        case ShaderType_Pixel: return "ps_5_0";
 
         default:
             DX_ASSERT(false, "ShaderCompiler", "Unsupported shader type %d.", m_shaderType);
@@ -26,7 +26,7 @@ namespace DX
         }
     }
 
-    std::unique_ptr<ShaderBytecode> ShaderCompiler::Compile(const ShaderInfo& shaderInfo)
+    std::shared_ptr<ShaderBytecode> ShaderCompiler::Compile(const ShaderInfo& shaderInfo)
     {
         const auto shaderCode = ReadAssetFile(shaderInfo.m_name);
         if (!shaderCode.has_value())
@@ -63,6 +63,6 @@ namespace DX
         DX_LOG(Verbose, "ShaderCompiler", "Shader '%s' (entry point: '%s') compiled successfully.",
             shaderInfo.m_name.c_str(), shaderInfo.m_entryPoint.c_str());
 
-        return std::make_unique<DX11ShaderBytecode>(std::move(shaderBlob));
+        return std::make_shared<DX11ShaderBytecode>(std::move(shaderBlob));
     }
 } // namespace DX

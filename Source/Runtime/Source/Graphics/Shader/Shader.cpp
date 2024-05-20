@@ -12,20 +12,20 @@ namespace DX
     {
         switch (shaderType)
         {
-        case ShaderType::Vertex:
+        case ShaderType_Vertex:
             return "Vertex";
-        case ShaderType::Hull:
+        case ShaderType_Hull:
             return "Hull";
-        case ShaderType::Domain:
+        case ShaderType_Domain:
             return "Domain";
-        case ShaderType::Geometry:
+        case ShaderType_Geometry:
             return "Geometry";
-        case ShaderType::Pixel:
+        case ShaderType_Pixel:
             return "Pixel";
-        case ShaderType::Compute:
+        case ShaderType_Compute:
             return "Compute";
 
-        case ShaderType::Unknown:
+        case ShaderType_Unknown:
         default:
             return "Unknown";
         }
@@ -33,9 +33,9 @@ namespace DX
 
     Shader::Shader(Device* device, const ShaderDesc& desc)
         : DeviceObject(device)
-        , m_shaderInfo(desc.m_shaderInfo)
+        , m_desc(desc)
     {
-        if (!desc.m_bytecode)
+        if (!m_desc.m_bytecode)
         {
             DX_LOG(Fatal, "Shader", "Shader description with invalid bytecode.");
             return;
@@ -43,97 +43,97 @@ namespace DX
 
         HRESULT result;
 
-        switch (m_shaderInfo.m_shaderType)
+        switch (m_desc.m_shaderInfo.m_shaderType)
         {
-        case ShaderType::Vertex:
+        case ShaderType_Vertex:
         {
             ComPtr<ID3D11VertexShader> dx11VertexShader;
             result = m_ownerDevice->GetDX11Device()->CreateVertexShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11VertexShader.GetAddressOf());
             m_dx11Shader = dx11VertexShader;
         }
         break;
 
-        case ShaderType::Hull:
+        case ShaderType_Hull:
         {
             ComPtr<ID3D11HullShader> dx11HullShader;
             result = m_ownerDevice->GetDX11Device()->CreateHullShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11HullShader.GetAddressOf());
             m_dx11Shader = dx11HullShader;
         }
         break;
 
-        case ShaderType::Domain:
+        case ShaderType_Domain:
         {
             ComPtr<ID3D11DomainShader> dx11DomainShader;
             result = m_ownerDevice->GetDX11Device()->CreateDomainShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11DomainShader.GetAddressOf());
             m_dx11Shader = dx11DomainShader;
         }
         break;
 
-        case ShaderType::Geometry:
+        case ShaderType_Geometry:
         {
             ComPtr<ID3D11GeometryShader> dx11GeometryShader;
             result = m_ownerDevice->GetDX11Device()->CreateGeometryShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11GeometryShader.GetAddressOf());
             m_dx11Shader = dx11GeometryShader;
         }
         break;
 
-        case ShaderType::Pixel:
+        case ShaderType_Pixel:
         {
             ComPtr<ID3D11PixelShader> dx11PixelShader;
             result = m_ownerDevice->GetDX11Device()->CreatePixelShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11PixelShader.GetAddressOf());
             m_dx11Shader = dx11PixelShader;
         }
         break;
 
-        case ShaderType::Compute:
+        case ShaderType_Compute:
         {
             ComPtr<ID3D11ComputeShader> dx11ComputeShader;
             result = m_ownerDevice->GetDX11Device()->CreateComputeShader(
-                desc.m_bytecode->GetData(),
-                desc.m_bytecode->GetSize(),
+                m_desc.m_bytecode->GetData(),
+                m_desc.m_bytecode->GetSize(),
                 nullptr, // Class linkage
                 dx11ComputeShader.GetAddressOf());
             m_dx11Shader = dx11ComputeShader;
         }
         break;
 
-        case ShaderType::Unknown:
+        case ShaderType_Unknown:
         default:
-            DX_LOG(Fatal, "Shader", "Shader description with unknown shader type (%d).", m_shaderInfo.m_shaderType);
+            DX_LOG(Fatal, "Shader", "Shader description with unknown shader type (%d).", m_desc.m_shaderInfo.m_shaderType);
             return;
         };
 
         if (FAILED(result))
         {
-            DX_LOG(Error, "Shader", "Failed to create %s shader", ShaderTypeStr(m_shaderInfo.m_shaderType));
+            DX_LOG(Error, "Shader", "Failed to create %s shader", ShaderTypeStr(m_desc.m_shaderInfo.m_shaderType));
             return;
         }
 
-        DX_LOG(Verbose, "Shader", "%s shader '%s' created.", ShaderTypeStr(m_shaderInfo.m_shaderType), m_shaderInfo.m_name.c_str());
+        DX_LOG(Verbose, "Shader", "%s shader '%s' created.", ShaderTypeStr(m_desc.m_shaderInfo.m_shaderType), m_desc.m_shaderInfo.m_name.c_str());
     }
 
     Shader::~Shader()
     {
-        DX_LOG(Verbose, "Shader", "%s shader '%s' destroyed.", ShaderTypeStr(m_shaderInfo.m_shaderType), m_shaderInfo.m_name.c_str());
+        DX_LOG(Verbose, "Shader", "%s shader '%s' destroyed.", ShaderTypeStr(m_desc.m_shaderInfo.m_shaderType), m_desc.m_shaderInfo.m_name.c_str());
     }
 } // namespace DX

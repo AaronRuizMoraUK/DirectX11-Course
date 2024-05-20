@@ -2,6 +2,8 @@
 
 #include <Graphics/Shader/ShaderEnums.h>
 
+#include <memory>
+
 namespace DX
 {
     class ShaderBytecode;
@@ -10,6 +12,6 @@ namespace DX
     {
         ShaderInfo m_shaderInfo;
 
-        ShaderBytecode* m_bytecode;
+        std::shared_ptr<ShaderBytecode> m_bytecode;
     };
 } // namespace DX

@@ -66,14 +66,14 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing Shader -----");
 
-        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType::Vertex, "Shaders/VertexShader.hlsl", "main" };
-        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType::Pixel, "Shaders/PixelShader.hlsl", "main" };
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "main" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "main" };
 
         auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
         auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
 
-        auto vertexShader = m_device->CreateShader({ vertexShaderInfo, vertexShaderByteCode.get() });
-        auto pixelShader = m_device->CreateShader({ pixelShaderInfo, pixelShaderByteCode.get() });
+        auto vertexShader = m_device->CreateShader({ vertexShaderInfo, vertexShaderByteCode });
+        auto pixelShader = m_device->CreateShader({ pixelShaderInfo, pixelShaderByteCode });
     }
 
     void DeviceObjectTests::TestSampler()
