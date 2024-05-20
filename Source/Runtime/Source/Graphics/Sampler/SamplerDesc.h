@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Graphics/Sampler/SamplerEnums.h>
+#include <Graphics/Resource/ResourceEnums.h>
 #include <Math/Vector2.h>
 #include <Math/Color.h>
 

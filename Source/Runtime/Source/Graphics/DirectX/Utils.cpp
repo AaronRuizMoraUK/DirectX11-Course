@@ -402,11 +402,45 @@ namespace DX
         switch (blendOperation)
         {
         case BlendOperation::Add: return D3D11_BLEND_OP_ADD;
+        case BlendOperation::Subtract: return D3D11_BLEND_OP_SUBTRACT;
+        case BlendOperation::RevSubtract: return D3D11_BLEND_OP_REV_SUBTRACT;
+        case BlendOperation::Min: return D3D11_BLEND_OP_MIN;
+        case BlendOperation::Max: return D3D11_BLEND_OP_MAX;
 
         case BlendOperation::Unknown:
         default:
             DX_LOG(Error, "Utils", "Unknown blend operation %d", blendOperation);
             return D3D11_BLEND_OP_ADD;
         }
+    }
+
+    D3D11_STENCIL_OP ToDX11StencilOp(StencilOp stencilOp)
+    {
+        switch (stencilOp)
+        {
+        case StencilOp::Keep: return D3D11_STENCIL_OP_KEEP;
+        case StencilOp::Zero: return D3D11_STENCIL_OP_ZERO;
+        case StencilOp::Replace: return D3D11_STENCIL_OP_REPLACE;
+        case StencilOp::IncrementClamp: return D3D11_STENCIL_OP_INCR_SAT;
+        case StencilOp::DecrementClamp: return D3D11_STENCIL_OP_DECR_SAT;
+        case StencilOp::Invert: return D3D11_STENCIL_OP_INVERT;
+        case StencilOp::Increment: return D3D11_STENCIL_OP_INCR;
+        case StencilOp::Decrement: return D3D11_STENCIL_OP_DECR;
+
+        case StencilOp::Unknown:
+        default:
+            DX_LOG(Error, "Utils", "Unknown stencil operation %d", stencilOp);
+            return D3D11_STENCIL_OP_KEEP;
+        }
+    }
+
+    D3D11_DEPTH_STENCILOP_DESC ToDX11StencipBehaviour(StencilBehaviour stencilBehaviour)
+    {
+        D3D11_DEPTH_STENCILOP_DESC desc = {};
+        desc.StencilFailOp = ToDX11StencilOp(stencilBehaviour.m_stencilFailOp);
+        desc.StencilDepthFailOp = ToDX11StencilOp(stencilBehaviour.m_stencilDepthFailOp);
+        desc.StencilPassOp = ToDX11StencilOp(stencilBehaviour.m_stencilPassOp);
+        desc.StencilFunc = ToDX11ComparisonFunction(stencilBehaviour.m_stencilComparisonFunction);
+        return desc;
     }
 }

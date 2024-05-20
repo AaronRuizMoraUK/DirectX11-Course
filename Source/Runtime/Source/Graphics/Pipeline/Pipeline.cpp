@@ -5,6 +5,7 @@
 #include <Graphics/Pipeline/InputLayout/InputLayout.h>
 #include <Graphics/Pipeline/RasterizerState/RasterizerState.h>
 #include <Graphics/Pipeline/BlendState/BlendState.h>
+#include <Graphics/Pipeline/DepthStencilState/DepthStencilState.h>
 #include <Log/Log.h>
 
 #include <ranges>
@@ -137,14 +138,16 @@ namespace DX
     bool Pipeline::CreateDepthStencilState()
     {
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
-        //OOL DepthEnable;
-        //3D11_DEPTH_WRITE_MASK DepthWriteMask;
-        //3D11_COMPARISON_FUNC DepthFunc;
-        //OOL StencilEnable;
-        //INT8 StencilReadMask;
-        //INT8 StencilWriteMask;
-        //3D11_DEPTH_STENCILOP_DESC FrontFace;
-        //3D11_DEPTH_STENCILOP_DESC BackFace;
+        depthStencilDesc.DepthEnable = m_desc.m_depthStencilState.m_depthEnabled;
+        depthStencilDesc.DepthWriteMask = m_desc.m_depthStencilState.m_depthWriteEnabled 
+            ? D3D11_DEPTH_WRITE_MASK_ALL 
+            : D3D11_DEPTH_WRITE_MASK_ZERO;
+        depthStencilDesc.DepthFunc = ToDX11ComparisonFunction(m_desc.m_depthStencilState.m_depthTestFunc);
+        depthStencilDesc.StencilEnable = m_desc.m_depthStencilState.m_stencilEnabled;
+        depthStencilDesc.StencilReadMask = m_desc.m_depthStencilState.m_stencilReadMask;
+        depthStencilDesc.StencilWriteMask = m_desc.m_depthStencilState.m_stencilWriteMask;
+        depthStencilDesc.FrontFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_frontFaceStencilBehaviour);
+        depthStencilDesc.BackFace = ToDX11StencipBehaviour(m_desc.m_depthStencilState.m_backFaceStencilBehaviour);
 
         auto result = m_ownerDevice->GetDX11Device()->CreateDepthStencilState(
             &depthStencilDesc,

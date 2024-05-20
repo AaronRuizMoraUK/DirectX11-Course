@@ -44,22 +44,6 @@ namespace DX
         Count
     };
 
-    enum class ComparisonFunction
-    {
-        Unknown = 0,
-
-        Never,
-        Less,
-        Equal,
-        LessEqual,
-        Greater,
-        NotEqual,
-        GreaterEqual,
-        Always,
-
-        Count
-    };
-
     static const float MaxMipLevel = 3.402823466e+38f;
     static const Math::Vector2 NoMipClamping = Math::Vector2(0.0f, MaxMipLevel);
 } // namespace DX

@@ -26,6 +26,22 @@ namespace DX
         Count
     };
 
+    enum class ComparisonFunction
+    {
+        Unknown = 0,
+
+        Never,
+        Less,
+        Equal,
+        LessEqual,
+        Greater,
+        NotEqual,
+        GreaterEqual,
+        Always,
+
+        Count
+    };
+
     enum class ResourceFormat
     {
         Unknown = 0,
