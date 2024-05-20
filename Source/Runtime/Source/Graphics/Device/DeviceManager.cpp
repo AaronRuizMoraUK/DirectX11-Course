@@ -34,9 +34,9 @@ namespace DX
         DX_LOG(Info, "Device Manager", "Terminating graphics device manager...");
     }
 
-    Device* DeviceManager::CreateDevice(const DeviceDesc& desc)
+    Device* DeviceManager::CreateDevice()
     {
-        auto newDevice = std::make_unique<Device>(NextDeviceId, desc);
+        auto newDevice = std::make_unique<Device>(NextDeviceId);
         auto result = m_devices.emplace(NextDeviceId, std::move(newDevice));
 
         NextDeviceId = DeviceId(NextDeviceId.GetValue() + 1);

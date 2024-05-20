@@ -103,7 +103,7 @@ int main()
 
     // Graphics device initialization
     DX::DeviceManager& deviceManager = DX::DeviceManager::Get();
-    DX::Device* device = deviceManager.CreateDevice({});
+    DX::Device* device = deviceManager.CreateDevice();
     if (!device)
     {
         return -1;

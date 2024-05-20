@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Graphics/Device/DeviceDesc.h>
 #include <GenericId/GenericId.h>
 
 #include <vector>
@@ -45,7 +44,7 @@ namespace DX
     class Device
     {
     public:
-        Device(DeviceId deviceId, const DeviceDesc& desc);
+        Device(DeviceId deviceId);
         ~Device();
 
         Device(const Device&) = delete;

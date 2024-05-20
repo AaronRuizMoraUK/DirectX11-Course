@@ -23,7 +23,7 @@ namespace DX
         DeviceManager(const DeviceManager&) = delete;
         DeviceManager& operator=(const DeviceManager&) = delete;
 
-        Device* CreateDevice(const DeviceDesc& desc);
+        Device* CreateDevice();
         void DestroyDevice(DeviceId rendererId);
 
         Device* GetDevice(DeviceId rendererId = DefaultDeviceId);

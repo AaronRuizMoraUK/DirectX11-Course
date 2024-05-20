@@ -24,7 +24,7 @@
 
 namespace DX
 {
-    Device::Device(DeviceId deviceId, const DeviceDesc& desc)
+    Device::Device(DeviceId deviceId)
         : m_deviceId(deviceId)
     {
         const std::array<D3D_FEATURE_LEVEL, 1> featureLevels = { D3D_FEATURE_LEVEL_11_1 };
