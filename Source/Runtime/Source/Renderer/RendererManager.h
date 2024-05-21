@@ -15,6 +15,10 @@ namespace DX
         static RendererManager& Get();
         static void Destroy();
 
+        // First renderer created will become the default one.
+        // Default renderer cannot be destroyed with DestroyRenderer.
+        static inline const RendererId DefaultRendererId{ 1 };
+
         ~RendererManager() = default;
 
         // Delete copy constructor and assignment operator to prevent copying
@@ -24,7 +28,7 @@ namespace DX
         Renderer* CreateRenderer(Window* window);
         void DestroyRenderer(RendererId rendererId);
 
-        Renderer* GetRenderer(RendererId rendererId);
+        Renderer* GetRenderer(RendererId rendererId = DefaultRendererId);
 
     private:
         RendererManager() = default;

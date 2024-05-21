@@ -1,5 +1,13 @@
 #include <Renderer/Object.h>
 #include <Renderer/RendererManager.h>
+
+#include <RHI/Device/Device.h>
+#include <RHI/Device/DeviceContext.h>
+#include <RHI/Resource/Buffer/Buffer.h>
+#include <RHI/Resource/Texture/Texture.h>
+#include <RHI/Resource/Views/ShaderResourceView.h>
+#include <RHI/Sampler/Sampler.h>
+
 #include <File/FileUtils.h>
 #include <Log/Log.h>
 
@@ -13,139 +21,119 @@ namespace DX
 
     void Object::CreateBuffers()
     {
-        auto* renderer = RendererManager::Get().GetRenderer(0);
-        DX_ASSERT(renderer, "Object", "Renderer 0 not found");
+        auto* renderer = RendererManager::Get().GetRenderer();
+        DX_ASSERT(renderer, "Object", "Default renderer not found");
 
         // Vertex Buffer
         {
-            D3D11_BUFFER_DESC vertexBufferDesc = {};
-            vertexBufferDesc.ByteWidth = GetVertexSize() * m_vertexData.size();
-            vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-            vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-            vertexBufferDesc.CPUAccessFlags = 0;
-            vertexBufferDesc.MiscFlags = 0;
+            BufferDesc vertexBufferDesc = {};
+            vertexBufferDesc.m_elementSizeInBytes = GetVertexSize();
+            vertexBufferDesc.m_elementCount = m_vertexData.size();
+            vertexBufferDesc.m_usage = ResourceUsage::Immutable;
+            vertexBufferDesc.m_bindFlags = BufferBind_VertexBuffer;
+            vertexBufferDesc.m_cpuAccess = ResourceCPUAccess::None;
+            vertexBufferDesc.m_bufferType = BufferType::None;
+            vertexBufferDesc.m_initialData = m_vertexData.data();
 
-            D3D11_SUBRESOURCE_DATA vertexSubresourceData = {};
-            vertexSubresourceData.pSysMem = m_vertexData.data();
-            vertexSubresourceData.SysMemPitch = 0;
-            vertexSubresourceData.SysMemSlicePitch = 0;
-
-            renderer->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexSubresourceData, m_vertexBuffer.GetAddressOf());
+            m_vertexBuffer = renderer->GetDevice()->CreateBuffer(vertexBufferDesc);
         }
 
         // Index Buffer
         {
-            D3D11_BUFFER_DESC indexBufferDesc = {};
-            indexBufferDesc.ByteWidth = GetIndexxSize() * m_indexData.size();
-            indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-            indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-            indexBufferDesc.CPUAccessFlags = 0;
-            indexBufferDesc.MiscFlags = 0;
+            BufferDesc indexBufferDesc = {};
+            indexBufferDesc.m_elementSizeInBytes = GetIndexSize();
+            indexBufferDesc.m_elementCount = m_indexData.size();
+            indexBufferDesc.m_usage = ResourceUsage::Immutable;
+            indexBufferDesc.m_bindFlags = BufferBind_IndexBuffer;
+            indexBufferDesc.m_cpuAccess = ResourceCPUAccess::None;
+            indexBufferDesc.m_bufferType = BufferType::None;
+            indexBufferDesc.m_initialData = m_indexData.data();
 
-            D3D11_SUBRESOURCE_DATA indexSubresourceData = {};
-            indexSubresourceData.pSysMem = m_indexData.data();
-            indexSubresourceData.SysMemPitch = 0;
-            indexSubresourceData.SysMemSlicePitch = 0;
-
-            renderer->GetDevice()->CreateBuffer(&indexBufferDesc, &indexSubresourceData, m_indexBuffer.GetAddressOf());
+            m_indexBuffer = renderer->GetDevice()->CreateBuffer(indexBufferDesc);
         }
 
         // Constant Buffer
         {
-            D3D11_BUFFER_DESC constantBufferDesc = {};
-            constantBufferDesc.ByteWidth = sizeof(Math::Matrix4x4Packed);
-            constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-            constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-            constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
-            constantBufferDesc.MiscFlags = 0;
-
             const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
 
-            D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
-            constantSubresourceData.pSysMem = &worldMatrix;
-            constantSubresourceData.SysMemPitch = 0;
-            constantSubresourceData.SysMemSlicePitch = 0;
+            BufferDesc constantBufferDesc = {};
+            constantBufferDesc.m_elementSizeInBytes = sizeof(Math::Matrix4x4Packed);
+            constantBufferDesc.m_elementCount = 1;
+            constantBufferDesc.m_usage = ResourceUsage::Dynamic;
+            constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
+            constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
+            constantBufferDesc.m_bufferType = BufferType::None;
+            constantBufferDesc.m_initialData = &worldMatrix;
 
-            renderer->GetDevice()->CreateBuffer(&constantBufferDesc, &constantSubresourceData, m_worldMatrixConstantBuffer.GetAddressOf());
+            m_worldMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
 
         // Texture
         {
             m_textureData = LoadTexture("Textures/Wall_Stone_Albedo.png", m_textureSize);
 
-            D3D11_TEXTURE2D_DESC textureDesc = {};
-            textureDesc.Width = m_textureSize.x;
-            textureDesc.Height = m_textureSize.y;
-            textureDesc.MipLevels = 1;
-            textureDesc.ArraySize = 1;
-            textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            textureDesc.SampleDesc.Count = 1;
-            textureDesc.SampleDesc.Quality = 0;
-            textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
-            textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-            textureDesc.CPUAccessFlags = 0;
-            textureDesc.MiscFlags = 0;
+            TextureDesc textureDesc = {};
+            textureDesc.m_textureType = TextureType::Texture2D;
+            textureDesc.m_dimensions = Math::Vector3Int(m_textureSize, 0);
+            textureDesc.m_mipCount = 1;
+            textureDesc.m_format = ResourceFormat::R8G8B8A8_UNORM;
+            textureDesc.m_usage = ResourceUsage::Immutable;
+            textureDesc.m_bindFlags = TextureBind_ShaderResource;
+            textureDesc.m_cpuAccess = ResourceCPUAccess::None;
+            textureDesc.m_arrayCount = 1;
+            textureDesc.m_sampleCount = 1;
+            textureDesc.m_sampleQuality = 0;
+            textureDesc.m_initialData = m_textureData;
 
-            D3D11_SUBRESOURCE_DATA textureSubresourceData = {};
-            textureSubresourceData.pSysMem = m_textureData;
-            textureSubresourceData.SysMemPitch = m_textureSize.x * 4 * sizeof(uint8_t); // Necessary for textures only to specify size of one line.
-            textureSubresourceData.SysMemSlicePitch = 0;
+            m_texture = renderer->GetDevice()->CreateTexture(textureDesc);
 
-            renderer->GetDevice()->CreateTexture2D(&textureDesc, &textureSubresourceData, m_texture.GetAddressOf());
+            ShaderResourceViewDesc srvDesc = {};
+            srvDesc.m_resource = m_texture;
+            srvDesc.m_viewFormat = textureDesc.m_format;
+            srvDesc.m_firstMip = 0;
+            srvDesc.m_mipCount = -1;
 
-            D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc = {};
-            shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-            shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-            shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-            renderer->GetDevice()->CreateShaderResourceView(m_texture.Get(), &shaderResourceViewDesc, m_textureView.GetAddressOf());
+            m_textureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
         }
 
         // Sampler State
         {
-            D3D11_SAMPLER_DESC samplerDesc = {};
-            samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-            samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-            samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-            samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-            samplerDesc.MipLODBias = 0.0f;
-            samplerDesc.MaxAnisotropy = 1;
-            samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-            for (int i = 0; i < 4; ++i)
-            {
-                samplerDesc.BorderColor[i] = 0.0f;
-            }
-            samplerDesc.MinLOD = 0;
-            samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+            SamplerDesc samplerDesc = {};
+            samplerDesc.m_minFilter = FilterSampling::Linear;
+            samplerDesc.m_magFilter = FilterSampling::Linear;
+            samplerDesc.m_mipFilter = FilterSampling::Linear;
+            samplerDesc.m_filterMode = FilterMode::Normal;
+            samplerDesc.m_addressU = AddressMode::Wrap;
+            samplerDesc.m_addressV = AddressMode::Wrap;
+            samplerDesc.m_addressW = AddressMode::Wrap;
+            samplerDesc.m_mipBias = 0;
+            samplerDesc.m_mipClamp = NoMipClamping;
+            samplerDesc.m_maxAnisotropy = 1;
+            samplerDesc.m_borderColor = Math::Color(0.0f);
+            samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
 
-            renderer->GetDevice()->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf());
+            m_samplerState = renderer->GetDevice()->CreateSampler(samplerDesc);
         }
     }
 
     void Object::SetBuffers()
     {
-        auto* renderer = RendererManager::Get().GetRenderer(0);
-        DX_ASSERT(renderer, "Object", "Renderer 0 not found");
+        auto* renderer = RendererManager::Get().GetRenderer();
+        DX_ASSERT(renderer, "Object", "Default renderer not found");
 
         // Update constant buffer with the latest world matrix.
         {
             const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
 
-            D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
-            renderer->GetDeviceContext()->Map(m_worldMatrixConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-            memcpy(mappedSubresource.pData, &worldMatrix, sizeof(Math::Matrix4x4Packed));
-            renderer->GetDeviceContext()->Unmap(m_worldMatrixConstantBuffer.Get(), 0);
+            renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldMatrix, sizeof(worldMatrix));
         }
 
-        const uint32_t vertexBufferStride = GetVertexSize();
-        const uint32_t vertexBufferOffset = 0;
+        renderer->GetDevice()->GetImmediateContext().BindVertexBuffers({m_vertexBuffer.get()});
+        renderer->GetDevice()->GetImmediateContext().BindIndexBuffer(*m_indexBuffer);
 
-        renderer->GetDeviceContext()->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &vertexBufferStride, &vertexBufferOffset);
-        renderer->GetDeviceContext()->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-        renderer->GetDeviceContext()->VSSetConstantBuffers(1, 1, m_worldMatrixConstantBuffer.GetAddressOf());
-        renderer->GetDeviceContext()->PSSetShaderResources(0, 1, m_textureView.GetAddressOf());
-        renderer->GetDeviceContext()->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+        //renderer->GetDevice()->GetImmediateContext().VSSetConstantBuffers(1, 1, m_worldMatrixConstantBuffer.GetAddressOf());
+        //renderer->GetDevice()->GetImmediateContext().PSSetShaderResources(0, 1, m_textureView.GetAddressOf());
+        //renderer->GetDevice()->GetImmediateContext().PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
     }
 
     Triangle::Triangle()

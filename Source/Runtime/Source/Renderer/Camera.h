@@ -2,14 +2,12 @@
 
 #include <Math/Transform.h>
 
-// For COM objects' smart pointers
-#include <wrl.h>
-using Microsoft::WRL::ComPtr;
-
-class ID3D11Buffer;
+#include <memory>
 
 namespace DX
 {
+    class Buffer;
+
     // 3D perspective camera
     class Camera
     {
@@ -44,6 +42,6 @@ namespace DX
             Math::Matrix4x4Packed m_projMatrix;
         };
 
-        ComPtr<ID3D11Buffer> m_viewProjMatrixConstantBuffer;
+        std::shared_ptr<Buffer> m_viewProjMatrixConstantBuffer;
     };
 } // namespace DX

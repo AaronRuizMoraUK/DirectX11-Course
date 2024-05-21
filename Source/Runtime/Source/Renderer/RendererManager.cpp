@@ -5,7 +5,7 @@ namespace DX
 {
     std::unique_ptr<RendererManager> RendererManager::Instance;
 
-    RendererId RendererManager::NextRendererId = 0;
+    RendererId RendererManager::NextRendererId = DefaultRendererId;
 
     RendererManager& RendererManager::Get()
     {
@@ -30,7 +30,8 @@ namespace DX
         }
 
         auto result = m_renderers.emplace(NextRendererId, std::move(newRenderer));
-        ++NextRendererId;
+
+        NextRendererId = RendererId(NextRendererId.GetValue() + 1);
 
         // Result's first is the iterator to the newly inserted element (pair),
         // its second is the value of the element (unique_ptr<Window>).
@@ -39,8 +40,11 @@ namespace DX
 
     void RendererManager::DestroyRenderer(RendererId rendererId)
     {
-        // Removing the renderer from the map will destroy it.
-        m_renderers.erase(rendererId);
+        if (rendererId != DefaultRendererId)
+        {
+            // Removing the renderer from the map will destroy it.
+            m_renderers.erase(rendererId);
+        }
     }
 
     Renderer* RendererManager::GetRenderer(RendererId rendererId)

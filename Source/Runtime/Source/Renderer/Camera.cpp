@@ -1,13 +1,14 @@
 #include <Renderer/Camera.h>
 #include <Renderer/RendererManager.h>
+#include <RHI/Device/Device.h>
+#include <RHI/Device/DeviceContext.h>
+#include <RHI/Resource/Buffer/Buffer.h>
 #include <Window/WindowManager.h>
 #include <Log/Log.h>
 
 #include <Math/Vector2.h>
 #include <Math/Matrix3x3.h>
 #include <mathfu/constants.h>
-
-#include <d3d11.h>
 
 // GLFW uses Vulkan by default, so we need to indicate to not use it.
 #define GLFW_INCLUDE_NONE
@@ -40,25 +41,22 @@ namespace DX
 
     void Camera::CreateBuffers()
     {
-        auto* renderer = RendererManager::Get().GetRenderer(0);
-        DX_ASSERT(renderer, "Camera", "Renderer 0 not found");
+        auto* renderer = RendererManager::Get().GetRenderer();
+        DX_ASSERT(renderer, "Camera", "Default renderer not found");
 
         {
-            D3D11_BUFFER_DESC constantBufferDesc = {};
-            constantBufferDesc.ByteWidth = sizeof(ViewProjBuffer);
-            constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-            constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-            constantBufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
-            constantBufferDesc.MiscFlags = 0;
-
             const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
 
-            D3D11_SUBRESOURCE_DATA constantSubresourceData = {};
-            constantSubresourceData.pSysMem = &viewProjBuffer;
-            constantSubresourceData.SysMemPitch = 0;
-            constantSubresourceData.SysMemSlicePitch = 0;
+            BufferDesc constantBufferDesc = {};
+            constantBufferDesc.m_elementSizeInBytes = sizeof(ViewProjBuffer);
+            constantBufferDesc.m_elementCount = 1;
+            constantBufferDesc.m_usage = ResourceUsage::Dynamic;
+            constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
+            constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
+            constantBufferDesc.m_bufferType = BufferType::None;
+            constantBufferDesc.m_initialData = &viewProjBuffer;
 
-            renderer->GetDevice()->CreateBuffer(&constantBufferDesc, &constantSubresourceData, m_viewProjMatrixConstantBuffer.GetAddressOf());
+            m_viewProjMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
     }
 
@@ -197,19 +195,16 @@ namespace DX
 
     void Camera::SetBuffers()
     {
-        auto* renderer = RendererManager::Get().GetRenderer(0);
-        DX_ASSERT(renderer, "Camera", "Renderer 0 not found");
+        auto* renderer = RendererManager::Get().GetRenderer();
+        DX_ASSERT(renderer, "Camera", "Default renderer not found");
 
         // Update constant buffer with the latest view and projection matrices.
         {
             const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
 
-            D3D11_MAPPED_SUBRESOURCE mappedSubresource = {};
-            renderer->GetDeviceContext()->Map(m_viewProjMatrixConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-            memcpy(mappedSubresource.pData, &viewProjBuffer, sizeof(ViewProjBuffer));
-            renderer->GetDeviceContext()->Unmap(m_viewProjMatrixConstantBuffer.Get(), 0);
+            renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
 
-        renderer->GetDeviceContext()->VSSetConstantBuffers(0, 1, m_viewProjMatrixConstantBuffer.GetAddressOf());
+        //renderer->GetDevice()->GetImmediateContext()->VSSetConstantBuffers(0, 1, m_viewProjMatrixConstantBuffer.GetAddressOf());
     }
 } // namespace DX
