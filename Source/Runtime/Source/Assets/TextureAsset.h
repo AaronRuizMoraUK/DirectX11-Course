@@ -19,9 +19,6 @@ namespace DX
 
         static inline const AssetType TextureAssetType = 0xB8FCE1BE;
 
-        TextureAsset() = default;
-        ~TextureAsset() = default;
-
         AssetType GetAssetType() const override
         {
             return TextureAssetType;
