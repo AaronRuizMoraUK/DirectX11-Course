@@ -66,7 +66,7 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (m_desc.m_initialData)
             {
-                const uint32_t mipLevels = std::max<uint32_t>(m_desc.m_mipCount, 1);
+                const uint32_t mipLevels = m_desc.m_mipCount;
                 const uint32_t arraySize = m_desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);
@@ -131,7 +131,7 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (m_desc.m_initialData)
             {
-                const uint32_t mipLevels = std::max<uint32_t>(m_desc.m_mipCount, 1);
+                const uint32_t mipLevels = m_desc.m_mipCount;
                 const uint32_t arraySize = m_desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);
@@ -185,7 +185,7 @@ namespace DX
             std::vector<D3D11_SUBRESOURCE_DATA> subresourceData;
             if (m_desc.m_initialData)
             {
-                const uint32_t mipLevels = std::max<uint32_t>(m_desc.m_mipCount, 1);
+                const uint32_t mipLevels = m_desc.m_mipCount;
                 const uint32_t arraySize = m_desc.m_arrayCount;
 
                 subresourceData.resize(mipLevels * arraySize);

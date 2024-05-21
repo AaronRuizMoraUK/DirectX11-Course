@@ -10,7 +10,7 @@ namespace DX
     {
         TextureType m_textureType;
         Math::Vector3Int m_dimensions;
-        uint32_t m_mipCount; // 0 to generate all mipmap levels. Use 1 for no mipmaps.
+        uint32_t m_mipCount; // 1 for no mipmaps. It has be > 0.
         ResourceFormat m_format;
         ResourceUsage m_usage;
         TextureBindFlags m_bindFlags; // Bitwise operation of TextureBindFlag
