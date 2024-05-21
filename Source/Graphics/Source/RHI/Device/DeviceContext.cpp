@@ -210,7 +210,7 @@ namespace DX
         // All resources passed must be of the same type.
         const DeviceObjectType type = resources[0]->GetType();
 
-#ifdef _DEBUG
+#ifndef NDEBUG
         // All resources must be of the same type.
         bool sameType = std::all_of(resources.cbegin() + 1, resources.cend(),
             [type](const DeviceObject* resource)
@@ -224,7 +224,7 @@ namespace DX
         {
         case DeviceObjectType::Buffer:
         {
-#ifdef _DEBUG
+#ifndef NDEBUG
             bool allSame = std::all_of(resources.cbegin() + 1, resources.cend(),
                 [type](const DeviceObject* resource)
                 {

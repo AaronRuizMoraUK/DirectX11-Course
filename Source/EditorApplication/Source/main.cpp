@@ -3,6 +3,7 @@
 #include <Renderer/Camera.h>
 
 #include <Window/WindowManager.h>
+#include <Assets/AssetManager.h>
 #include <Math/Vector3.h>
 #include <Math/Color.h>
 #include <Log/Log.h>
@@ -21,6 +22,9 @@ int main()
     const int refreshRate = 144;
     const bool fullScreen = false;
     const bool vSync = true;
+
+    // Asset Manager initialization
+    DX::AssetManager& assetManager = DX::AssetManager::Get();
 
     // Window initialization
     DX::WindowManager& windowManager = DX::WindowManager::Get();
@@ -93,6 +97,7 @@ int main()
     camera.reset();
     DX::RendererManager::Destroy();
     DX::WindowManager::Destroy();
+    DX::AssetManager::Destroy();
 
     DX_LOG(Info, "Main", "Done!");
     return 0;
