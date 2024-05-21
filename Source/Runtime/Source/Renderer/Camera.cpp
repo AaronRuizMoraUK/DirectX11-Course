@@ -205,6 +205,6 @@ namespace DX
             renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
 
-        //renderer->GetDevice()->GetImmediateContext()->VSSetConstantBuffers(0, 1, m_viewProjMatrixConstantBuffer.GetAddressOf());
+        renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_viewProjMatrixConstantBuffer.get() });
     }
 } // namespace DX

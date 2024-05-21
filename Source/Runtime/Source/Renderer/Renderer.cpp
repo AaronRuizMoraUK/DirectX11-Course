@@ -179,7 +179,7 @@ namespace DX
         };
         pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
         pipelineDesc.m_rasterizerState = {
-            .m_faceFrontOrder = DX::FaceFrontOrder::CounterClockwise,
+            .m_faceFrontOrder = DX::FaceFrontOrder::Clockwise,
             .m_faceCullMode = DX::FaceCullMode::BackFace,
             .m_faceFillMode = DX::FaceFillMode::Solid,
         };

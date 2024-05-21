@@ -6,6 +6,9 @@
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Resource/Views/RenderTargetView.h>
 #include <RHI/Resource/Views/DepthStencilView.h>
+#include <RHI/Resource/Views/ShaderResourceView.h>
+#include <RHI/Resource/Views/ShaderRWResourceView.h>
+#include <RHI/Sampler/Sampler.h>
 #include <Log/Log.h>
 
 #include <d3d11.h>
@@ -194,9 +197,110 @@ namespace DX
         m_dx11DeviceContext->IASetIndexBuffer(indexBuffer.GetDX11Buffer().Get(), ToDX11ResourceFormat(indexFormat), 0);
     }
 
-    void DeviceContext::BindResources()
+    void DeviceContext::BindResources(uint32_t slot, std::vector<DeviceObject*> resources)
     {
-        // TODO: Bind resources to shaders: CB, SRV, UAV and Sampler.
+        // TODO: Bind resources to shaders using resource layout.
+
+        if (resources.empty())
+        {
+            DX_LOG(Warning, "DeviceContext", "BindResources called with no resources.");
+            return;
+        }
+
+        // All resources passed must be of the same type.
+        const DeviceObjectType type = resources[0]->GetType();
+
+#ifdef _DEBUG
+        // All resources must be of the same type.
+        bool sameType = std::all_of(resources.cbegin() + 1, resources.cend(),
+            [type](const DeviceObject* resource)
+            {
+                return resource->GetType() == type;
+            });
+        DX_ASSERT(sameType, "DeviceContext", "Not all resources are of the same type (%d).", type);
+#endif
+
+        switch (type)
+        {
+        case DeviceObjectType::Buffer:
+        {
+#ifdef _DEBUG
+            bool allSame = std::all_of(resources.cbegin() + 1, resources.cend(),
+                [type](const DeviceObject* resource)
+                {
+                    auto buffer = static_cast<const Buffer*>(resource);
+                    return buffer->GetBufferDesc().m_bindFlags & BufferBind_ConstantBuffer;
+                });
+            DX_ASSERT(allSame, "DeviceContext", "Not all resources passed are constant buffers.");
+#endif
+
+            std::vector<ID3D11Buffer*> dx11Buffers(resources.size());
+            std::transform(resources.begin(), resources.end(), dx11Buffers.begin(),
+                [](DeviceObject* resource)
+                {
+                    return static_cast<Buffer*>(resource)->GetDX11Buffer().Get();
+                });
+
+            m_dx11DeviceContext->VSSetConstantBuffers(slot, resources.size(), dx11Buffers.data());
+        }
+        break;
+
+        case DeviceObjectType::ShaderResourceView:
+        {
+            std::vector<ID3D11ShaderResourceView*> dx11SRVs(resources.size());
+            std::transform(resources.begin(), resources.end(), dx11SRVs.begin(),
+                [](DeviceObject* resource)
+                {
+                    return static_cast<ShaderResourceView*>(resource)->GetDX11ShaderResourceView().Get();
+                });
+
+            m_dx11DeviceContext->PSSetShaderResources(slot, dx11SRVs.size(), dx11SRVs.data());
+        }
+        break;
+
+        case DeviceObjectType::ShaderRWResourceView:
+        {
+            std::vector<ID3D11UnorderedAccessView*> dx11UAVs(resources.size());
+            std::transform(resources.begin(), resources.end(), dx11UAVs.begin(),
+                [](DeviceObject* resource)
+                {
+                    return static_cast<ShaderRWResourceView*>(resource)->GetDX11UnorderedAccessView().Get();
+                });
+
+            // An array of append and consume buffer offsets. A value of - 1 indicates to keep the current offset.
+            // Any other values set the hidden counter for that appendable and consumable UAV.
+            // This is relevant only for UAVs that were created with either D3D11_BUFFER_UAV_FLAG_APPEND or
+            // D3D11_BUFFER_UAV_FLAG_COUNTER specified when the UAV was created; otherwise, the argument is ignored.
+            const UINT uavInitialCounts = -1;
+
+            m_dx11DeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(
+                D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
+                nullptr,
+                nullptr,
+                slot,
+                dx11UAVs.size(),
+                dx11UAVs.data(),
+                &uavInitialCounts);
+        }
+        break;
+
+        case DeviceObjectType::Sampler:
+        {
+            std::vector<ID3D11SamplerState*> dx11Samplers(resources.size());
+            std::transform(resources.begin(), resources.end(), dx11Samplers.begin(),
+                [](DeviceObject* resource)
+                {
+                    return static_cast<Sampler*>(resource)->GetDX11Sampler().Get();
+                });
+
+            m_dx11DeviceContext->PSSetSamplers(slot, dx11Samplers.size(), dx11Samplers.data());
+        }
+        break;
+
+        default:
+            DX_LOG(Error, "DeviceContext", "Unexpected device object type %d to bind.", type);
+            return;
+        }
     }
 
     void DeviceContext::ClearFrameBuffer(FrameBuffer& frameBuffer,

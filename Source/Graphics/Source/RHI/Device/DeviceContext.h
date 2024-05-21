@@ -47,7 +47,10 @@ namespace DX
 
         void BindVertexBuffers(const std::vector<Buffer*>& vertexBuffers);
         void BindIndexBuffer(Buffer& indexBuffer);
-        void BindResources(); // CB, SRV, SRWRV, Samplers. Needs resource layouts filled for each shader.
+
+        // Bind an array of resources to a shader slot: ConstantBuffer, SRV, SRWRV and Samplers.
+        // All resources must be of the same type in a single BindResources call.
+        void BindResources(uint32_t slot, std::vector<DeviceObject*> resources);
 
         void ClearFrameBuffer(FrameBuffer& frameBuffer,
             std::optional<Math::Color> color,

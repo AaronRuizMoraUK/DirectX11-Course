@@ -30,6 +30,7 @@ namespace DX
             depthStencilTextureDesc.m_arrayCount = colorTextureDesc.m_arrayCount;
             depthStencilTextureDesc.m_sampleCount = colorTextureDesc.m_sampleCount;
             depthStencilTextureDesc.m_sampleQuality = colorTextureDesc.m_sampleQuality;
+            depthStencilTextureDesc.m_initialData = nullptr;
 
             m_depthStencilTexture = m_ownerDevice->CreateTexture(depthStencilTextureDesc);
         }
@@ -47,7 +48,7 @@ namespace DX
             rtvDesc.m_firstArray = 0;
             rtvDesc.m_arrayCount = m_colorTexture->GetTextureDesc().m_arrayCount;
             rtvDesc.m_firstDepth = 0;
-            rtvDesc.m_depthCount = -1;
+            rtvDesc.m_depthCount = m_colorTexture->GetTextureDesc().m_dimensions.z;
 
             m_colorRenderTargetView = m_ownerDevice->CreateRenderTargetView(rtvDesc);
         }

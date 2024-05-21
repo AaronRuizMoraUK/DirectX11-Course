@@ -1,5 +1,6 @@
 
 #include <RHI/Device/Device.h>
+#include <RHI/FrameBuffer/FrameBuffer.h>
 #include <RHI/Shader/Shader.h>
 #include <RHI/Shader/ShaderCompiler/ShaderCompiler.h>
 #include <RHI/Sampler/Sampler.h>
@@ -25,6 +26,7 @@ namespace UnitTest
         DeviceObjectTests(DX::Device* device)
             : m_device(device)
         {
+            TestFrameBuffer();
             TestShader();
             TestSampler();
             TestTexure1D();
@@ -41,6 +43,7 @@ namespace UnitTest
         }
 
     private:
+        void TestFrameBuffer();
         void TestShader();
         void TestSampler();
         void TestTexure1D();
@@ -70,6 +73,32 @@ namespace UnitTest
         DeviceObjectTests tests(device.get());
 
         DX_LOG(Info, "Test", " --------------------------");
+    }
+
+    void DeviceObjectTests::TestFrameBuffer()
+    {
+        DX_LOG(Info, "Test", " ----- Testing FrameBuffer -----");
+
+        DX::TextureDesc textureDesc = {};
+        textureDesc.m_textureType = DX::TextureType::Texture2D;
+        textureDesc.m_dimensions = Math::Vector3Int(1280, 720, 0);
+        textureDesc.m_mipCount = 1;
+        textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
+        textureDesc.m_usage = DX::ResourceUsage::Default;
+        textureDesc.m_bindFlags = DX::TextureBind_RenderTarget;
+        textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+        textureDesc.m_arrayCount = 1;
+        textureDesc.m_sampleCount = 1;
+        textureDesc.m_sampleQuality = 0;
+        textureDesc.m_initialData = nullptr;
+
+        auto texture = m_device->CreateTexture(textureDesc);
+
+        DX::FrameBufferDesc frameBufferDesc = {};
+        frameBufferDesc.m_colorAttachment = texture;
+        frameBufferDesc.m_createDepthStencilAttachment = true;
+
+        auto frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);
     }
 
     void DeviceObjectTests::TestShader()
@@ -568,7 +597,7 @@ namespace UnitTest
         };
         pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
         pipelineDesc.m_rasterizerState = {
-            .m_faceFrontOrder = DX::FaceFrontOrder::CounterClockwise,
+            .m_faceFrontOrder = DX::FaceFrontOrder::Clockwise,
             .m_faceCullMode = DX::FaceCullMode::BackFace,
             .m_faceFillMode = DX::FaceFillMode::Solid,
         };

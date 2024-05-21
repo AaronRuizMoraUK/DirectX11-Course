@@ -245,7 +245,7 @@ namespace DX
         DX_LOG(Verbose, "ShaderResourceView", "Shader Resource View destroyed.");
     }
 
-    ComPtr<ID3D11ShaderResourceView> ShaderResourceView::GetDXShaderResourceView()
+    ComPtr<ID3D11ShaderResourceView> ShaderResourceView::GetDX11ShaderResourceView()
     {
         return m_dx11ShaderResourceView;
     }
