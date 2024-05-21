@@ -1,5 +1,6 @@
 #include <Renderer/Object.h>
 #include <Renderer/RendererManager.h>
+#include <Assets/TextureAsset.h>
 
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
@@ -70,11 +71,12 @@ namespace DX
 
         // Texture
         {
-            m_textureData = LoadTexture("Textures/Wall_Stone_Albedo.png", m_textureSize);
+            m_textureAsset = TextureAsset::LoadTextureAsset("Textures/Wall_Stone_Albedo.png");
+            DX_ASSERT(m_textureAsset.get(), "Object", "Failed to load texture");
 
             TextureDesc textureDesc = {};
             textureDesc.m_textureType = TextureType::Texture2D;
-            textureDesc.m_dimensions = Math::Vector3Int(m_textureSize, 0);
+            textureDesc.m_dimensions = Math::Vector3Int(m_textureAsset->GetData()->m_size, 0);
             textureDesc.m_mipCount = 1;
             textureDesc.m_format = ResourceFormat::R8G8B8A8_UNORM;
             textureDesc.m_usage = ResourceUsage::Immutable;
@@ -83,7 +85,7 @@ namespace DX
             textureDesc.m_arrayCount = 1;
             textureDesc.m_sampleCount = 1;
             textureDesc.m_sampleQuality = 0;
-            textureDesc.m_initialData = m_textureData;
+            textureDesc.m_initialData = m_textureAsset->GetData()->m_data;
 
             m_texture = renderer->GetDevice()->CreateTexture(textureDesc);
 

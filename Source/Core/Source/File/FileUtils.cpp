@@ -1,8 +1,6 @@
 #include <File/FileUtils.h>
 #include <Log/Log.h>
 
-#include <stb_image.h>
-
 #include <array>
 #include <fstream>
 #include <sstream>
@@ -36,25 +34,6 @@ namespace DX
             DX_LOG(Error, "FileUtils", "Filename path %s failed to open.", fileNamePath.generic_string().c_str());
             return std::nullopt;
         }
-    }
-
-    uint8_t* LoadTexture(const std::string& fileName, Math::Vector2Int& textureSizeOut)
-    {
-        auto fileNamePath = GetAssetPath() / fileName;
-        if (!std::filesystem::exists(fileNamePath))
-        {
-            DX_LOG(Error, "FileUtils", "Filename path %s does not exist.", fileNamePath.generic_string().c_str());
-            return nullptr;
-        }
-
-        uint8_t* textureData = stbi_load(fileNamePath.generic_string().c_str(), &textureSizeOut.x, &textureSizeOut.y, nullptr, STBI_rgb_alpha);
-        if (!textureData)
-        {
-            DX_LOG(Error, "FileUtils", "Failed to load texture %s.", fileNamePath.generic_string().c_str());
-            return nullptr;
-        }
-
-        return textureData;
     }
 
     std::filesystem::path GetAssetPath()

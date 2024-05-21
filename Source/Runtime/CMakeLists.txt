@@ -16,7 +16,12 @@ set_target_properties(Runtime PROPERTIES FOLDER "Engine")
 #target_include_directories(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/Source/Runtime/Include")
 target_include_directories(Runtime PUBLIC "${CMAKE_SOURCE_DIR}/Source/Runtime/Source")
 
+# Compiler definitions
+target_compile_definitions(Runtime PRIVATE STB_IMAGE_IMPLEMENTATION=1) # For stb
+
 # Libraries
 target_link_libraries(Runtime PUBLIC Core)
 target_link_libraries(Runtime PRIVATE Graphics)
 target_link_libraries(Runtime PRIVATE glfw)
+target_link_libraries(Runtime PRIVATE stb)
+target_link_libraries(Runtime PRIVATE assimp)

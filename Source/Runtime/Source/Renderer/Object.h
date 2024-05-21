@@ -12,6 +12,7 @@ namespace DX
     class Texture;
     class ShaderResourceView;
     class Sampler;
+    class TextureAsset;
 
     class Object
     {
@@ -43,7 +44,7 @@ namespace DX
         std::shared_ptr<Buffer> m_indexBuffer;
         std::shared_ptr<Buffer> m_worldMatrixConstantBuffer;
 
-        uint8_t* m_textureData = nullptr;
+        std::shared_ptr<TextureAsset> m_textureAsset;
         Math::Vector2Int m_textureSize = Math::Vector2Int(0);
 
         std::shared_ptr<Texture> m_texture;

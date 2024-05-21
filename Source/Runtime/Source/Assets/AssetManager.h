@@ -19,6 +19,7 @@ namespace DX
         AssetManager(const AssetManager&) = delete;
         AssetManager& operator=(const AssetManager&) = delete;
 
+        void AddAsset(std::shared_ptr<AssetBase> asset);
         void RemoveAsset(AssetId assetId);
 
         std::shared_ptr<AssetBase> GetAsset(AssetId assetId);

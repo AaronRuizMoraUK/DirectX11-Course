@@ -14,7 +14,6 @@
 #include <Log/Log.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
-#include <File/FileUtils.h>
 
 #include <numeric>
 
@@ -186,7 +185,7 @@ namespace UnitTest
             for (int row = 0; row < textureSize; ++row)
             {
                 const std::byte value = static_cast<std::byte>(row % 255);
-                const int index = (row + arrayIndex * textureSize) * components;
+                const int index = (arrayIndex * textureSize + row) * components;
                 textureData[index + 0] = value;
                 textureData[index + 1] = value;
                 textureData[index + 2] = value;
@@ -218,8 +217,21 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing Texure2D -----");
 
-        Math::Vector2Int textureSize;
-        auto* textureData = DX::LoadTexture("Textures/Wall_Stone_Albedo.png", textureSize);
+        const int components = 4;
+        Math::Vector2Int textureSize(256, 256);
+        std::vector<std::byte> textureData(components * textureSize.x * textureSize.y);
+        for (int row = 0; row < textureSize.x; ++row)
+        {
+            for (int col = 0; col < textureSize.y; ++col)
+            {
+                const std::byte value = static_cast<std::byte>(row % 255);
+                const int index = (row * textureSize.y + col) * components;
+                textureData[index + 0] = value;
+                textureData[index + 1] = value;
+                textureData[index + 2] = value;
+                textureData[index + 3] = value;
+            }
+        }
 
         DX::TextureDesc textureDesc = {};
         textureDesc.m_textureType = DX::TextureType::Texture2D;
@@ -232,7 +244,7 @@ namespace UnitTest
         textureDesc.m_arrayCount = 1;
         textureDesc.m_sampleCount = 1;
         textureDesc.m_sampleQuality = 0;
-        textureDesc.m_initialData = textureData;
+        textureDesc.m_initialData = textureData.data();
 
         auto texture = m_device->CreateTexture(textureDesc);
 
@@ -251,14 +263,13 @@ namespace UnitTest
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * arrayCount);
         for (int arrayIndex = 0; arrayIndex < arrayCount; ++arrayIndex)
         {
-            for (int col = 0; col < textureSize.y; ++col)
+            for (int row = 0; row < textureSize.x; ++row)
             {
-                for (int row = 0; row < textureSize.x; ++row)
+                for (int col = 0; col < textureSize.y; ++col)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row
-                        + col * (textureSize.x)
-                        + arrayIndex * (textureSize.x * textureSize.y)) * components;
+                    const int index = (arrayIndex * textureSize.x * textureSize.y
+                        + row * textureSize.y + col) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
                     textureData[index + 2] = value;
@@ -297,14 +308,13 @@ namespace UnitTest
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * faceCount);
         for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
         {
-            for (int col = 0; col < textureSize.y; ++col)
+            for (int row = 0; row < textureSize.x; ++row)
             {
-                for (int row = 0; row < textureSize.x; ++row)
+                for (int col = 0; col < textureSize.y; ++col)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row
-                        + col * (textureSize.x)
-                        + faceIndex * (textureSize.x * textureSize.y)) * components;
+                    const int index =(faceIndex * textureSize.x * textureSize.y
+                        + row * textureSize.y + col) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
                     textureData[index + 2] = value;
@@ -348,15 +358,14 @@ namespace UnitTest
         {
             for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
             {
-                for (int col = 0; col < textureSize.y; ++col)
+                for (int row = 0; row < textureSize.x; ++row)
                 {
-                    for (int row = 0; row < textureSize.x; ++row)
+                    for (int col = 0; col < textureSize.y; ++col)
                     {
                         const std::byte value = static_cast<std::byte>(row % 255);
-                        const int index = (row
-                            + col * (textureSize.x)
-                            + faceIndex * (textureSize.x * textureSize.y)
-                            + arrayIndex * (textureSize.x * textureSize.y * faceCount)) * components;
+                        const int index = (arrayIndex * faceCount * textureSize.x * textureSize.y
+                            + faceIndex * textureSize.x * textureSize.y
+                            + row * textureSize.y + col) * components;
                         textureData[index + 0] = value;
                         textureData[index + 1] = value;
                         textureData[index + 2] = value;
@@ -397,14 +406,13 @@ namespace UnitTest
         std::vector<std::byte> textureData(components * textureSize.x * textureSize.y * textureSize.z);
         for (int depth = 0; depth < textureSize.z; ++depth)
         {
-            for (int col = 0; col < textureSize.y; ++col)
+            for (int row = 0; row < textureSize.x; ++row)
             {
-                for (int row = 0; row < textureSize.x; ++row)
+                for (int col = 0; col < textureSize.y; ++col)
                 {
                     const std::byte value = static_cast<std::byte>(row % 255);
-                    const int index = (row
-                        + col * (textureSize.x)
-                        + depth * (textureSize.x * textureSize.y)) * components;
+                    const int index = (depth * textureSize.x * textureSize.y
+                        + row * textureSize.y + col) * components;
                     textureData[index + 0] = value;
                     textureData[index + 1] = value;
                     textureData[index + 2] = value;

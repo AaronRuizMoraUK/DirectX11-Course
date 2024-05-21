@@ -45,6 +45,11 @@ namespace DX
         DX_LOG(Info, "Asset Manager", "Terminating Asset Manager...");
     }
 
+    void AssetManager::AddAsset(std::shared_ptr<AssetBase> asset)
+    {
+        m_assets.emplace(asset->GetAssetId(), asset);
+    }
+
     void AssetManager::RemoveAsset(AssetId assetId)
     {
         // If there are no other references to the asset it'll be destroyed when removed from map.

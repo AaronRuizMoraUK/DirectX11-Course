@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <cstdint>
 
 namespace DX
 {
@@ -12,6 +13,8 @@ namespace DX
     class AssetBase
     {
     public:
+        AssetBase() = default;
+
         AssetBase(AssetId assetId)
             : m_assetId(assetId)
         {
@@ -27,20 +30,22 @@ namespace DX
             return m_assetId;
         }
 
+        bool IsAssetIdValid() const
+        {
+            return m_assetId != "";
+        }
+
         virtual AssetType GetAssetType() const = 0;
 
-    protected:
+    private:
         AssetId m_assetId;
     };
 
     template<typename T>
-    class Asset
+    class Asset : public AssetBase
     {
     public:
-        Asset(AssetId assetId)
-            : AssetBase(assetId)
-        {
-        }
+        Asset() = default;
 
         Asset(AssetId assetId, std::unique_ptr<T> data)
             : AssetBase(assetId)

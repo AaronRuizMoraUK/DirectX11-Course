@@ -16,10 +16,5 @@ set_target_properties(Core PROPERTIES FOLDER "Engine")
 #target_include_directories(Core PUBLIC "${CMAKE_SOURCE_DIR}/Source/Core/Include")
 target_include_directories(Core PUBLIC "${CMAKE_SOURCE_DIR}/Source/Core/Source")
 
-# Compiler definitions
-target_compile_definitions(Core PRIVATE STB_IMAGE_IMPLEMENTATION=1) # For stb
-
 # Libraries
 target_link_libraries(Core PUBLIC mathfu)
-target_link_libraries(Core PRIVATE stb)
-target_link_libraries(Core PRIVATE assimp)
