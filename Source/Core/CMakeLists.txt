@@ -22,3 +22,4 @@ target_compile_definitions(Core PRIVATE STB_IMAGE_IMPLEMENTATION=1) # For stb
 # Libraries
 target_link_libraries(Core PUBLIC mathfu)
 target_link_libraries(Core PRIVATE stb)
+target_link_libraries(Core PRIVATE assimp)
