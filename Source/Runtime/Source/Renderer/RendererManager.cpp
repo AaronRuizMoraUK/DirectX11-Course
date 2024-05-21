@@ -3,23 +3,7 @@
 
 namespace DX
 {
-    std::unique_ptr<RendererManager> RendererManager::Instance;
-
     RendererId RendererManager::NextRendererId = DefaultRendererId;
-
-    RendererManager& RendererManager::Get()
-    {
-        if (!Instance)
-        {
-            Instance.reset(new RendererManager());
-        }
-        return *Instance;
-    }
-
-    void RendererManager::Destroy()
-    {
-        Instance.reset();
-    }
 
     Renderer* RendererManager::CreateRenderer(Window* window)
     {

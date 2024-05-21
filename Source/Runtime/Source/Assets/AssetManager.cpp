@@ -5,22 +5,6 @@
 
 namespace DX
 {
-    std::unique_ptr<AssetManager> AssetManager::Instance;
-
-    AssetManager& AssetManager::Get()
-    {
-        if (!Instance)
-        {
-            Instance.reset(new AssetManager());
-        }
-        return *Instance;
-    }
-
-    void AssetManager::Destroy()
-    {
-        Instance.reset();
-    }
-
     AssetManager::AssetManager()
     {
         DX_LOG(Info, "Asset Manager", "Initializing Asset Manager...");

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Singleton/Singleton.h>
 #include <Renderer/Renderer.h>
 
 #include <memory>
@@ -9,21 +10,17 @@ namespace DX
 {
     class Window;
 
-    class RendererManager
+    class RendererManager : public Singleton<RendererManager>
     {
-    public:
-        static RendererManager& Get();
-        static void Destroy();
+        friend class Singleton<RendererManager>;
+        RendererManager() = default;
 
+    public:
         // First renderer created will become the default one.
         // Default renderer cannot be destroyed with DestroyRenderer.
         static inline const RendererId DefaultRendererId{ 1 };
 
         ~RendererManager() = default;
-
-        // Delete copy constructor and assignment operator to prevent copying
-        RendererManager(const RendererManager&) = delete;
-        RendererManager& operator=(const RendererManager&) = delete;
 
         Renderer* CreateRenderer(Window* window);
         void DestroyRenderer(RendererId rendererId);
@@ -31,9 +28,6 @@ namespace DX
         Renderer* GetRenderer(RendererId rendererId = DefaultRendererId);
 
     private:
-        RendererManager() = default;
-
-        static std::unique_ptr<RendererManager> Instance;
         static RendererId NextRendererId;
 
         using Renderers = std::unordered_map<RendererId, std::unique_ptr<Renderer>>;

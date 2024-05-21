@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Singleton/Singleton.h>
 #include <Assets/Asset.h>
 
 #include <memory>
@@ -7,17 +8,18 @@
 
 namespace DX
 {
-    class AssetManager
+    // TODO: Improve so types can be registered with the AssetManager and
+    //       the manager can create the Asset.
+    // TODO: Handle loading the asset asynchronously
+    // TODO: Handle reloading assets
+
+    class AssetManager : public Singleton<AssetManager>
     {
+        friend class Singleton<AssetManager>;
+        AssetManager();
+
     public:
-        static AssetManager& Get();
-        static void Destroy();
-
         ~AssetManager();
-
-        // Delete copy constructor and assignment operator to prevent copying
-        AssetManager(const AssetManager&) = delete;
-        AssetManager& operator=(const AssetManager&) = delete;
 
         void AddAsset(std::shared_ptr<AssetBase> asset);
         void RemoveAsset(AssetId assetId);
@@ -28,10 +30,6 @@ namespace DX
         std::shared_ptr<T> GetAssetAs(AssetId assetId);
 
     private:
-        AssetManager();
-
-        static std::unique_ptr<AssetManager> Instance;
-
         using Assets = std::unordered_map<AssetId, std::shared_ptr<AssetBase>>;
 
         Assets m_assets;

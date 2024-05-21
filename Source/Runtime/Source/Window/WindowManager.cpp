@@ -9,23 +9,7 @@
 
 namespace DX
 {
-    std::unique_ptr<WindowManager> WindowManager::Instance;
-
     WindowId WindowManager::NextWindowId = DefaultWindowId;
-
-    WindowManager& WindowManager::Get()
-    {
-        if (!Instance)
-        {
-            Instance.reset(new WindowManager());
-        }
-        return *Instance;
-    }
-
-    void WindowManager::Destroy()
-    {
-        Instance.reset();
-    }
 
     WindowManager::WindowManager()
     {
