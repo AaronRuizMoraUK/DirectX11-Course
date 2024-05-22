@@ -202,41 +202,7 @@ namespace DX
     void DeviceContext::BindResources(const PipelineResourceBindings& resources)
     {
 #ifndef NDEBUG
-        // Validate resource binding data with the shaders resource layouts
-        for (int i = 0; i < ShaderType_Count; ++i)
-        {
-            const ShaderType shaderType = static_cast<ShaderType>(i);
-
-            const ShaderResourceLayout* shaderResourceLayout = 
-                resources.GetPipeline()->GetShaderResourceLayout(shaderType);
-
-            const ShaderResourceBindingData& shaderBindingData = resources.GetBindingData()[shaderType];
-
-            if (!shaderResourceLayout)
-            {
-                DX_ASSERT(shaderBindingData.m_constantBuffers.empty(), "BindResources",
-                    "Shader binding data should have no constant buffers for %s Shader", ShaderTypeStr(shaderType));
-                DX_ASSERT(shaderBindingData.m_shaderResourceViews.empty(), "BindResources",
-                    "Shader binding data should have no shader resource views in %s Shader", ShaderTypeStr(shaderType));
-                DX_ASSERT(shaderBindingData.m_shaderRWResourceViews.empty(), "BindResources",
-                    "Shader binding data should have no shader RW resource views for %s Shader", ShaderTypeStr(shaderType));
-                DX_ASSERT(shaderBindingData.m_samplers.empty(), "BindResources",
-                    "Shader binding data should have no samplers for %s Shader", ShaderTypeStr(shaderType));
-                continue;
-            }
-
-            const ShaderInfo& shaderInfo =
-                resources.GetPipeline()->GetPipelineShader(shaderType)->GetShaderDesc().m_shaderInfo;
-
-            ValidateConstantBufferBindings(
-                shaderInfo, shaderResourceLayout->m_constantBuffers, shaderBindingData.m_constantBuffers);
-            ValidateShaderResourceViewBindings(
-                shaderInfo, shaderResourceLayout->m_shaderResourceViews, shaderBindingData.m_shaderResourceViews);
-            ValidateShaderRWResourceViewBindings(
-                shaderInfo, shaderResourceLayout->m_shaderRWResourceViews, shaderBindingData.m_shaderRWResourceViews);
-            ValidateSamplersBindings(
-                shaderInfo, shaderResourceLayout->m_samplers, shaderBindingData.m_samplers);
-        }
+        ValidatePipelineResourceBindings(resources);
 #endif
 
         const PipelineResourceBindingData& bindingData = resources.GetBindingData();

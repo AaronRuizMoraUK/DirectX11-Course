@@ -1,5 +1,10 @@
 #include <RHI/Pipeline/PipelineResourceValidations.h>
 
+#include <RHI/Pipeline/Pipeline.h>
+#include <RHI/Pipeline/PipelineResourceBindings.h>
+#include <RHI/Shader/ShaderEnums.h>
+#include <RHI/Shader/ShaderResourceLayout.h>
+#include <RHI/Sampler/Sampler.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Resource/Views/ShaderResourceView.h>
@@ -9,7 +14,7 @@
 
 namespace DX
 {
-    void ValidateConstantBufferBindings(const ShaderInfo& shaderInfo,
+    static void ValidateConstantBufferBindings(const ShaderInfo& shaderInfo,
         const std::vector<ShaderResourceInfo>& constantBuffersInfo,
         const std::vector<std::shared_ptr<Buffer>>& constantBuffers)
     {
@@ -39,7 +44,7 @@ namespace DX
         }
     }
 
-    void ValidateShaderResourceViewBindings(const ShaderInfo& shaderInfo,
+    static void ValidateShaderResourceViewBindings(const ShaderInfo& shaderInfo,
         const std::vector<ShaderResourceInfo>& shaderResourceViewsInfo,
         const std::vector<std::shared_ptr<ShaderResourceView>>& shaderResourceViews)
     {
@@ -126,7 +131,7 @@ namespace DX
         }
     }
 
-    void ValidateShaderRWResourceViewBindings(const ShaderInfo& shaderInfo,
+    static void ValidateShaderRWResourceViewBindings(const ShaderInfo& shaderInfo,
         const std::vector<ShaderResourceInfo>& shaderRWResourceViewsInfo,
         const std::vector<std::shared_ptr<ShaderRWResourceView>>& shaderRWResourceViews)
     {
@@ -213,7 +218,7 @@ namespace DX
         }
     }
 
-    void ValidateSamplersBindings(const ShaderInfo& shaderInfo,
+    static void ValidateSamplersBindings(const ShaderInfo& shaderInfo,
         const std::vector<ShaderResourceInfo>& samplersInfo,
         const std::vector<std::shared_ptr<Sampler>>& samplers)
     {
@@ -230,6 +235,44 @@ namespace DX
                     continue;
                 }
             }
+        }
+    }
+
+    void ValidatePipelineResourceBindings(const PipelineResourceBindings& resources)
+    {
+        for (int i = 0; i < ShaderType_Count; ++i)
+        {
+            const ShaderType shaderType = static_cast<ShaderType>(i);
+
+            const ShaderResourceLayout* shaderResourceLayout =
+                resources.GetPipeline()->GetShaderResourceLayout(shaderType);
+
+            const ShaderResourceBindingData& shaderBindingData = resources.GetBindingData()[shaderType];
+
+            if (!shaderResourceLayout)
+            {
+                DX_ASSERT(shaderBindingData.m_constantBuffers.empty(), "BindResources",
+                    "Shader binding data should have no constant buffers for %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_shaderResourceViews.empty(), "BindResources",
+                    "Shader binding data should have no shader resource views in %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_shaderRWResourceViews.empty(), "BindResources",
+                    "Shader binding data should have no shader RW resource views for %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_samplers.empty(), "BindResources",
+                    "Shader binding data should have no samplers for %s Shader", ShaderTypeStr(shaderType));
+                continue;
+            }
+
+            const ShaderInfo& shaderInfo =
+                resources.GetPipeline()->GetPipelineShader(shaderType)->GetShaderDesc().m_shaderInfo;
+
+            ValidateConstantBufferBindings(
+                shaderInfo, shaderResourceLayout->m_constantBuffers, shaderBindingData.m_constantBuffers);
+            ValidateShaderResourceViewBindings(
+                shaderInfo, shaderResourceLayout->m_shaderResourceViews, shaderBindingData.m_shaderResourceViews);
+            ValidateShaderRWResourceViewBindings(
+                shaderInfo, shaderResourceLayout->m_shaderRWResourceViews, shaderBindingData.m_shaderRWResourceViews);
+            ValidateSamplersBindings(
+                shaderInfo, shaderResourceLayout->m_samplers, shaderBindingData.m_samplers);
         }
     }
 } // namespace DX
