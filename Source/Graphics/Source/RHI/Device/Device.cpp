@@ -12,7 +12,6 @@
 #include <RHI/Resource/Views/RenderTargetView.h>
 #include <RHI/Resource/Views/DepthStencilView.h>
 #include <RHI/Pipeline/Pipeline.h>
-#include <RHI/ResourceLayout/ResourceLayout.h>
 #include <RHI/CommandList/CommandList.h>
 
 #include <Log/Log.h>
@@ -174,13 +173,6 @@ namespace DX
         auto pipeline = std::make_shared<Pipeline>(this, desc);
         m_deviceObjects.push_back(pipeline);
         return pipeline;
-    }
-
-    std::shared_ptr<ResourceLayout> Device::CreateResourceLayout(const ResourceLayoutDesc& desc)
-    {
-        auto resourceLayout = std::make_shared<ResourceLayout>(this, desc);
-        m_deviceObjects.push_back(resourceLayout);
-        return resourceLayout;
     }
 
     std::shared_ptr<CommandList> Device::CreateCommandList()

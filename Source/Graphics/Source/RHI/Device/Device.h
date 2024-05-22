@@ -21,7 +21,6 @@ namespace DX
     class RenderTargetView;
     class DepthStencilView;
     class Pipeline;
-    class ResourceLayout;
     class CommandList;
 
     struct SwapChainDesc;
@@ -35,7 +34,6 @@ namespace DX
     struct RenderTargetViewDesc;
     struct DepthStencilViewDesc;
     struct PipelineDesc;
-    struct ResourceLayoutDesc;
 
     class Device
     {
@@ -60,7 +58,6 @@ namespace DX
         std::shared_ptr<RenderTargetView> CreateRenderTargetView(const RenderTargetViewDesc& desc);
         std::shared_ptr<DepthStencilView> CreateDepthStencilView(const DepthStencilViewDesc& desc);
         std::shared_ptr<Pipeline> CreatePipeline(const PipelineDesc& desc);
-        std::shared_ptr<ResourceLayout> CreateResourceLayout(const ResourceLayoutDesc& desc);
         std::shared_ptr<CommandList> CreateCommandList();
 
         void ExecuteCommandLists(std::vector<CommandList*> commandLists);
