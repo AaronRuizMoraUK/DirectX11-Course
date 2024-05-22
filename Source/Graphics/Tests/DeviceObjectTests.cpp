@@ -104,8 +104,8 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing Shader -----");
 
-        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "main" };
-        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "main" };
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/Tests/VertexShaderTest.hlsl", "main" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/Tests/PixelShaderTest.hlsl", "main" };
 
         auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
         auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
@@ -537,23 +537,17 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing RawBuffer -----");
 
-        const int components = 4;
         const int bufferSize = 256;
-        std::vector<std::byte> bufferData(components * bufferSize);
+        std::vector<uint32_t> bufferData(bufferSize);
         for (int i = 0; i < bufferSize; ++i)
         {
-            const std::byte value = static_cast<std::byte>(i % 255);
-            const int index = i * components;
-            bufferData[index + 0] = value;
-            bufferData[index + 1] = value;
-            bufferData[index + 2] = value;
-            bufferData[index + 3] = value;
+            bufferData[i] = i;
         }
 
         DX::BufferDesc bufferDesc = {};
         bufferDesc.m_bufferType = DX::BufferType::Raw;
-        bufferDesc.m_elementSizeInBytes = sizeof(std::byte) * components;
-        bufferDesc.m_elementCount = bufferData.size() / components;
+        bufferDesc.m_elementSizeInBytes = sizeof(uint32_t);
+        bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
         bufferDesc.m_bindFlags = DX::BufferBind_ShaderResource | DX::BufferBind_ShaderRWResource;
         bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
