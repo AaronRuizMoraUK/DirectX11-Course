@@ -3,6 +3,8 @@
 #include <RHI/Device/Device.h>
 #include <RHI/FrameBuffer/FrameBuffer.h>
 #include <RHI/Pipeline/Pipeline.h>
+#include <RHI/Pipeline/PipelineResourceBindings.h>
+#include <RHI/Pipeline/PipelineResourceValidations.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Resource/Views/RenderTargetView.h>
 #include <RHI/Resource/Views/DepthStencilView.h>
@@ -115,7 +117,7 @@ namespace DX
                 break;
 
             default:
-                DX_LOG(Fatal, "DeviceContext", "Unknown shader type %d", shader->GetShaderType());
+                DX_LOG(Error, "DeviceContext", "Unknown shader type %d", shader->GetShaderType());
                 break;
             }
         }
@@ -197,109 +199,201 @@ namespace DX
         m_dx11DeviceContext->IASetIndexBuffer(indexBuffer.GetDX11Buffer().Get(), ToDX11ResourceFormat(indexFormat), 0);
     }
 
-    void DeviceContext::BindResources(uint32_t slot, std::vector<DeviceObject*> resources)
+    void DeviceContext::BindResources(const PipelineResourceBindings& resources)
     {
-        // TODO: Bind resources to shaders using resource layout.
-
-        if (resources.empty())
-        {
-            DX_LOG(Warning, "DeviceContext", "BindResources called with no resources.");
-            return;
-        }
-
-        // All resources passed must be of the same type.
-        const DeviceObjectType type = resources[0]->GetType();
-
 #ifndef NDEBUG
-        // All resources must be of the same type.
-        bool sameType = std::all_of(resources.cbegin() + 1, resources.cend(),
-            [type](const DeviceObject* resource)
+        // Validate resource binding data with the shaders resource layouts
+        for (int i = 0; i < ShaderType_Count; ++i)
+        {
+            const ShaderType shaderType = static_cast<ShaderType>(i);
+
+            const ShaderResourceLayout* shaderResourceLayout = 
+                resources.GetPipeline()->GetShaderResourceLayout(shaderType);
+
+            const ShaderResourceBindingData& shaderBindingData = resources.GetBindingData()[shaderType];
+
+            if (!shaderResourceLayout)
             {
-                return resource->GetType() == type;
-            });
-        DX_ASSERT(sameType, "DeviceContext", "Not all resources are of the same type (%d).", type);
+                DX_ASSERT(shaderBindingData.m_constantBuffers.empty(), "BindResources",
+                    "Shader binding data should have no constant buffers for %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_shaderResourceViews.empty(), "BindResources",
+                    "Shader binding data should have no shader resource views in %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_shaderRWResourceViews.empty(), "BindResources",
+                    "Shader binding data should have no shader RW resource views for %s Shader", ShaderTypeStr(shaderType));
+                DX_ASSERT(shaderBindingData.m_samplers.empty(), "BindResources",
+                    "Shader binding data should have no samplers for %s Shader", ShaderTypeStr(shaderType));
+                continue;
+            }
+
+            const ShaderInfo& shaderInfo =
+                resources.GetPipeline()->GetPipelineShader(shaderType)->GetShaderDesc().m_shaderInfo;
+
+            ValidateConstantBufferBindings(
+                shaderInfo, shaderResourceLayout->m_constantBuffers, shaderBindingData.m_constantBuffers);
+            ValidateShaderResourceViewBindings(
+                shaderInfo, shaderResourceLayout->m_shaderResourceViews, shaderBindingData.m_shaderResourceViews);
+            ValidateShaderRWResourceViewBindings(
+                shaderInfo, shaderResourceLayout->m_shaderRWResourceViews, shaderBindingData.m_shaderRWResourceViews);
+            ValidateSamplersBindings(
+                shaderInfo, shaderResourceLayout->m_samplers, shaderBindingData.m_samplers);
+        }
 #endif
 
-        switch (type)
+        const PipelineResourceBindingData& bindingData = resources.GetBindingData();
+        for (int i = 0; i < ShaderType_Count; ++i)
         {
-        case DeviceObjectType::Buffer:
-        {
-#ifndef NDEBUG
-            bool allSame = std::all_of(resources.cbegin() + 1, resources.cend(),
-                [type](const DeviceObject* resource)
+            if (const auto& constantBuffers = bindingData[i].m_constantBuffers; 
+                !constantBuffers.empty())
+            {
+                std::vector<ID3D11Buffer*> dx11ConstantBuffers(constantBuffers.size());
+                std::transform(constantBuffers.begin(), constantBuffers.end(), dx11ConstantBuffers.begin(),
+                    [](const auto& constantBuffer)
+                    {
+                        return constantBuffer->GetDX11Buffer().Get();
+                    });
+
+                switch (i)
                 {
-                    auto buffer = static_cast<const Buffer*>(resource);
-                    return buffer->GetBufferDesc().m_bindFlags & BufferBind_ConstantBuffer;
-                });
-            DX_ASSERT(allSame, "DeviceContext", "Not all resources passed are constant buffers.");
-#endif
+                case ShaderType_Vertex:
+                    m_dx11DeviceContext->VSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
 
-            std::vector<ID3D11Buffer*> dx11Buffers(resources.size());
-            std::transform(resources.begin(), resources.end(), dx11Buffers.begin(),
-                [](DeviceObject* resource)
+                case ShaderType_Hull:
+                    m_dx11DeviceContext->HSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
+
+                case ShaderType_Domain:
+                    m_dx11DeviceContext->DSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
+
+                case ShaderType_Geometry:
+                    m_dx11DeviceContext->GSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
+
+                case ShaderType_Pixel:
+                    m_dx11DeviceContext->PSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
+
+                case ShaderType_Compute:
+                    m_dx11DeviceContext->CSSetConstantBuffers(0, dx11ConstantBuffers.size(), dx11ConstantBuffers.data());
+                    break;
+
+                default:
+                    DX_LOG(Error, "DeviceContext", "Unknown shader type %d", i);
+                    break;
+                }
+            }
+
+            if (const auto& srvs = bindingData[i].m_shaderResourceViews;
+                !srvs.empty())
+            {
+                std::vector<ID3D11ShaderResourceView*> dx11Srvs(srvs.size());
+                std::transform(srvs.begin(), srvs.end(), dx11Srvs.begin(),
+                    [](const auto& srv)
+                    {
+                        return srv->GetDX11ShaderResourceView().Get();
+                    });
+
+                switch (i)
                 {
-                    return static_cast<Buffer*>(resource)->GetDX11Buffer().Get();
-                });
+                case ShaderType_Vertex:
+                    m_dx11DeviceContext->VSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
 
-            m_dx11DeviceContext->VSSetConstantBuffers(slot, resources.size(), dx11Buffers.data());
-        }
-        break;
+                case ShaderType_Hull:
+                    m_dx11DeviceContext->HSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
 
-        case DeviceObjectType::ShaderResourceView:
-        {
-            std::vector<ID3D11ShaderResourceView*> dx11SRVs(resources.size());
-            std::transform(resources.begin(), resources.end(), dx11SRVs.begin(),
-                [](DeviceObject* resource)
+                case ShaderType_Domain:
+                    m_dx11DeviceContext->DSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
+
+                case ShaderType_Geometry:
+                    m_dx11DeviceContext->GSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
+
+                case ShaderType_Pixel:
+                    m_dx11DeviceContext->PSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
+
+                case ShaderType_Compute:
+                    m_dx11DeviceContext->CSSetShaderResources(0, dx11Srvs.size(), dx11Srvs.data());
+                    break;
+
+                default:
+                    DX_LOG(Error, "DeviceContext", "Unknown shader type %d", i);
+                    break;
+                }
+            }
+
+
+            if (const auto& srwrvs = bindingData[i].m_shaderRWResourceViews;
+                !srwrvs.empty())
+            {
+                std::vector<ID3D11UnorderedAccessView*> dx11Uavs(srwrvs.size());
+                std::transform(srwrvs.begin(), srwrvs.end(), dx11Uavs.begin(),
+                    [](const auto& srwrv)
+                    {
+                        return srwrv->GetDX11UnorderedAccessView().Get();
+                    });
+
+                // An array of append and consume buffer offsets. A value of -1 indicates to keep the current offset.
+                // Any other values set the hidden counter for that appendable and consumable UAV.
+                // This is relevant only for UAVs that were created with either D3D11_BUFFER_UAV_FLAG_APPEND or
+                // D3D11_BUFFER_UAV_FLAG_COUNTER specified when the UAV was created; otherwise, the argument is ignored.
+                const UINT uavInitialCounts = -1;
+
+                m_dx11DeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(
+                    D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
+                    nullptr,
+                    nullptr,
+                    0,
+                    dx11Uavs.size(),
+                    dx11Uavs.data(),
+                    &uavInitialCounts);
+            }
+
+            if (const auto& samplers = bindingData[i].m_samplers;
+                !samplers.empty())
+            {
+                std::vector<ID3D11SamplerState*> dx11Samplers(samplers.size());
+                std::transform(samplers.begin(), samplers.end(), dx11Samplers.begin(),
+                    [](const auto& sampler)
+                    {
+                        return sampler->GetDX11Sampler().Get();
+                    });
+
+                switch (i)
                 {
-                    return static_cast<ShaderResourceView*>(resource)->GetDX11ShaderResourceView().Get();
-                });
+                case ShaderType_Vertex:
+                    m_dx11DeviceContext->VSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-            m_dx11DeviceContext->PSSetShaderResources(slot, dx11SRVs.size(), dx11SRVs.data());
-        }
-        break;
+                case ShaderType_Hull:
+                    m_dx11DeviceContext->HSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-        case DeviceObjectType::ShaderRWResourceView:
-        {
-            std::vector<ID3D11UnorderedAccessView*> dx11UAVs(resources.size());
-            std::transform(resources.begin(), resources.end(), dx11UAVs.begin(),
-                [](DeviceObject* resource)
-                {
-                    return static_cast<ShaderRWResourceView*>(resource)->GetDX11UnorderedAccessView().Get();
-                });
+                case ShaderType_Domain:
+                    m_dx11DeviceContext->DSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-            // An array of append and consume buffer offsets. A value of - 1 indicates to keep the current offset.
-            // Any other values set the hidden counter for that appendable and consumable UAV.
-            // This is relevant only for UAVs that were created with either D3D11_BUFFER_UAV_FLAG_APPEND or
-            // D3D11_BUFFER_UAV_FLAG_COUNTER specified when the UAV was created; otherwise, the argument is ignored.
-            const UINT uavInitialCounts = -1;
+                case ShaderType_Geometry:
+                    m_dx11DeviceContext->GSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-            m_dx11DeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(
-                D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,
-                nullptr,
-                nullptr,
-                slot,
-                dx11UAVs.size(),
-                dx11UAVs.data(),
-                &uavInitialCounts);
-        }
-        break;
+                case ShaderType_Pixel:
+                    m_dx11DeviceContext->PSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-        case DeviceObjectType::Sampler:
-        {
-            std::vector<ID3D11SamplerState*> dx11Samplers(resources.size());
-            std::transform(resources.begin(), resources.end(), dx11Samplers.begin(),
-                [](DeviceObject* resource)
-                {
-                    return static_cast<Sampler*>(resource)->GetDX11Sampler().Get();
-                });
+                case ShaderType_Compute:
+                    m_dx11DeviceContext->CSSetSamplers(0, dx11Samplers.size(), dx11Samplers.data());
+                    break;
 
-            m_dx11DeviceContext->PSSetSamplers(slot, dx11Samplers.size(), dx11Samplers.data());
-        }
-        break;
-
-        default:
-            DX_LOG(Error, "DeviceContext", "Unexpected device object type %d to bind.", type);
-            return;
+                default:
+                    DX_LOG(Error, "DeviceContext", "Unknown shader type %d", i);
+                    break;
+                }
+            }
         }
     }
 

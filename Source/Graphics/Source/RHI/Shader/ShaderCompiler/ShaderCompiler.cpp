@@ -106,7 +106,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture1D, TextureSubTypeFlag::Array);
+                    TextureType::Texture1D, TextureSubType_Array);
             case D3D11_SRV_DIMENSION_TEXTURE2D:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
@@ -115,17 +115,17 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture2D, TextureSubTypeFlag::Array);
+                    TextureType::Texture2D, TextureSubType_Array);
                 break;
             case D3D11_SRV_DIMENSION_TEXTURE2DMS:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture2D, TextureSubTypeFlag::Multisample);
+                    TextureType::Texture2D, TextureSubType_Multisample);
                 break;
             case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture2D, TextureSubTypeFlag::Array | TextureSubTypeFlag::Multisample);
+                    TextureType::Texture2D, TextureSubType_Array | TextureSubType_Multisample);
                 break;
             case D3D11_SRV_DIMENSION_TEXTURE3D:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
@@ -140,7 +140,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::TextureCube, TextureSubTypeFlag::Array);
+                    TextureType::TextureCube, TextureSubType_Array);
                 break;
             case D3D11_SRV_DIMENSION_BUFFER:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
@@ -171,7 +171,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
                 shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture1D, TextureSubTypeFlag::Array);
+                    TextureType::Texture1D, TextureSubType_Array);
                 break;
             case D3D11_SRV_DIMENSION_TEXTURE2D:
                 shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
@@ -181,7 +181,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
                 shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
-                    TextureType::Texture2D, TextureSubTypeFlag::Array);
+                    TextureType::Texture2D, TextureSubType_Array);
                 break;
             case D3D11_SRV_DIMENSION_TEXTURE3D:
                 shaderResourceLayout.m_shaderRWResourceViews.emplace_back(

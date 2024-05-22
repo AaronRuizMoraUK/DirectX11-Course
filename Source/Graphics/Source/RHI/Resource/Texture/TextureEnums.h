@@ -21,8 +21,8 @@ namespace DX
     // Used by shader resource layout
     enum TextureSubTypeFlag
     {
-        Array = 1 << 0,
-        Multisample = 1 << 1
+        TextureSubType_Array = 1 << 0,
+        TextureSubType_Multisample = 1 << 1
     };
 
     using TextureSubTypeFlags = uint32_t;

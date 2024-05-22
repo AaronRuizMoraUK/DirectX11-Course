@@ -21,6 +21,8 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::RenderTargetView; }
 
+        const RenderTargetViewDesc& GetRenderTargetViewDesc() const { return m_desc; }
+
         ComPtr<ID3D11RenderTargetView> GetDX11RenderTargetView();
 
     private:

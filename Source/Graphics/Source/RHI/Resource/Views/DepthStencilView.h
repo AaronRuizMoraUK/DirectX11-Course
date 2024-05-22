@@ -21,6 +21,8 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::DepthStencilView; }
 
+        const DepthStencilViewDesc& GetDepthStencilViewDesc() const { return m_desc; }
+
         ComPtr<ID3D11DepthStencilView> GetDX11DepthStencilView();
 
     private:

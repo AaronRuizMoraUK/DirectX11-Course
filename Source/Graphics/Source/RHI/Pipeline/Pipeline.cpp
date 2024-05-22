@@ -9,6 +9,7 @@
 #include <Log/Log.h>
 
 #include <ranges>
+#include <numeric>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>
@@ -40,6 +41,12 @@ namespace DX
         if (!CreateDepthStencilState())
         {
             DX_LOG(Fatal, "Pipeline", "Failed to create depth stencil state in pipeline.");
+            return;
+        }
+
+        if (!CreateResourceBindings())
+        {
+            DX_LOG(Fatal, "Pipeline", "Failed to create pipeline resource bindings.");
             return;
         }
 
@@ -185,9 +192,77 @@ namespace DX
         return SUCCEEDED(result);
     }
 
+    bool Pipeline::CreateResourceBindings()
+    {
+        PipelineResourceBindingData pipelineLayout;
+
+        for (int i = 0; i < ShaderType_Count; ++i)
+        {
+            const ShaderResourceLayout* shaderResourceLayout = GetShaderResourceLayout(static_cast<ShaderType>(i));
+            if (!shaderResourceLayout)
+            {
+                continue;
+            }
+
+            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_constantBuffers);
+                maxSlot > 0)
+            {
+                pipelineLayout[i].m_constantBuffers.resize(maxSlot);
+            }
+
+            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_shaderResourceViews);
+                maxSlot > 0)
+            {
+                pipelineLayout[i].m_shaderResourceViews.resize(maxSlot);
+            }
+
+            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_shaderRWResourceViews);
+                maxSlot > 0)
+            {
+                pipelineLayout[i].m_shaderRWResourceViews.resize(maxSlot);
+            }
+
+            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_samplers);
+                maxSlot > 0)
+            {
+                pipelineLayout[i].m_samplers.resize(maxSlot);
+            }
+        }
+
+        m_resourceBindings = PipelineResourceBindings(this, std::move(pipelineLayout));
+        return true;
+    }
+
+    uint32_t Pipeline::FindMaxSlot(const std::vector<ShaderResourceInfo>& resources) const
+    {
+        return std::reduce(resources.begin(), resources.end(), 0u,
+            [](uint32_t maxSlot, const auto& resource)
+            {
+                return std::max<uint32_t>(maxSlot, resource.m_startSlot + resource.m_slotCount);
+            });
+    }
+
     std::shared_ptr<Shader> Pipeline::GetPipelineShader(ShaderType shaderType)
     {
         return m_desc.m_shaders[shaderType];
+    }
+
+    std::shared_ptr<const Shader> Pipeline::GetPipelineShader(ShaderType shaderType) const
+    {
+        return m_desc.m_shaders[shaderType];
+    }
+
+    const ShaderResourceLayout* Pipeline::GetShaderResourceLayout(ShaderType shaderType) const
+    {
+        auto shader = m_desc.m_shaders[shaderType];
+        if (!shader)
+        {
+            return nullptr;
+        }
+        DX_ASSERT(shader->GetShaderDesc().m_bytecode.get(), "Pipeline",
+            "%s Shader Bytecode is null.", ShaderTypeStr(shaderType));
+
+        return &shader->GetShaderDesc().m_bytecode->GetShaderResourceLayout();
     }
 
     ComPtr<ID3D11InputLayout> Pipeline::GetDX11InputLayout()

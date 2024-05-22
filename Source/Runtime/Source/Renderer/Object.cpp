@@ -133,9 +133,9 @@ namespace DX
         renderer->GetDevice()->GetImmediateContext().BindVertexBuffers({m_vertexBuffer.get()});
         renderer->GetDevice()->GetImmediateContext().BindIndexBuffer(*m_indexBuffer);
 
-        renderer->GetDevice()->GetImmediateContext().BindResources(1, { m_worldMatrixConstantBuffer.get() });
-        renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_textureView.get() });
-        renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_samplerState.get() });
+        //renderer->GetDevice()->GetImmediateContext().BindResources(1, { m_worldMatrixConstantBuffer.get() });
+        //renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_textureView.get() });
+        //renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_samplerState.get() });
     }
 
     Triangle::Triangle()
