@@ -79,13 +79,15 @@ int main()
         const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
         renderer->Clear(clearColor, 1.0f, 0);
 
-        renderer->SetPipeline();
+        renderer->BindPipeline();
 
         camera->SetBuffers();
 
         for (auto& object : objects)
         {
             object->SetBuffers();
+
+            renderer->BindPipelineResources();
 
             renderer->Draw(object->GetIndexCount());
         }

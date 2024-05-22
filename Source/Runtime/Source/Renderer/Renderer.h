@@ -12,6 +12,7 @@ namespace DX
     class SwapChain;
     class FrameBuffer;
     class Pipeline;
+    class PipelineResourceBindings;
 
     using RendererId = GenericId<struct RendererIdTag>;
 
@@ -33,7 +34,10 @@ namespace DX
         void Clear(const Math::Color& color, float depth, uint8_t stencil);
         void Present();
 
-        void SetPipeline();
+        void BindPipeline();
+        void BindPipelineResources();
+
+        PipelineResourceBindings& GetPipelineResources();
 
         void Draw(int indexCount);
 
@@ -52,5 +56,6 @@ namespace DX
         void DestroyPipeline();
 
         std::shared_ptr<Pipeline> m_pipeline;
+        std::unique_ptr<PipelineResourceBindings> m_pipelineResources;
     };
 } // namespace DX

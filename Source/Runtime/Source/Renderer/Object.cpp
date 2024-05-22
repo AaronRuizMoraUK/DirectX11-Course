@@ -8,6 +8,7 @@
 #include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Resource/Views/ShaderResourceView.h>
 #include <RHI/Sampler/Sampler.h>
+#include <RHI/Pipeline/PipelineResourceBindings.h>
 
 #include <File/FileUtils.h>
 #include <Log/Log.h>
@@ -114,7 +115,7 @@ namespace DX
             samplerDesc.m_borderColor = Math::Color(0.0f);
             samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
 
-            m_samplerState = renderer->GetDevice()->CreateSampler(samplerDesc);
+            m_sampler = renderer->GetDevice()->CreateSampler(samplerDesc);
         }
     }
 
@@ -133,9 +134,9 @@ namespace DX
         renderer->GetDevice()->GetImmediateContext().BindVertexBuffers({m_vertexBuffer.get()});
         renderer->GetDevice()->GetImmediateContext().BindIndexBuffer(*m_indexBuffer);
 
-        //renderer->GetDevice()->GetImmediateContext().BindResources(1, { m_worldMatrixConstantBuffer.get() });
-        //renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_textureView.get() });
-        //renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_samplerState.get() });
+        renderer->GetPipelineResources().SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
+        renderer->GetPipelineResources().SetShaderResourceView(ShaderType_Pixel, 0, m_textureView);
+        renderer->GetPipelineResources().SetSampler(ShaderType_Pixel, 0, m_sampler);
     }
 
     Triangle::Triangle()

@@ -3,6 +3,7 @@
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
 #include <RHI/Resource/Buffer/Buffer.h>
+#include <RHI/Pipeline/PipelineResourceBindings.h>
 #include <Window/WindowManager.h>
 #include <Log/Log.h>
 
@@ -205,6 +206,6 @@ namespace DX
             renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
 
-        //renderer->GetDevice()->GetImmediateContext().BindResources(0, { m_viewProjMatrixConstantBuffer.get() });
+        renderer->GetPipelineResources().SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
     }
 } // namespace DX

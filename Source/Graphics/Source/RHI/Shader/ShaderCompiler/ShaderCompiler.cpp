@@ -107,6 +107,7 @@ namespace DX
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
                     TextureType::Texture1D, TextureSubType_Array);
+                break;
             case D3D11_SRV_DIMENSION_TEXTURE2D:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
                     dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
@@ -150,10 +151,13 @@ namespace DX
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
                 break;
             }
+            break;
+
         case D3D_SIT_STRUCTURED:
             shaderResourceLayout.m_shaderResourceViews.emplace_back(
                 dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
             break;
+
         case D3D_SIT_BYTEADDRESS:
             shaderResourceLayout.m_shaderResourceViews.emplace_back(
                 dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);
@@ -196,10 +200,13 @@ namespace DX
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
                 break;
             }
+            break;
+
         case D3D_SIT_UAV_RWSTRUCTURED:
             shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
                 dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
             break;
+
         case D3D_SIT_UAV_RWBYTEADDRESS:
             shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
                 dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);

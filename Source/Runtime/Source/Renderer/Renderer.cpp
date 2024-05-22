@@ -7,6 +7,7 @@
 #include <RHI/Pipeline/Pipeline.h>
 #include <RHI/Shader/Shader.h>
 #include <RHI/Shader/ShaderCompiler/ShaderCompiler.h>
+#include <RHI/Pipeline/PipelineResourceBindings.h>
 
 #include <Window/Window.h>
 #include <File/FileUtils.h>
@@ -146,12 +147,22 @@ namespace DX
         m_swapChain->Present();
     }
 
-    void Renderer::SetPipeline()
+    void Renderer::BindPipeline()
     {
         m_device->GetImmediateContext().BindFrameBuffer(*m_frameBuffer);
         m_device->GetImmediateContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{m_window->GetSize()}} });
 
         m_device->GetImmediateContext().BindPipeline(*m_pipeline);
+    }
+
+    void Renderer::BindPipelineResources()
+    {
+        m_device->GetImmediateContext().BindResources(*m_pipelineResources);
+    }
+
+    PipelineResourceBindings& Renderer::GetPipelineResources()
+    {
+        return *m_pipelineResources;
     }
 
     void Renderer::Draw(int indexCount)
@@ -202,12 +213,15 @@ namespace DX
             return false;
         }
 
+        m_pipelineResources = std::make_unique<PipelineResourceBindings>(m_pipeline->GetResourceBindings());
+
         DX_LOG(Info, "Renderer", "Pipeline created.");
         return true;
     }
 
     void Renderer::DestroyPipeline()
     {
+        m_pipelineResources.reset();
         m_pipeline.reset();
     }
 } // namespace DX

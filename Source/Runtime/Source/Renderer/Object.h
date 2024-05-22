@@ -49,7 +49,7 @@ namespace DX
 
         std::shared_ptr<Texture> m_texture;
         std::shared_ptr<ShaderResourceView> m_textureView;
-        std::shared_ptr<Sampler> m_samplerState;
+        std::shared_ptr<Sampler> m_sampler;
     };
 
     class Triangle : public Object
