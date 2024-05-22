@@ -8,10 +8,12 @@ typedef ID3D10Blob ID3DBlob;
 
 namespace DX
 {
+    class ShaderResourceLayout;
+
     class DX11ShaderBytecode : public ShaderBytecode
     {
     public:
-        DX11ShaderBytecode(ComPtr<ID3DBlob>&& dx11Blob);
+        DX11ShaderBytecode(ComPtr<ID3DBlob>&& dx11Blob, ShaderResourceLayout&& resourceLayout);
         ~DX11ShaderBytecode() = default;
 
         DX11ShaderBytecode(const DX11ShaderBytecode&) = delete;

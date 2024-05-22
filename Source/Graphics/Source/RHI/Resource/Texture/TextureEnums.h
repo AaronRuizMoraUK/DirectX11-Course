@@ -16,6 +16,15 @@ namespace DX
         Count
     };
 
+    // Used by shader resource layout
+    enum TextureSubTypeFlag
+    {
+        Array = 1 << 0,
+        Multisample = 1 << 1
+    };
+
+    using TextureSubTypeFlags = uint32_t;
+
     //------------------------------------------------------------------------
     // Texture Format
     // 

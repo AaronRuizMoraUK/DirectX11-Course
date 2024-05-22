@@ -27,7 +27,6 @@ namespace DX
             break;
 
         case TextureType::Texture2D:
-        case TextureType::TextureCube: // TODO: Verify it works. Only different with Texture2D is D3D11_RESOURCE_MISC_TEXTURECUBE misc flag.
             uavDimension = (desc.m_arrayCount > 1) ? D3D11_UAV_DIMENSION_TEXTURE2DARRAY : D3D11_UAV_DIMENSION_TEXTURE2D;
             break;
 

@@ -339,10 +339,7 @@ namespace UnitTest
         auto texture = m_device->CreateTexture(textureDesc);
 
         auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1 });
-        // Technically Shader RW Resource View and Render Target View do not support texture Cube,
-        // but we can still create the view to read it as a Texture 2D Array.
-        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount });
-        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount });
+        // Shader RW Resource View and Render Target View do not support texture Cube.
     }
 
     void DeviceObjectTests::TestTexureCubeArray()
@@ -391,10 +388,7 @@ namespace UnitTest
         auto texture = m_device->CreateTexture(textureDesc);
 
         auto textureSRV = m_device->CreateShaderResourceView({ texture, texture->GetTextureDesc().m_format, 0, -1, 0, arrayCount });
-        // Technically Shader RW Resource View and Render Target View do not support texture Cube Array,
-        // but we can still create the view to read it as a Texture 2D Array.
-        auto textureSRWRV = m_device->CreateShaderRWResourceView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount * arrayCount });
-        auto textureRTV = m_device->CreateRenderTargetView({ texture, texture->GetTextureDesc().m_format, 0, 0, faceCount * arrayCount });
+        // Shader RW Resource View and Render Target View do not support texture Cube Array.
     }
 
     void DeviceObjectTests::TestTexure3D()

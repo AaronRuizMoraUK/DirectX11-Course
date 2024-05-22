@@ -47,7 +47,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: return "ShaderResourceView (Texture2DMSArray)";
             case D3D11_SRV_DIMENSION_TEXTURE3D:        return "ShaderResourceView (Texture3D)";
             case D3D11_SRV_DIMENSION_TEXTURECUBE:      return "ShaderResourceView (TextureCube)";
-            case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: return "ShaderResourceView (TextureArray)";
+            case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: return "ShaderResourceView (TextureCubeArray)";
             case D3D11_SRV_DIMENSION_BUFFER:           return "ShaderResourceView (TypedBuffer)";
             default:
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dimension);
@@ -63,11 +63,7 @@ namespace DX
             case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:   return "ShaderRWResourceView (Texture1DArray)";
             case D3D11_SRV_DIMENSION_TEXTURE2D:        return "ShaderRWResourceView (Texture2D)";
             case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:   return "ShaderRWResourceView (Texture2DArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DMS:      return "ShaderRWResourceView (Texture2D with MS)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: return "ShaderRWResourceView (Texture2DArray with MS)";
             case D3D11_SRV_DIMENSION_TEXTURE3D:        return "ShaderRWResourceView (Texture3D)";
-            case D3D11_SRV_DIMENSION_TEXTURECUBE:      return "ShaderRWResourceView (TextureCube)";
-            case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: return "ShaderRWResourceView (TextureArray)";
             case D3D11_SRV_DIMENSION_BUFFER:           return "ShaderRWResourceView (TypedBuffer)";
             default:
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dimension);
@@ -82,6 +78,142 @@ namespace DX
         default:
             DX_ASSERT(false, "ShaderCompiler", "Unsupported shader input type %d.", type);
             return nullptr;
+        }
+    }
+
+    static void AddResourceBindingToLayout(
+        const D3D11_SHADER_INPUT_BIND_DESC& dx11ResourceDesc,
+        ShaderResourceLayout& shaderResourceLayout)
+    {
+        switch (dx11ResourceDesc.Type)
+        {
+        // Constant Buffer
+        case D3D_SIT_CBUFFER:
+        case D3D_SIT_TBUFFER:
+            shaderResourceLayout.m_constantBuffers.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount);
+            break;
+
+        // Shader Resource View
+        case D3D_SIT_TEXTURE:
+            switch (dx11ResourceDesc.Dimension)
+            {
+            case D3D11_SRV_DIMENSION_TEXTURE1D:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture1D);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture1D, TextureSubTypeFlag::Array);
+            case D3D11_SRV_DIMENSION_TEXTURE2D:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D, TextureSubTypeFlag::Array);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE2DMS:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D, TextureSubTypeFlag::Multisample);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D, TextureSubTypeFlag::Array | TextureSubTypeFlag::Multisample);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE3D:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture3D);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURECUBE:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::TextureCube);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::TextureCube, TextureSubTypeFlag::Array);
+                break;
+            case D3D11_SRV_DIMENSION_BUFFER:
+                shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Typed);
+                break;
+            default:
+                DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
+                break;
+            }
+        case D3D_SIT_STRUCTURED:
+            shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
+            break;
+        case D3D_SIT_BYTEADDRESS:
+            shaderResourceLayout.m_shaderResourceViews.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);
+            break;
+
+        // Shader RW Resource View
+        case D3D_SIT_UAV_RWTYPED:
+            switch (dx11ResourceDesc.Dimension)
+            {
+            case D3D11_SRV_DIMENSION_TEXTURE1D:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture1D);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture1D, TextureSubTypeFlag::Array);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE2D:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture2D, TextureSubTypeFlag::Array);
+                break;
+            case D3D11_SRV_DIMENSION_TEXTURE3D:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount,
+                    TextureType::Texture3D);
+                break;
+            case D3D11_SRV_DIMENSION_BUFFER:
+                shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Typed);
+                break;
+            default:
+                DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
+                break;
+            }
+        case D3D_SIT_UAV_RWSTRUCTURED:
+            shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
+            break;
+        case D3D_SIT_UAV_RWBYTEADDRESS:
+            shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);
+            break;
+
+        // Sampler
+        case D3D_SIT_SAMPLER:
+            shaderResourceLayout.m_samplers.emplace_back(
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount);
+            break;
+
+        default:
+            DX_ASSERT(false, "ShaderCompiler", "Unsupported shader input type %d.", dx11ResourceDesc.Type);
+            break;
         }
     }
 
@@ -123,32 +255,36 @@ namespace DX
             shaderInfo.m_name.c_str(), shaderInfo.m_entryPoint.c_str());
 
         // Shader resource layout obtained from shader reflection data
+        ShaderResourceLayout shaderResourceLayout;
         {
-            ComPtr<ID3D11ShaderReflection> shaderReflection;
+            ComPtr<ID3D11ShaderReflection> dx11ShaderReflection;
             result = D3DReflect(
                 shaderBlob->GetBufferPointer(),
                 shaderBlob->GetBufferSize(),
-                IID_PPV_ARGS(shaderReflection.GetAddressOf()));
+                IID_PPV_ARGS(dx11ShaderReflection.GetAddressOf()));
             if (FAILED(result)) {
                 DX_LOG(Error, "ShaderCompiler", "Failed to create shader reflection.");
                 return nullptr;
             }
 
-            D3D11_SHADER_DESC shaderDesc;
-            shaderReflection->GetDesc(&shaderDesc);
+            D3D11_SHADER_DESC dx11ShaderDesc;
+            dx11ShaderReflection->GetDesc(&dx11ShaderDesc);
 
-            DX_LOG(Info, "ShaderCompiler", "---------------------");
-            DX_LOG(Info, "ShaderCompiler", "Shader Name: %s", shaderInfo.m_name.c_str());
-            for (int i = 0; i < shaderDesc.BoundResources; ++i) {
-                D3D11_SHADER_INPUT_BIND_DESC resourceDesc;
-                shaderReflection->GetResourceBindingDesc(i, &resourceDesc);
+            DX_LOG(Verbose, "ShaderCompiler", "---------------------");
+            DX_LOG(Verbose, "ShaderCompiler", "Shader Name: %s", shaderInfo.m_name.c_str());
+            for (int i = 0; i < dx11ShaderDesc.BoundResources; ++i) {
+                D3D11_SHADER_INPUT_BIND_DESC dx11ResourceDesc;
+                dx11ShaderReflection->GetResourceBindingDesc(i, &dx11ResourceDesc);
 
-                DX_LOG(Info, "ShaderCompiler", "- Resource Name: %s Type: %s Bind Point: %u Bind Count: %u", 
-                    resourceDesc.Name, ToDX11ResourceString(resourceDesc.Type, resourceDesc.Dimension), resourceDesc.BindPoint, resourceDesc.BindCount);
+                DX_LOG(Verbose, "ShaderCompiler", "- Resource Name: %s Type: %s Bind Point: %u Bind Count: %u",
+                    dx11ResourceDesc.Name, ToDX11ResourceString(dx11ResourceDesc.Type, dx11ResourceDesc.Dimension),
+                    dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount);
+
+                AddResourceBindingToLayout(dx11ResourceDesc, shaderResourceLayout);
             }
-            DX_LOG(Info, "ShaderCompiler", "---------------------");
+            DX_LOG(Verbose, "ShaderCompiler", "---------------------");
         }
 
-        return std::make_shared<DX11ShaderBytecode>(std::move(shaderBlob));
+        return std::make_shared<DX11ShaderBytecode>(std::move(shaderBlob), std::move(shaderResourceLayout));
     }
 } // namespace DX
