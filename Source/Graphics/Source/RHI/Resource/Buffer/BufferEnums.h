@@ -28,6 +28,8 @@ namespace DX
         Total
     };
 
+    const char* BufferTypeStr(BufferType bufferType);
+
     // Bitwise operations on ResourceBindFlag are allowed.
     enum BufferBindFlag
     {

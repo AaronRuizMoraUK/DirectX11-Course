@@ -16,6 +16,8 @@ namespace DX
         Count
     };
 
+    const char* TextureTypeStr(TextureType textureType);
+
     // Used by shader resource layout
     enum TextureSubTypeFlag
     {

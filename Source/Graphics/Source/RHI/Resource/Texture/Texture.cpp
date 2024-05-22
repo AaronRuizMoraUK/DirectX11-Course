@@ -8,23 +8,6 @@
 
 namespace DX
 {
-    static const char* TextureDimStr(TextureType textureType)
-    {
-        switch (textureType)
-        {
-        case TextureType::Texture1D:
-            return "1D";
-        case TextureType::Texture2D:
-            return "2D";
-        case TextureType::TextureCube:
-            return "Cube";
-        case TextureType::Texture3D:
-            return "3D";
-        default:
-            return "Unknown";
-        }
-    }
-
     Texture::Texture(Device* device, const TextureDesc& desc)
         : DeviceObject(device)
         , m_desc(desc)
@@ -163,7 +146,7 @@ namespace DX
 
             if (FAILED(result))
             {
-                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", TextureDimStr(m_desc.m_textureType));
+                DX_LOG(Fatal, "Texture", "Failed to create %s texture.", TextureTypeStr(m_desc.m_textureType));
                 return;
             }
 
@@ -231,7 +214,7 @@ namespace DX
         }
 
         DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array created.",
-            TextureDimStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
+            TextureTypeStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
     }
 
     Texture::~Texture()
@@ -239,7 +222,7 @@ namespace DX
         if (m_dx11Texture)
         {
             DX_LOG(Verbose, "Texture", "Texture %s %dx%dx%d, %d mipmaps and %d array destroyed.",
-                TextureDimStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
+                TextureTypeStr(m_desc.m_textureType), m_desc.m_dimensions.x, m_desc.m_dimensions.y, m_desc.m_dimensions.z, m_desc.m_mipCount, m_desc.m_arrayCount);
         }
     }
 

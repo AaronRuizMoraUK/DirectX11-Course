@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RHI/Shader/ShaderEnums.h>
+#include <RHI/Shader/ShaderResourceLayout.h>
 
 #include <cstdint>
 
