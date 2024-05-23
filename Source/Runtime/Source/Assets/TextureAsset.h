@@ -3,6 +3,11 @@
 #include <Assets/Asset.h>
 #include <Math/Vector2.h>
 
+namespace std::filesystem
+{
+    class path;
+}
+
 namespace DX
 {
     struct TextureData
@@ -17,16 +22,20 @@ namespace DX
         // Loads a texture from a file. The filename is relative to the assets folder.
         static std::shared_ptr<TextureAsset> LoadTextureAsset(const std::string& fileName);
 
-        static inline const AssetType TextureAssetType = 0xB8FCE1BE;
+        static inline const AssetType AssetTypeId = 0xB8FCE1BE;
 
         AssetType GetAssetType() const override
         {
-            return TextureAssetType;
+            return AssetTypeId;
         }
 
     protected:
+        friend class AssetManager;
         using Super = Asset<TextureData>;
 
-        TextureAsset(AssetId assetId, std::unique_ptr<TextureData> textureData);
+        TextureAsset(AssetId assetId, std::unique_ptr<TextureData> data);
+
+    private:
+        static std::unique_ptr<TextureData> LoadTexture(const std::filesystem::path& fileNamePath);
     };
 } // namespace DX

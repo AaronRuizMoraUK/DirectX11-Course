@@ -44,18 +44,20 @@ namespace DX
     class Asset : public AssetBase
     {
     public:
-        const T* GetData() const
+        using DataType = T;
+
+        const DataType* GetData() const
         {
             return m_data.get();
         }
 
     protected:
-        Asset(AssetId assetId, std::unique_ptr<T> data)
+        Asset(AssetId assetId, std::unique_ptr<DataType> data)
             : AssetBase(assetId)
             , m_data(std::move(data))
         {
         }
 
-        std::unique_ptr<T> m_data;
+        std::unique_ptr<DataType> m_data;
     };
 } // namespace DX
