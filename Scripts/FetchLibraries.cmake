@@ -107,6 +107,7 @@ set(ASSIMP_INSTALL_PDB OFF CACHE INTERNAL "Install MSVC debug files.")
 # Configure assimp importers
 set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE CACHE INTERNAL "Disable all importers.")
 set(ASSIMP_BUILD_FBX_IMPORTER TRUE CACHE INTERNAL "Enable FBX Importer.")
+set(ASSIMP_BUILD_GLTF_IMPORTER TRUE CACHE INTERNAL "Enable GLTF Importer.")
 
 # Configure assimp exporters
 set(ASSIMP_NO_EXPORT TRUE CACHE INTERNAL "Disable assimp's export functionality.")

@@ -15,6 +15,8 @@
 #include <Log/Log.h>
 #include <Debug/Debug.h>
 
+#include <algorithm>
+
 #include <d3d11.h>
 
 #pragma DX_DISABLE_WARNING(4267, "")
@@ -239,7 +241,6 @@ namespace DX
     Mesh::Mesh(const std::string& filename)
     {
         auto meshAsset = MeshAsset::LoadMeshAsset(filename);
-
         if (!meshAsset)
         {
             DX_LOG(Fatal, "Mesh", "Failed to load mesh asset %s", filename.c_str());
@@ -249,8 +250,14 @@ namespace DX
         const MeshData* meshData = meshAsset->GetData();
 
         m_vertexData.resize(meshData->m_positions.size());
+        std::transform(meshData->m_positions.begin(), meshData->m_positions.end(), meshData->m_textCoords.begin(),
+            m_vertexData.begin(),
+            [](const Math::Vector3Packed& position, const Math::Vector2Packed& textCoord)
+            {
+                return VertexPUV{ .m_position = position, .m_uv = textCoord };
+            });
 
-        m_indexData = std::move(meshData->m_indices);
+        m_indexData = meshData->m_indices;
 
         CreateBuffers();
     }
