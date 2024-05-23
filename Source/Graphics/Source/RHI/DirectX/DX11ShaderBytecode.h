@@ -8,7 +8,7 @@ typedef ID3D10Blob ID3DBlob;
 
 namespace DX
 {
-    class ShaderResourceLayout;
+    struct ShaderResourceLayout;
 
     class DX11ShaderBytecode : public ShaderBytecode
     {

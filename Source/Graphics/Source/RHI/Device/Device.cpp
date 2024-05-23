@@ -15,11 +15,14 @@
 #include <RHI/CommandList/CommandList.h>
 
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <array>
 #include <algorithm>
 
 #include <d3d11.h>
+
+#pragma DX_DISABLE_WARNING(4267, "")
 
 namespace DX
 {
@@ -72,7 +75,7 @@ namespace DX
         // If there are still objects in the list, that means they are still referenced somewhere
         // and could be a memory leak.
         {
-            int objectsCount;
+            size_t objectsCount;
             do
             {
                 objectsCount = m_deviceObjects.size();

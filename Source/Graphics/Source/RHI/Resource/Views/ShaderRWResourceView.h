@@ -4,7 +4,7 @@
 #include <RHI/Resource/Views/ShaderRWResourceViewDesc.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11UnorderedAccessView;
+struct ID3D11UnorderedAccessView;
 
 namespace DX
 {

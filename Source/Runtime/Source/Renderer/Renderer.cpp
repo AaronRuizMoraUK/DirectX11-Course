@@ -16,7 +16,8 @@
 namespace DX
 {
     Renderer::Renderer(RendererId rendererId, Window* window)
-        : m_window(window)
+        : m_rendererId(rendererId)
+        , m_window(window)
     {
     }
 

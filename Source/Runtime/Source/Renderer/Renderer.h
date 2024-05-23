@@ -28,6 +28,8 @@ namespace DX
         bool Initialize();
         void Terminate();
 
+        RendererId GetId() const { return m_rendererId; }
+
         Window* GetWindow();
         Device* GetDevice();
 
@@ -46,6 +48,7 @@ namespace DX
         bool CreateSwapChain();
         bool CreateFrameBuffer();
 
+        RendererId m_rendererId;
         Window* m_window = nullptr;
         std::unique_ptr<Device> m_device;
         std::shared_ptr<SwapChain> m_swapChain;

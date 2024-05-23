@@ -6,10 +6,10 @@
 #include <RHI/Shader/ShaderResourceLayout.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11InputLayout;
-class ID3D11RasterizerState;
-class ID3D11BlendState;
-class ID3D11DepthStencilState;
+struct ID3D11InputLayout;
+struct ID3D11RasterizerState;
+struct ID3D11BlendState;
+struct ID3D11DepthStencilState;
 
 namespace DX
 {

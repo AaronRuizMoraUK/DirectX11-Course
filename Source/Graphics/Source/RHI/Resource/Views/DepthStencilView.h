@@ -6,7 +6,7 @@
 #include <optional>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11DepthStencilView;
+struct ID3D11DepthStencilView;
 
 namespace DX
 {

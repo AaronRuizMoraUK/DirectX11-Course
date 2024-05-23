@@ -8,7 +8,7 @@
 #include <optional>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11DeviceContext;
+struct ID3D11DeviceContext;
 
 namespace DX
 {

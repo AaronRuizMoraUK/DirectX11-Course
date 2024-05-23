@@ -24,7 +24,7 @@ int main()
     const bool vSync = true;
 
     // Asset Manager initialization
-    DX::AssetManager& assetManager = DX::AssetManager::Get();
+    DX::AssetManager::Get();
 
     // Window initialization
     DX::WindowManager& windowManager = DX::WindowManager::Get();

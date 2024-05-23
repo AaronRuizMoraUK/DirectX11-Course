@@ -88,7 +88,7 @@ namespace DX
         case ResourceFormat::A8_UNORM:                    return elementCount * 1;
 
         // 1 bit per element rounded up to nearest byte. Example: 10 elements -> 10 bits -> 2 bytes.
-        case ResourceFormat::R1_UNORM:                    return std::ceil(elementCount / 8.0f);
+        case ResourceFormat::R1_UNORM:                    return static_cast<int>(std::ceil(elementCount / 8.0f));
 
         case ResourceFormat::R9G9B9E5_SHAREDEXP:          return elementCount * 0;
         case ResourceFormat::R8G8_B8G8_UNORM:             return elementCount * 0;

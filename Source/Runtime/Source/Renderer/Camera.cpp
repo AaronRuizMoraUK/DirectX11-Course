@@ -5,7 +5,7 @@
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Pipeline/PipelineResourceBindings.h>
 #include <Window/WindowManager.h>
-#include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <Math/Vector2.h>
 #include <Math/Matrix3x3.h>

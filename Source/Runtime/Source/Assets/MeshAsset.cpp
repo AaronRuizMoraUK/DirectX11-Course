@@ -1,6 +1,7 @@
 #include <Assets/MeshAsset.h>
 #include <Assets/AssetManager.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -68,11 +69,11 @@ namespace DX
                 });
 
             meshData->m_indices.resize(mesh->mNumFaces * 3);
-            for (int faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex)
+            for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex)
             {
                 DX_ASSERT(mesh->mFaces[faceIndex].mNumIndices == 3, "MeshAsset", "Mesh face must have 3 indices");
 
-                const int index = faceIndex * 3;
+                const uint32_t index = faceIndex * 3;
                 meshData->m_indices[index + 0] = mesh->mFaces[faceIndex].mIndices[0];
                 meshData->m_indices[index + 1] = mesh->mFaces[faceIndex].mIndices[1];
                 meshData->m_indices[index + 2] = mesh->mFaces[faceIndex].mIndices[2];

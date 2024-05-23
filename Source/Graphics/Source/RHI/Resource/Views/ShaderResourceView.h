@@ -4,7 +4,7 @@
 #include <RHI/Resource/Views/ShaderResourceViewDesc.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11ShaderResourceView;
+struct ID3D11ShaderResourceView;
 
 namespace DX
 {

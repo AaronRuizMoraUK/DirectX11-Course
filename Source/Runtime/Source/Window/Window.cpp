@@ -48,7 +48,7 @@ namespace DX
 
         // Accumulate mouse scroll offset
         glfwSetWindowUserPointer(m_window, this);
-        glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset)
+        glfwSetScrollCallback(m_window, [](GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
             {
                 if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)))
                 {

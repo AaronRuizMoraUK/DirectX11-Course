@@ -12,9 +12,12 @@
 #include <RHI/Resource/Views/ShaderRWResourceView.h>
 #include <RHI/Sampler/Sampler.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>
+
+#pragma DX_DISABLE_WARNING(4267, "")
 
 namespace DX
 {
@@ -307,7 +310,7 @@ namespace DX
                 // Any other values set the hidden counter for that appendable and consumable UAV.
                 // This is relevant only for UAVs that were created with either D3D11_BUFFER_UAV_FLAG_APPEND or
                 // D3D11_BUFFER_UAV_FLAG_COUNTER specified when the UAV was created; otherwise, the argument is ignored.
-                const UINT uavInitialCounts = -1;
+                const uint32_t uavInitialCounts = static_cast<uint32_t>(-1);
 
                 m_dx11DeviceContext->OMSetRenderTargetsAndUnorderedAccessViews(
                     D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL,

@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 namespace DX
 {
@@ -22,7 +23,7 @@ namespace DX
 
         void SetBuffers();
 
-        uint32_t GetIndexCount() const { return m_indexData.size(); }
+        uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
 
         Math::Transform& GetTransform() { return m_transform; }
         const Math::Transform& GetTransform() const { return m_transform; }
@@ -62,5 +63,11 @@ namespace DX
     {
     public:
         Cube(const Math::Vector3& extends);
+    };
+
+    class Mesh : public Object
+    {
+    public:
+        Mesh(const std::string& filename);
     };
 } // namespace DX

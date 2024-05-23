@@ -4,7 +4,7 @@
 #include <RHI/Resource/Buffer/BufferDesc.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11Buffer;
+struct ID3D11Buffer;
 
 namespace DX
 {

@@ -6,12 +6,12 @@
 #include <variant>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11VertexShader;
-class ID3D11HullShader;
-class ID3D11DomainShader;
-class ID3D11GeometryShader;
-class ID3D11PixelShader;
-class ID3D11ComputeShader;
+struct ID3D11VertexShader;
+struct ID3D11HullShader;
+struct ID3D11DomainShader;
+struct ID3D11GeometryShader;
+struct ID3D11PixelShader;
+struct ID3D11ComputeShader;
 
 namespace DX
 {

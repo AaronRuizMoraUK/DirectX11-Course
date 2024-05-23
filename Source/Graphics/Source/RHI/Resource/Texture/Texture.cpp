@@ -55,13 +55,13 @@ namespace DX
                 subresourceData.resize(mipLevels * arraySize);
 
                 const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
-                for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
+                for (uint32_t arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
-                    for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
+                    for (uint32_t mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
-                        const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
-                        const int rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
+                        const uint32_t index = (arrayIndex * mipLevels) + mipIndex;
+                        const uint32_t mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
+                        const uint32_t rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = 0;
@@ -120,14 +120,14 @@ namespace DX
                 subresourceData.resize(mipLevels * arraySize);
 
                 const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
-                for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
+                for (uint32_t arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
-                    for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
+                    for (uint32_t mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
-                        const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
-                        const int mipSizeY = std::max<uint32_t>(1, m_desc.m_dimensions.y >> mipIndex);
-                        const int rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
+                        const uint32_t index = (arrayIndex * mipLevels) + mipIndex;
+                        const uint32_t mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
+                        const uint32_t mipSizeY = std::max<uint32_t>(1, m_desc.m_dimensions.y >> mipIndex);
+                        const uint32_t rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = rowBytes;
@@ -174,15 +174,15 @@ namespace DX
                 subresourceData.resize(mipLevels * arraySize);
 
                 const std::byte* head = static_cast<const std::byte*>(m_desc.m_initialData);
-                for (int arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
+                for (uint32_t arrayIndex = 0; arrayIndex < arraySize; ++arrayIndex)
                 {
-                    for (int mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
+                    for (uint32_t mipIndex = 0; mipIndex < mipLevels; ++mipIndex)
                     {
-                        const int index = (arrayIndex * mipLevels) + mipIndex;
-                        const int mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
-                        const int mipSizeY = std::max<uint32_t>(1, m_desc.m_dimensions.y >> mipIndex);
-                        const int mipSizeZ = std::max<uint32_t>(1, m_desc.m_dimensions.z >> mipIndex);
-                        const int rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
+                        const uint32_t index = (arrayIndex * mipLevels) + mipIndex;
+                        const uint32_t mipSizeX = std::max<uint32_t>(1, m_desc.m_dimensions.x >> mipIndex);
+                        const uint32_t mipSizeY = std::max<uint32_t>(1, m_desc.m_dimensions.y >> mipIndex);
+                        const uint32_t mipSizeZ = std::max<uint32_t>(1, m_desc.m_dimensions.z >> mipIndex);
+                        const uint32_t rowBytes = ResourceFormatSize(m_desc.m_format, mipSizeX);
 
                         subresourceData[index].pSysMem = head;
                         subresourceData[index].SysMemPitch = rowBytes;

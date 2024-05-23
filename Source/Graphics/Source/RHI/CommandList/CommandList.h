@@ -5,7 +5,7 @@
 #include <memory>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11CommandList;
+struct ID3D11CommandList;
 
 namespace DX
 {

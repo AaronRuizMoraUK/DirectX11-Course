@@ -2,6 +2,7 @@
 
 #include <File/FileUtils.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <RHI/DirectX/ComPtr.h>
 #include <RHI/DirectX/DX11ShaderBytecode.h>
@@ -279,7 +280,7 @@ namespace DX
 
             DX_LOG(Verbose, "ShaderCompiler", "---------------------");
             DX_LOG(Verbose, "ShaderCompiler", "Shader Name: %s", shaderInfo.m_name.c_str());
-            for (int i = 0; i < dx11ShaderDesc.BoundResources; ++i) {
+            for (uint32_t i = 0; i < dx11ShaderDesc.BoundResources; ++i) {
                 D3D11_SHADER_INPUT_BIND_DESC dx11ResourceDesc;
                 dx11ShaderReflection->GetResourceBindingDesc(i, &dx11ResourceDesc);
 

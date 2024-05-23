@@ -4,7 +4,7 @@
 #include <RHI/Resource/Texture/TextureDesc.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11Resource;
+struct ID3D11Resource;
 
 namespace DX
 {

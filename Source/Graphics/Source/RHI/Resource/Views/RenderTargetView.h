@@ -6,7 +6,7 @@
 #include <Math/Color.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11RenderTargetView;
+struct ID3D11RenderTargetView;
 
 namespace DX
 {

@@ -25,3 +25,10 @@ target_link_libraries(Runtime PRIVATE Graphics)
 target_link_libraries(Runtime PRIVATE glfw)
 target_link_libraries(Runtime PRIVATE stb)
 target_link_libraries(Runtime PRIVATE assimp)
+
+# Set warning levels based on the compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(Runtime PRIVATE -Wall -Wextra -Werror)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(Runtime PRIVATE /W4 /WX)
+endif()

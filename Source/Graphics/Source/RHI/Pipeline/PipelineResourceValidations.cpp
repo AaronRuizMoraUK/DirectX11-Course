@@ -11,6 +11,7 @@
 #include <RHI/Resource/Views/ShaderRWResourceView.h>
 
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 namespace DX
 {

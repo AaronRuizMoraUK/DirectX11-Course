@@ -12,10 +12,13 @@
 #include <RHI/Pipeline/Pipeline.h>
 
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
 #include <numeric>
+
+#pragma DX_DISABLE_WARNING(4267, "")
 
 namespace UnitTest
 {

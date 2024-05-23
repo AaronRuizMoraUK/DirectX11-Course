@@ -4,7 +4,7 @@
 #include <RHI/Sampler/SamplerDesc.h>
 
 #include <RHI/DirectX/ComPtr.h>
-class ID3D11SamplerState;
+struct ID3D11SamplerState;
 
 namespace DX
 {

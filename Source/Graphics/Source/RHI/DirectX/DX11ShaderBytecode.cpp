@@ -1,7 +1,7 @@
 #include <RHI/DirectX/DX11ShaderBytecode.h>
 #include <RHI/Shader/ShaderEnums.h>
 
-#include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <memory>
 
@@ -24,6 +24,6 @@ namespace DX
 
     uint32_t DX11ShaderBytecode::GetSize() const
     {
-        return m_dx11Blob->GetBufferSize();
+        return static_cast<uint32_t>(m_dx11Blob->GetBufferSize());
     }
 } // namespace DX

@@ -6,7 +6,7 @@
 #include <memory>
 
 #include <RHI/DirectX/ComPtr.h>
-class IDXGISwapChain;
+struct IDXGISwapChain;
 
 namespace DX
 {

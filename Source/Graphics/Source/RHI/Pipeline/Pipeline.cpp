@@ -7,12 +7,15 @@
 #include <RHI/Pipeline/BlendState/BlendState.h>
 #include <RHI/Pipeline/DepthStencilState/DepthStencilState.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <ranges>
 #include <numeric>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>
+
+#pragma DX_DISABLE_WARNING(4267, "")
 
 namespace DX
 {

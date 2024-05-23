@@ -21,6 +21,13 @@ target_link_libraries(Graphics PUBLIC Core)
 target_link_libraries(Graphics PRIVATE d3d11.lib)
 target_link_libraries(Graphics PRIVATE d3dcompiler.lib)
 
+# Set warning levels based on the compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(Graphics PRIVATE -Wall -Wextra -Werror)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(Graphics PRIVATE /W4 /WX)
+endif()
+
 # ------------------------------------------
 # Tests
 # ------------------------------------------
@@ -39,3 +46,10 @@ target_include_directories(GraphicsTests PUBLIC "${CMAKE_SOURCE_DIR}/Source/Grap
 
 # Libraries
 target_link_libraries(GraphicsTests PRIVATE Graphics)
+
+# Set warning levels based on the compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(GraphicsTests PRIVATE -Wall -Wextra -Werror)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(GraphicsTests PRIVATE /W4 /WX)
+endif()

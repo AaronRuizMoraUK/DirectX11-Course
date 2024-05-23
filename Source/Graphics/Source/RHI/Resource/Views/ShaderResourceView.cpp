@@ -4,6 +4,7 @@
 #include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>

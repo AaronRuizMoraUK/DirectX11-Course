@@ -1,6 +1,7 @@
 #include <Renderer/Object.h>
 #include <Renderer/RendererManager.h>
 #include <Assets/TextureAsset.h>
+#include <Assets/MeshAsset.h>
 
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
@@ -12,8 +13,11 @@
 
 #include <File/FileUtils.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <d3d11.h>
+
+#pragma DX_DISABLE_WARNING(4267, "")
 
 namespace DX
 {
@@ -227,6 +231,26 @@ namespace DX
             20, 23, 22,
             22, 21, 20
         };
+
+        CreateBuffers();
+    }
+
+
+    Mesh::Mesh(const std::string& filename)
+    {
+        auto meshAsset = MeshAsset::LoadMeshAsset(filename);
+
+        if (!meshAsset)
+        {
+            DX_LOG(Fatal, "Mesh", "Failed to load mesh asset %s", filename.c_str());
+            return;
+        }
+
+        const MeshData* meshData = meshAsset->GetData();
+
+        m_vertexData.resize(meshData->m_positions.size());
+
+        m_indexData = std::move(meshData->m_indices);
 
         CreateBuffers();
     }

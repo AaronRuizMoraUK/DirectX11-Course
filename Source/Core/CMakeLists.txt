@@ -18,3 +18,10 @@ target_include_directories(Core PUBLIC "${CMAKE_SOURCE_DIR}/Source/Core/Source")
 
 # Libraries
 target_link_libraries(Core PUBLIC mathfu)
+
+# Set warning levels based on the compiler
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(Core PRIVATE -Wall -Wextra -Werror)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(Core PRIVATE /W4 /WX)
+endif()
