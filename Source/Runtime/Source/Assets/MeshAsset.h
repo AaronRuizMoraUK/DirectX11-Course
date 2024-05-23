@@ -3,6 +3,7 @@
 #include <Assets/Asset.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
+#include <Renderer/Vertices.h>
 
 #include <vector>
 
@@ -20,6 +21,8 @@ namespace DX
         std::vector<Math::Vector3Packed> m_normals;
         std::vector<Math::Vector3Packed> m_tangents;
         std::vector<Math::Vector3Packed> m_binormals;
+
+        std::vector<Index> m_indices;
     };
 
     class MeshAsset : public Asset<MeshData>

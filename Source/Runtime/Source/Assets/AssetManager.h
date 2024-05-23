@@ -59,6 +59,13 @@ namespace DX
     template<typename T>
     std::shared_ptr<T> AssetManager::LoadAssetAs(const std::string& fileName, LoadDataFunc<T> loadDataFunc)
     {
+        if (fileName.empty())
+        {
+            DX_LOG(Error, "AssetManager", "Filename is empty.");
+            return nullptr;
+        }
+
+        // Check if asset already exists (by Id)
         if (auto asset = GetAsset(fileName))
         {
             if (asset->GetAssetType() == T::AssetTypeId)
@@ -72,6 +79,7 @@ namespace DX
             }
         }
 
+        // Check if filename exists
         auto fileNamePath = GetAssetPath() / fileName;
         if (!std::filesystem::exists(fileNamePath))
         {
