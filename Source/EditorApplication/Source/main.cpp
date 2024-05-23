@@ -49,9 +49,12 @@ int main()
     std::vector<std::unique_ptr<DX::Object>> objects;
     objects.push_back(std::make_unique<DX::Triangle>());
     objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
-    objects.push_back(std::make_unique<DX::Mesh>("Meshes/DamagedHelmet.glb"));
+    objects.push_back(std::make_unique<DX::Mesh>("Models/DamagedHelmet/DamagedHelmet.gltf"));
+    objects.push_back(std::make_unique<DX::Mesh>("Models/Jack/Jack.fbx"));
     objects[0]->SetTransform(Math::Vector3(0.0f, 1.0f, 0.0f));
-    objects[2]->SetTransform(Math::Vector3(3.0f, 0.0f, 0.0f));
+    objects[1]->SetTransform(Math::Vector3(0.0f, 0.0f, 0.0f));
+    objects[2]->SetTransform({ Math::Vector3(3.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ 0.0f, 3.14f, 0.0f }) });
+    objects[3]->SetTransform({ Math::Vector3(1.5f, -1.0f, 0.0f), Math::Quaternion::FromEulerAngles({0.0f, 3.14f, 0.0f}), Math::Vector3(0.01f) });
 
     auto t0 = std::chrono::system_clock::now();
 
@@ -69,11 +72,11 @@ int main()
         // Update
         // ------
         camera->Update(deltaTime);
-        for (auto& object : objects)
-        {
-            Math::Transform& transform = object->GetTransform();
-            transform.m_rotation = transform.m_rotation * Math::Quaternion::FromEulerAngles(Math::Vector3(0.1f * deltaTime));
-        }
+        //for (auto& object : objects)
+        //{
+        //    Math::Transform& transform = object->GetTransform();
+        //    transform.m_rotation = transform.m_rotation * Math::Quaternion::FromEulerAngles(Math::Vector3(0.1f * deltaTime));
+        //}
 
         // ------
         // Render
