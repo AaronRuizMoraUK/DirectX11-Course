@@ -2,24 +2,9 @@
 
 // -------------------------------------------------------
 // Usage:
-//
-// DX_ASSERT(condition, "Title", "My message %d", 123);
 // 
 // #pragma DX_IGNORE_WARNING(4101, "-Wunused-variable")
 // -------------------------------------------------------
-
-#ifndef NDEBUG
-// No Release configuration
-
-#define DX_ASSERT(condition, title, message, ...)   ::DX::Internal::Assert((condition), #condition, title, __FILE__, __LINE__, message, ##__VA_ARGS__)
-
-#else
-// Release configuration
-
-#define DX_ASSERT(...)
-
-#endif // NDEBUG
-
 
 #if defined(__GNUC__)
 
@@ -34,6 +19,28 @@
 #define DX_DISABLE_WARNING(msvc_warning_number, gcc_clang_warning_string)
 
 #endif
+
+// -------------------------------------------------------
+// Usage:
+//
+// DX_ASSERT(condition, "Title", "My message %d", 123);
+// -------------------------------------------------------
+
+#ifndef NDEBUG
+// No Release configuration
+
+#define DX_ASSERT(condition, title, message, ...)   ::DX::Internal::Assert((condition), #condition, title, __FILE__, __LINE__, message, ##__VA_ARGS__)
+
+#else
+// Release configuration
+
+#define DX_ASSERT(...)
+
+// Disable warning 4189: local variable is initialized but not referenced
+// This happens often in release configuration when using DX_ASSERT()
+#pragma DX_DISABLE_WARNING(4189, "")
+
+#endif // NDEBUG
 
 namespace DX::Internal
 {

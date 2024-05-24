@@ -20,6 +20,11 @@
 
 #define DX_LOG(...)
 
+// Disable warning C4100: unreferenced formal parameter
+// This happens often in release configuration when using DX_LOG()
+#include <Debug/Debug.h>
+#pragma DX_DISABLE_WARNING(4100, "")
+
 #endif // NDEBUG
 
 namespace DX::Internal
