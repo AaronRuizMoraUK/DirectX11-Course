@@ -102,7 +102,6 @@ namespace DX
         else
         {
             DX_LOG(Warning, "MeshAsset", "Mesh %s has no texture coordinates\n", fileNamePath.generic_string().c_str());
-            return nullptr;
         }
 
         if (mesh->HasNormals())
@@ -122,7 +121,6 @@ namespace DX
         else
         {
             DX_LOG(Warning, "MeshAsset", "Mesh %s has no normals\n", fileNamePath.generic_string().c_str());
-            return nullptr;
         }
 
         if (mesh->HasTangentsAndBitangents())
@@ -154,7 +152,6 @@ namespace DX
         else
         {
             DX_LOG(Warning, "MeshAsset", "Mesh %s has no tangents and binormals\n", fileNamePath.generic_string().c_str());
-            return nullptr;
         }
 
         return meshData;
