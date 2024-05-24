@@ -71,6 +71,11 @@ namespace DX
         return m_device.get();
     }
 
+    FrameBuffer* Renderer::GetFrameBuffer()
+    {
+        return m_frameBuffer.get();
+    }
+
     bool Renderer::CreateDevice()
     {
         m_device = std::make_unique<Device>();

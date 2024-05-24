@@ -13,6 +13,7 @@ namespace DX
     class Texture;
     class ShaderResourceView;
     class Sampler;
+    class CommandList;
     class PipelineResourceBindings;
 
     class Object
@@ -21,7 +22,7 @@ namespace DX
         Object();
         virtual ~Object();
 
-        void SetBuffers(PipelineResourceBindings& resources);
+        void SetBuffers(CommandList& commandList, PipelineResourceBindings& resources);
 
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
 

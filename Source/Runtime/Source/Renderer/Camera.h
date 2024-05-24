@@ -7,6 +7,7 @@
 namespace DX
 {
     class Buffer;
+    class CommandList;
     class PipelineResourceBindings;
 
     // 3D perspective camera
@@ -25,7 +26,7 @@ namespace DX
         Math::Matrix4x4 GetViewMatrix() const;
         Math::Matrix4x4 GetProjectionMatrix() const;
 
-        void SetBuffers(PipelineResourceBindings& resources);
+        void SetBuffers(CommandList& commandList, PipelineResourceBindings& resources);
 
     private:
         bool m_firstUpdate = true;

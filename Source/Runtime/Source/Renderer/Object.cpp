@@ -5,6 +5,7 @@
 
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
+#include <RHI/CommandList/CommandList.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Resource/Views/ShaderResourceView.h>
@@ -125,7 +126,7 @@ namespace DX
         }
     }
 
-    void Object::SetBuffers(PipelineResourceBindings& resources)
+    void Object::SetBuffers(CommandList& commandList, PipelineResourceBindings& resources)
     {
         auto* renderer = RendererManager::Get().GetRenderer();
         DX_ASSERT(renderer, "Object", "Default renderer not found");
@@ -134,11 +135,11 @@ namespace DX
         {
             const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
 
-            renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldMatrix, sizeof(worldMatrix));
+            commandList.GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldMatrix, sizeof(worldMatrix));
         }
 
-        renderer->GetDevice()->GetImmediateContext().BindVertexBuffers({m_vertexBuffer.get()});
-        renderer->GetDevice()->GetImmediateContext().BindIndexBuffer(*m_indexBuffer);
+        commandList.GetDeferredContext().BindVertexBuffers({m_vertexBuffer.get()});
+        commandList.GetDeferredContext().BindIndexBuffer(*m_indexBuffer);
 
         resources.SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
         resources.SetShaderResourceView(ShaderType_Pixel, 0, m_textureView);

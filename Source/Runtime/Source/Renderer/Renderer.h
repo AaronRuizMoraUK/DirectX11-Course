@@ -32,6 +32,7 @@ namespace DX
 
         Window* GetWindow();
         Device* GetDevice();
+        FrameBuffer* GetFrameBuffer();
 
         void Clear(const Math::Color& color, float depth, uint8_t stencil);
         void Present();

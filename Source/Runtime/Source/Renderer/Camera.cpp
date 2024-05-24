@@ -1,7 +1,9 @@
 #include <Renderer/Camera.h>
 #include <Renderer/RendererManager.h>
+
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
+#include <RHI/CommandList/CommandList.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Pipeline/PipelineResourceBindings.h>
 #include <Window/WindowManager.h>
@@ -194,7 +196,7 @@ namespace DX
             Math::CoordinateSystem::Default);
     }
 
-    void Camera::SetBuffers(PipelineResourceBindings& resources)
+    void Camera::SetBuffers(CommandList& commandList, PipelineResourceBindings& resources)
     {
         auto* renderer = RendererManager::Get().GetRenderer();
         DX_ASSERT(renderer, "Camera", "Default renderer not found");
@@ -203,7 +205,7 @@ namespace DX
         {
             const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
 
-            renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
+            commandList.GetDeferredContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
 
         resources.SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
