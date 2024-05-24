@@ -188,12 +188,12 @@ namespace DX
             return;
         }
 
-        DX_LOG(Verbose, "RenderTargetView", "Render Target View created.");
+        //DX_LOG(Verbose, "RenderTargetView", "Render Target View created.");
     }
 
     RenderTargetView::~RenderTargetView()
     {
-        DX_LOG(Verbose, "RenderTargetView", "Render Target View destroyed.");
+        //DX_LOG(Verbose, "RenderTargetView", "Render Target View destroyed.");
     }
 
     ComPtr<ID3D11RenderTargetView> RenderTargetView::GetDX11RenderTargetView()

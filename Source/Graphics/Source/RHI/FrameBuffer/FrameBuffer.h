@@ -31,6 +31,10 @@ namespace DX
         const std::vector<std::shared_ptr<RenderTargetView>>& GetRenderTargetViews();
         std::shared_ptr<DepthStencilView> GetDepthStencilView();
 
+    protected:
+        friend class SwapChain;
+        void FlipSwapChainBackBuffer(std::shared_ptr<Texture> backBuffer);
+
     private:
         FrameBufferDesc m_desc;
 

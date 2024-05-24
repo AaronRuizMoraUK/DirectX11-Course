@@ -86,18 +86,19 @@ namespace DX
             return false;
         }
 
-        DX_LOG(Info, "Renderer", "Device created.");
         return true;
     }
 
     bool Renderer::CreateSwapChain()
     {
+        const uint32_t frameBufferCount = 2;
+
         SwapChainDesc swapChainDesc = {};
         swapChainDesc.m_size = m_window->GetSize();
         swapChainDesc.m_refreshRate = m_window->GetRefreshRate();
         swapChainDesc.m_fullScreen = m_window->IsFullScreen();
         swapChainDesc.m_vSyncEnabled = m_window->IsVSyncEnabled();
-        swapChainDesc.m_bufferCount = 1;
+        swapChainDesc.m_bufferCount = frameBufferCount;
         swapChainDesc.m_bufferFormat = ResourceFormat::R8G8B8A8_UNORM;
         swapChainDesc.m_nativeWindowHandler = m_window->GetWindowNativeHandler();
 
@@ -109,27 +110,19 @@ namespace DX
             return false;
         }
 
-        DX_LOG(Info, "Renderer", "Swap chain created.");
         return true;
     }
 
     bool Renderer::CreateFrameBuffer()
     {
-        FrameBufferDesc frameBufferDesc = {};
-        frameBufferDesc.m_renderTargetAttachments = FrameBufferDesc::TextureAttachments{ 
-            {m_swapChain->GetBackBufferTexture(), m_swapChain->GetBackBufferTexture()->GetTextureDesc().m_format}
-        };
-        frameBufferDesc.m_createDepthStencilAttachment = true;
+        m_frameBuffer = m_swapChain->CreateFrameBuffer();
 
-        m_frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);
-
-        if (!m_swapChain)
+        if (!m_frameBuffer)
         {
             DX_LOG(Error, "Renderer", "Failed to create frame buffer.");
             return false;
         }
 
-        DX_LOG(Info, "Renderer", "Swap chain created.");
         return true;
     }
 
@@ -140,7 +133,7 @@ namespace DX
 
     void Renderer::Present()
     {
-        m_swapChain->Present();
+        m_swapChain->Present(*m_frameBuffer);
     }
 
     void Renderer::BindFramebuffer()

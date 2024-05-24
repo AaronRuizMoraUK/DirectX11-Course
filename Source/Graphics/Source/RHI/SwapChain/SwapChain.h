@@ -12,6 +12,7 @@ namespace DX
 {
     class Device;
     class Texture;
+    class FrameBuffer;
 
     class SwapChain : public DeviceObject
     {
@@ -26,11 +27,13 @@ namespace DX
 
         const SwapChainDesc& GetSwapChainDesc() const { return m_desc; }
 
-        void Present();
+        std::shared_ptr<FrameBuffer> CreateFrameBuffer();
 
-        std::shared_ptr<Texture> GetBackBufferTexture();
+        void Present(FrameBuffer& frameBuffer);
 
     private:
+        void ObtainBackBufferFromSwapChain();
+
         SwapChainDesc m_desc;
 
         std::shared_ptr<Texture> m_backBufferTexture;
