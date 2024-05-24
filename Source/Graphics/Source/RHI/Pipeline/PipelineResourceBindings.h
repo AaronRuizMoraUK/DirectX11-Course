@@ -34,13 +34,13 @@ namespace DX
         // Set resources using slot
         void SetConstantBuffer(ShaderType shaderType, uint32_t slot, std::shared_ptr<Buffer> buffer);
         void SetShaderResourceView(ShaderType shaderType, uint32_t slot, std::shared_ptr<ShaderResourceView> srv);
-        void SetShaderRWResourceView(ShaderType shaderType, uint32_t slot, std::shared_ptr<ShaderRWResourceView> srwrv);
+        void SetShaderRWResourceView(uint32_t slot, std::shared_ptr<ShaderRWResourceView> srwrv);
         void SetSampler(ShaderType shaderType, uint32_t slot, std::shared_ptr<Sampler> sampler);
 
         // Set resources using its variable name in the shader
         void SetConstantBuffer(ShaderType shaderType, const std::string& name, std::shared_ptr<Buffer> buffer);
         void SetShaderResourceView(ShaderType shaderType, const std::string& name, std::shared_ptr<ShaderResourceView> srv);
-        void SetShaderRWResourceView(ShaderType shaderType, const std::string& name, std::shared_ptr<ShaderRWResourceView> srwrv);
+        void SetShaderRWResourceView(const std::string& name, std::shared_ptr<ShaderRWResourceView> srwrv);
         void SetSampler(ShaderType shaderType, const std::string& name, std::shared_ptr<Sampler> sampler);
 
         const Pipeline* GetPipeline() const;

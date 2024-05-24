@@ -4,14 +4,9 @@
 #include <RHI/Device/DeviceContext.h>
 #include <RHI/SwapChain/SwapChain.h>
 #include <RHI/FrameBuffer/FrameBuffer.h>
-#include <RHI/Pipeline/Pipeline.h>
 #include <RHI/Resource/Texture/Texture.h>
-#include <RHI/Shader/Shader.h>
-#include <RHI/Shader/ShaderCompiler/ShaderCompiler.h>
-#include <RHI/Pipeline/PipelineResourceBindings.h>
 
 #include <Window/Window.h>
-#include <File/FileUtils.h>
 #include <Log/Log.h>
 
 namespace DX
@@ -54,20 +49,12 @@ namespace DX
             return false;
         }
 
-        if (!CreatePipeline())
-        {
-            Terminate();
-            return false;
-        }
-
         return true;
     }
 
     void Renderer::Terminate()
     {
         DX_LOG(Info, "Renderer", "Terminating Renderer...");
-
-        DestroyPipeline();
 
         m_frameBuffer.reset();
         m_swapChain.reset();
@@ -151,81 +138,14 @@ namespace DX
         m_swapChain->Present();
     }
 
-    void Renderer::BindPipeline()
+    void Renderer::BindFramebuffer()
     {
         m_device->GetImmediateContext().BindFrameBuffer(*m_frameBuffer);
         m_device->GetImmediateContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{m_window->GetSize()}} });
-
-        m_device->GetImmediateContext().BindPipeline(*m_pipeline);
-    }
-
-    void Renderer::BindPipelineResources()
-    {
-        m_device->GetImmediateContext().BindResources(*m_pipelineResources);
-    }
-
-    PipelineResourceBindings& Renderer::GetPipelineResources()
-    {
-        return *m_pipelineResources;
     }
 
     void Renderer::Draw(int indexCount)
     {
-        m_device->GetImmediateContext().DrawIndexed(indexCount, 0, 0);
-    }
-
-    bool Renderer::CreatePipeline()
-    {
-        const ShaderInfo vertexShaderInfo{ ShaderType_Vertex, "Shaders/VertexShader.hlsl", "main" };
-        const ShaderInfo pixelShaderInfo{ ShaderType_Pixel, "Shaders/PixelShader.hlsl", "main" };
-        auto vertexShaderByteCode = ShaderCompiler::Compile(vertexShaderInfo);
-        auto pixelShaderByteCode = ShaderCompiler::Compile(pixelShaderInfo);
-        auto vertexShader = m_device->CreateShader({ vertexShaderInfo, vertexShaderByteCode });
-        auto pixelShader = m_device->CreateShader({ pixelShaderInfo, pixelShaderByteCode });
-
-        PipelineDesc pipelineDesc = {};
-        pipelineDesc.m_shaders[DX::ShaderType_Vertex] = vertexShader;
-        pipelineDesc.m_shaders[DX::ShaderType_Pixel] = pixelShader;
-        pipelineDesc.m_inputLayout.m_inputElements =
-        {
-            InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
-            //InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
-            InputElement{ DX::InputSemantic::TexCoord, 0, DX::ResourceFormat::R32G32_FLOAT, 0, 12 },
-        };
-        pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
-        pipelineDesc.m_rasterizerState = {
-            .m_faceFrontOrder = DX::FaceFrontOrder::Clockwise,
-            .m_faceCullMode = DX::FaceCullMode::BackFace,
-            .m_faceFillMode = DX::FaceFillMode::Solid,
-        };
-        pipelineDesc.m_blendState.renderTargetBlends[0] = {
-            .m_blendEnabled = false,
-            .m_colorWriteMask = DX::ColorWrite_All
-        };
-        pipelineDesc.m_depthStencilState = {
-            .m_depthEnabled = true,
-            .m_depthTestFunc = DX::ComparisonFunction::Less,
-            .m_depthWriteEnabled = true,
-            .m_stencilEnabled = false
-        };
-
-        m_pipeline = m_device->CreatePipeline(pipelineDesc);
-
-        if (!m_pipeline)
-        {
-            DX_LOG(Error, "Renderer", "Failed to create pipeline.");
-            return false;
-        }
-
-        m_pipelineResources = std::make_unique<PipelineResourceBindings>(m_pipeline->GetResourceBindings());
-
-        DX_LOG(Info, "Renderer", "Pipeline created.");
-        return true;
-    }
-
-    void Renderer::DestroyPipeline()
-    {
-        m_pipelineResources.reset();
-        m_pipeline.reset();
+        m_device->GetImmediateContext().DrawIndexed(indexCount);
     }
 } // namespace DX

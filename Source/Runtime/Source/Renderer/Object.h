@@ -13,7 +13,7 @@ namespace DX
     class Texture;
     class ShaderResourceView;
     class Sampler;
-    class TextureAsset;
+    class PipelineResourceBindings;
 
     class Object
     {
@@ -21,7 +21,7 @@ namespace DX
         Object();
         virtual ~Object();
 
-        void SetBuffers();
+        void SetBuffers(PipelineResourceBindings& resources);
 
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
 
@@ -41,12 +41,10 @@ namespace DX
         std::vector<Index> m_indexData;
 
     private:
-        std::shared_ptr<Buffer> m_vertexBuffer;
-        std::shared_ptr<Buffer> m_indexBuffer;
         std::shared_ptr<Buffer> m_worldMatrixConstantBuffer;
 
-        std::shared_ptr<TextureAsset> m_textureAsset;
-        Math::Vector2Int m_textureSize = Math::Vector2Int(0);
+        std::shared_ptr<Buffer> m_vertexBuffer;
+        std::shared_ptr<Buffer> m_indexBuffer;
 
         std::shared_ptr<Texture> m_texture;
         std::shared_ptr<ShaderResourceView> m_textureView;

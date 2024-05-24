@@ -10,6 +10,8 @@ namespace DX
 {
     struct ShaderResourceInfo
     {
+        ShaderResourceInfo() = default;
+
         ShaderResourceInfo(
             const std::string& name, uint32_t startSlot, uint32_t slotCount)
             : m_name(name)
@@ -56,5 +58,10 @@ namespace DX
         std::vector<ShaderResourceInfo> m_shaderResourceViews; // Shader resource view can hold textures or buffers
         std::vector<ShaderResourceInfo> m_shaderRWResourceViews; // Shader RW resource view can hold textures or buffers
         std::vector<ShaderResourceInfo> m_samplers;
+
+        uint32_t m_constantBuffersSlotCount = 0;
+        uint32_t m_shaderResourceViewsSlotCount = 0;
+        uint32_t m_shaderRWResourceViewsSlotCount = 0;
+        uint32_t m_samplersSlotCount = 0;
     };
 } // namespace DX

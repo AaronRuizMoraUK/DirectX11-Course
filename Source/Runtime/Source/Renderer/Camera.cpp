@@ -194,7 +194,7 @@ namespace DX
             Math::CoordinateSystem::Default);
     }
 
-    void Camera::SetBuffers()
+    void Camera::SetBuffers(PipelineResourceBindings& resources)
     {
         auto* renderer = RendererManager::Get().GetRenderer();
         DX_ASSERT(renderer, "Camera", "Default renderer not found");
@@ -206,6 +206,6 @@ namespace DX
             renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
 
-        renderer->GetPipelineResources().SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
+        resources.SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
     }
 } // namespace DX

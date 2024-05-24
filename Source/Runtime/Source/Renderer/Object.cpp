@@ -78,12 +78,12 @@ namespace DX
 
         // Texture
         {
-            m_textureAsset = TextureAsset::LoadTextureAsset("Textures/Wall_Stone_Albedo.png");
-            DX_ASSERT(m_textureAsset.get(), "Object", "Failed to load texture");
+            auto textureAsset = TextureAsset::LoadTextureAsset("Textures/Wall_Stone_Albedo.png");
+            DX_ASSERT(textureAsset.get(), "Object", "Failed to load texture");
 
             TextureDesc textureDesc = {};
             textureDesc.m_textureType = TextureType::Texture2D;
-            textureDesc.m_dimensions = Math::Vector3Int(m_textureAsset->GetData()->m_size, 0);
+            textureDesc.m_dimensions = Math::Vector3Int(textureAsset->GetData()->m_size, 0);
             textureDesc.m_mipCount = 1;
             textureDesc.m_format = ResourceFormat::R8G8B8A8_UNORM;
             textureDesc.m_usage = ResourceUsage::Immutable;
@@ -92,7 +92,7 @@ namespace DX
             textureDesc.m_arrayCount = 1;
             textureDesc.m_sampleCount = 1;
             textureDesc.m_sampleQuality = 0;
-            textureDesc.m_initialData = m_textureAsset->GetData()->m_data;
+            textureDesc.m_initialData = textureAsset->GetData()->m_data;
 
             m_texture = renderer->GetDevice()->CreateTexture(textureDesc);
 
@@ -125,7 +125,7 @@ namespace DX
         }
     }
 
-    void Object::SetBuffers()
+    void Object::SetBuffers(PipelineResourceBindings& resources)
     {
         auto* renderer = RendererManager::Get().GetRenderer();
         DX_ASSERT(renderer, "Object", "Default renderer not found");
@@ -140,9 +140,9 @@ namespace DX
         renderer->GetDevice()->GetImmediateContext().BindVertexBuffers({m_vertexBuffer.get()});
         renderer->GetDevice()->GetImmediateContext().BindIndexBuffer(*m_indexBuffer);
 
-        renderer->GetPipelineResources().SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
-        renderer->GetPipelineResources().SetShaderResourceView(ShaderType_Pixel, 0, m_textureView);
-        renderer->GetPipelineResources().SetSampler(ShaderType_Pixel, 0, m_sampler);
+        resources.SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
+        resources.SetShaderResourceView(ShaderType_Pixel, 0, m_textureView);
+        resources.SetSampler(ShaderType_Pixel, 0, m_sampler);
     }
 
     Triangle::Triangle()

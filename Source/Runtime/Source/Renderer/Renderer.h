@@ -36,10 +36,7 @@ namespace DX
         void Clear(const Math::Color& color, float depth, uint8_t stencil);
         void Present();
 
-        void BindPipeline();
-        void BindPipelineResources();
-
-        PipelineResourceBindings& GetPipelineResources();
+        void BindFramebuffer();
 
         void Draw(int indexCount);
 
@@ -53,12 +50,5 @@ namespace DX
         std::unique_ptr<Device> m_device;
         std::shared_ptr<SwapChain> m_swapChain;
         std::shared_ptr<FrameBuffer> m_frameBuffer;
-
-    private:
-        bool CreatePipeline();
-        void DestroyPipeline();
-
-        std::shared_ptr<Pipeline> m_pipeline;
-        std::unique_ptr<PipelineResourceBindings> m_pipelineResources;
     };
 } // namespace DX

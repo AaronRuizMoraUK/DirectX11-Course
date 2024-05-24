@@ -26,9 +26,9 @@ namespace DX
                 const Buffer* cb = constantBuffers[slot].get();
                 if (!cb)
                 {
-                    DX_LOG(Error, "PipelineResourceValidations",
-                        "Missing to set a Constant Buffer in slot %d (name '%s') for %s Shader %s.",
-                        slot, cbInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
+                    //DX_LOG(Warning, "PipelineResourceValidations",
+                    //    "Missing to set a Constant Buffer in slot %d (name '%s') for %s Shader %s.",
+                    //    slot, cbInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
                     continue;
                 }
 
@@ -56,9 +56,9 @@ namespace DX
                 const ShaderResourceView* srv = shaderResourceViews[slot].get();
                 if (!srv)
                 {
-                    DX_LOG(Error, "PipelineResourceValidations",
-                        "Missing to set a Shader Resource View in slot %d (name '%s'). %s Shader %s.",
-                        slot, srvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
+                    //DX_LOG(Warning, "PipelineResourceValidations",
+                    //    "Missing to set a Shader Resource View in slot %d (name '%s'). %s Shader %s.",
+                    //    slot, srvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
                     continue;
                 }
 
@@ -143,9 +143,9 @@ namespace DX
                 const ShaderRWResourceView* srwrv = shaderRWResourceViews[slot].get();
                 if (!srwrv)
                 {
-                    DX_LOG(Error, "PipelineResourceValidations",
-                        "Missing to set a Shader RW Resource View in slot %d (name '%s') for %s Shader %s.",
-                        slot, srwrvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
+                    //DX_LOG(Warning, "PipelineResourceValidations",
+                    //    "Missing to set a Shader RW Resource View in slot %d (name '%s') for %s Shader %s.",
+                    //    slot, srwrvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
                     continue;
                 }
 
@@ -219,7 +219,7 @@ namespace DX
         }
     }
 
-    static void ValidateSamplersBindings(const ShaderInfo& shaderInfo,
+    static void ValidateSamplersBindings([[maybe_unused]] const ShaderInfo& shaderInfo,
         const std::vector<ShaderResourceInfo>& samplersInfo,
         const std::vector<std::shared_ptr<Sampler>>& samplers)
     {
@@ -230,9 +230,9 @@ namespace DX
                 const Sampler* sampler = samplers[slot].get();
                 if (!sampler)
                 {
-                    DX_LOG(Error, "PipelineResourceValidations",
-                        "Missing to set a Sampler in slot %d (name '%s') for %s Shader %s.",
-                        slot, samplerInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
+                    //DX_LOG(Warning, "PipelineResourceValidations",
+                    //    "Missing to set a Sampler in slot %d (name '%s') for %s Shader %s.",
+                    //    slot, samplerInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str());
                     continue;
                 }
             }

@@ -605,8 +605,8 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing Pipeline -----");
 
-        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "mainColor" };
-        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "mainColor" };
+        const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/Tests/VertexShaderTest.hlsl", "main" };
+        const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/Tests/PixelShaderTest.hlsl", "main" };
         auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
         auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
         auto vertexShader = m_device->CreateShader({ vertexShaderInfo, vertexShaderByteCode });
@@ -618,7 +618,7 @@ namespace UnitTest
         pipelineDesc.m_inputLayout.m_inputElements =
         {
             DX::InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
-            DX::InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
+            DX::InputElement{ DX::InputSemantic::TexCoord, 0, DX::ResourceFormat::R32G32_FLOAT, 0, 12 },
         };
         pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
         pipelineDesc.m_rasterizerState = {

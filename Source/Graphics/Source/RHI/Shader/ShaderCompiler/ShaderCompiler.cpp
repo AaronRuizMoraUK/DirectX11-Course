@@ -4,10 +4,12 @@
 #include <Log/Log.h>
 #include <Debug/Debug.h>
 
+#include <numeric>
+#include <format>
+
 #include <RHI/DirectX/ComPtr.h>
 #include <RHI/DirectX/DX11ShaderBytecode.h>
 #include <d3dcompiler.h>
-
 #include <d3d11.h>
 
 namespace DX
@@ -29,63 +31,12 @@ namespace DX
         }
     }
 
-    static const char* ToDX11ResourceString(D3D_SHADER_INPUT_TYPE type, D3D_SRV_DIMENSION dimension)
-    {
-        switch (type)
-        {
-        case D3D_SIT_CBUFFER:
-        case D3D_SIT_TBUFFER:
-            return "ConstantBuffer";
-
-        case D3D_SIT_TEXTURE:
-            switch (dimension)
-            {
-            case D3D11_SRV_DIMENSION_TEXTURE1D:        return "ShaderResourceView (Texture1D)";
-            case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:   return "ShaderResourceView (Texture1DArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE2D:        return "ShaderResourceView (Texture2D)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:   return "ShaderResourceView (Texture2DArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DMS:      return "ShaderResourceView (Texture2DMS)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: return "ShaderResourceView (Texture2DMSArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE3D:        return "ShaderResourceView (Texture3D)";
-            case D3D11_SRV_DIMENSION_TEXTURECUBE:      return "ShaderResourceView (TextureCube)";
-            case D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: return "ShaderResourceView (TextureCubeArray)";
-            case D3D11_SRV_DIMENSION_BUFFER:           return "ShaderResourceView (TypedBuffer)";
-            default:
-                DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dimension);
-                return nullptr;
-            }
-        case D3D_SIT_STRUCTURED:  return "ShaderResourceView (StructuredBuffer)";
-        case D3D_SIT_BYTEADDRESS: return "ShaderResourceView (RawBuffer)";
-
-        case D3D_SIT_UAV_RWTYPED:
-            switch (dimension)
-            {
-            case D3D11_SRV_DIMENSION_TEXTURE1D:        return "ShaderRWResourceView (Texture1D)";
-            case D3D11_SRV_DIMENSION_TEXTURE1DARRAY:   return "ShaderRWResourceView (Texture1DArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE2D:        return "ShaderRWResourceView (Texture2D)";
-            case D3D11_SRV_DIMENSION_TEXTURE2DARRAY:   return "ShaderRWResourceView (Texture2DArray)";
-            case D3D11_SRV_DIMENSION_TEXTURE3D:        return "ShaderRWResourceView (Texture3D)";
-            case D3D11_SRV_DIMENSION_BUFFER:           return "ShaderRWResourceView (TypedBuffer)";
-            default:
-                DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dimension);
-                return nullptr;
-            }
-        case D3D_SIT_UAV_RWSTRUCTURED:  return "ShaderRWResourceView (StructuredBuffer)";
-        case D3D_SIT_UAV_RWBYTEADDRESS: return "ShaderRWResourceView (RawBuffer)";
-
-        case D3D_SIT_SAMPLER:
-            return "Sampler";
-
-        default:
-            DX_ASSERT(false, "ShaderCompiler", "Unsupported shader input type %d.", type);
-            return nullptr;
-        }
-    }
-
     static void AddResourceBindingToLayout(
         const D3D11_SHADER_INPUT_BIND_DESC& dx11ResourceDesc,
         ShaderResourceLayout& shaderResourceLayout)
     {
+        DX_ASSERT(!std::string(dx11ResourceDesc.Name).empty(), "ShaderCompiler", "Invalid resource name.");
+
         switch (dx11ResourceDesc.Type)
         {
         // Constant Buffer
@@ -225,6 +176,15 @@ namespace DX
         }
     }
 
+    static uint32_t SlotCount(const std::vector<ShaderResourceInfo>& resources)
+    {
+        return std::reduce(resources.begin(), resources.end(), 0u,
+            [](uint32_t slotCount, const auto& resource)
+            {
+                return std::max<uint32_t>(slotCount, resource.m_startSlot + resource.m_slotCount);
+            });
+    }
+
     std::shared_ptr<ShaderBytecode> ShaderCompiler::Compile(const ShaderInfo& shaderInfo)
     {
         const auto shaderCode = ReadAssetFile(shaderInfo.m_name);
@@ -278,20 +238,82 @@ namespace DX
             D3D11_SHADER_DESC dx11ShaderDesc;
             dx11ShaderReflection->GetDesc(&dx11ShaderDesc);
 
-            DX_LOG(Verbose, "ShaderCompiler", "---------------------");
-            DX_LOG(Verbose, "ShaderCompiler", "Shader Name: %s", shaderInfo.m_name.c_str());
-            for (uint32_t i = 0; i < dx11ShaderDesc.BoundResources; ++i) {
+            for (uint32_t i = 0; i < dx11ShaderDesc.BoundResources; ++i)
+            {
                 D3D11_SHADER_INPUT_BIND_DESC dx11ResourceDesc;
                 dx11ShaderReflection->GetResourceBindingDesc(i, &dx11ResourceDesc);
 
-                DX_LOG(Verbose, "ShaderCompiler", "- Resource Name: %s Type: %s Bind Point: %u Bind Count: %u",
-                    dx11ResourceDesc.Name, ToDX11ResourceString(dx11ResourceDesc.Type, dx11ResourceDesc.Dimension),
-                    dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount);
-
                 AddResourceBindingToLayout(dx11ResourceDesc, shaderResourceLayout);
             }
-            DX_LOG(Verbose, "ShaderCompiler", "---------------------");
+
+            shaderResourceLayout.m_constantBuffersSlotCount = SlotCount(shaderResourceLayout.m_constantBuffers);
+            shaderResourceLayout.m_shaderResourceViewsSlotCount = SlotCount(shaderResourceLayout.m_shaderResourceViews);
+            shaderResourceLayout.m_shaderRWResourceViewsSlotCount = SlotCount(shaderResourceLayout.m_shaderRWResourceViews);
+            shaderResourceLayout.m_samplersSlotCount = SlotCount(shaderResourceLayout.m_samplers);
         }
+
+#ifndef NDEBUG
+        // Print shader resource layout
+        auto hlslViewTypeStr = [](const ShaderResourceInfo& resourceInfo, bool isRW) -> std::string
+            {
+                if (resourceInfo.m_bufferSubType != BufferSubType::None) 
+                {
+                    auto bufferSubTypeStr = [](BufferSubType bufferSubType)
+                        {
+                            switch (bufferSubType)
+                            {
+                            case BufferSubType::Typed:
+                                return "";
+                            case BufferSubType::Structured:
+                                return "Structured";
+                            case BufferSubType::Raw:
+                                return "ByteAddress";
+                            }
+                            return "Unknown";
+                        };
+
+                    return std::format("{}{}Buffer",
+                        isRW ? "RW" : "",
+                        bufferSubTypeStr(resourceInfo.m_bufferSubType));
+                }
+                else if (resourceInfo.m_textureType != TextureType::Unknown)
+                {
+                    return std::format("{}Texture{}{}{}",
+                        isRW ? "RW" : "",
+                        TextureTypeStr(resourceInfo.m_textureType),
+                        (resourceInfo.m_textureSubTypeFlags & TextureSubType_Multisample) ? "MS" : "",
+                        (resourceInfo.m_textureSubTypeFlags & TextureSubType_Array) ? "Array" : "");
+                }
+                else
+                {
+                    return "Unknown";
+                }
+            };
+
+        DX_LOG(Verbose, "ShaderCompiler", "---------------------");
+        DX_LOG(Verbose, "ShaderCompiler", "Shader Name: %s", shaderInfo.m_name.c_str());
+        for (const auto& resourceInfo : shaderResourceLayout.m_constantBuffers)
+        {
+            DX_LOG(Verbose, "ShaderCompiler", "- Name: %s Type: ConstantBuffer ShaderType: cbuffer StartSlot: %u SlotCount: %u",
+                resourceInfo.m_name.c_str(), resourceInfo.m_startSlot, resourceInfo.m_slotCount);
+        }
+        for (const auto& resourceInfo : shaderResourceLayout.m_shaderResourceViews)
+        {
+            DX_LOG(Verbose, "ShaderCompiler", "- Name: %s Type: ShaderResourceView ShaderType: %s StartSlot: %u SlotCount: %u",
+                resourceInfo.m_name.c_str(), hlslViewTypeStr(resourceInfo, false).c_str(), resourceInfo.m_startSlot, resourceInfo.m_slotCount);
+        }
+        for (const auto& resourceInfo : shaderResourceLayout.m_shaderRWResourceViews)
+        {
+            DX_LOG(Verbose, "ShaderCompiler", "- Name: %s Type: ShaderRWResourceView ShaderType: %s StartSlot: %u SlotCount: %u",
+                resourceInfo.m_name.c_str(), hlslViewTypeStr(resourceInfo, true).c_str(), resourceInfo.m_startSlot, resourceInfo.m_slotCount);
+        }
+        for (const auto& resourceInfo : shaderResourceLayout.m_samplers)
+        {
+            DX_LOG(Verbose, "ShaderCompiler", "- Name: %s Type: Sampler ShaderType: SamplerState StartSlot: %u SlotCount: %u",
+                resourceInfo.m_name.c_str(), resourceInfo.m_startSlot, resourceInfo.m_slotCount);
+        }
+        DX_LOG(Verbose, "ShaderCompiler", "---------------------");
+#endif
 
         return std::make_shared<DX11ShaderBytecode>(std::move(shaderBlob), std::move(shaderResourceLayout));
     }

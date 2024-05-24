@@ -21,7 +21,7 @@ target_compile_definitions(Runtime PRIVATE STB_IMAGE_IMPLEMENTATION=1) # For stb
 
 # Libraries
 target_link_libraries(Runtime PUBLIC Core)
-target_link_libraries(Runtime PRIVATE Graphics)
+target_link_libraries(Runtime PUBLIC Graphics) # TODO: Make it PRIVATE
 target_link_libraries(Runtime PRIVATE glfw)
 target_link_libraries(Runtime PRIVATE stb)
 target_link_libraries(Runtime PRIVATE assimp)

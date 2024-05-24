@@ -10,7 +10,6 @@
 #include <Debug/Debug.h>
 
 #include <ranges>
-#include <numeric>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>
@@ -47,7 +46,7 @@ namespace DX
             return;
         }
 
-        if (!CreateResourceBindings())
+        if (!CreatePipelineResourceBindings())
         {
             DX_LOG(Fatal, "Pipeline", "Failed to create pipeline resource bindings.");
             return;
@@ -195,54 +194,72 @@ namespace DX
         return SUCCEEDED(result);
     }
 
-    bool Pipeline::CreateResourceBindings()
+    bool Pipeline::CreatePipelineResourceBindings()
     {
         PipelineResourceBindingData pipelineLayout;
 
-        for (int i = 0; i < ShaderType_Count; ++i)
+        uint32_t maxSrwrvSlotCount = 0;
+
+        for (int shaderType = 0; shaderType < ShaderType_Count; ++shaderType)
         {
-            const ShaderResourceLayout* shaderResourceLayout = GetShaderResourceLayout(static_cast<ShaderType>(i));
+            const ShaderResourceLayout* shaderResourceLayout = GetShaderResourceLayout(static_cast<ShaderType>(shaderType));
             if (!shaderResourceLayout)
             {
                 continue;
             }
 
-            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_constantBuffers);
-                maxSlot > 0)
+            pipelineLayout[shaderType].m_constantBuffers.resize(shaderResourceLayout->m_constantBuffersSlotCount);
+            pipelineLayout[shaderType].m_shaderResourceViews.resize(shaderResourceLayout->m_shaderResourceViewsSlotCount);
+            pipelineLayout[shaderType].m_samplers.resize(shaderResourceLayout->m_samplersSlotCount);
+
+            maxSrwrvSlotCount = std::max<uint32_t>(maxSrwrvSlotCount, shaderResourceLayout->m_shaderRWResourceViewsSlotCount);
+        }
+
+        // Shader RW Resource Views layouts is a special case because in DirectX they
+        // are not split by shader types, so we're going to collect them all under
+        // the Pixel Shader. If a slot collides with different shaders, verify it's the
+        // same resource, otherwise through an error.
+        pipelineLayout[ShaderType_Pixel].m_shaderRWResourceViews.resize(maxSrwrvSlotCount);
+
+#ifndef NDEBUG
+        // Verify that all shared SRWRV slots have the same resource.
+        std::vector<ShaderResourceInfo> verifyViews(maxSrwrvSlotCount);
+        for (uint32_t shaderType = 0; shaderType < ShaderType_Count; ++shaderType)
+        {
+            const ShaderResourceLayout* shaderResourceLayout = GetShaderResourceLayout(static_cast<ShaderType>(shaderType));
+            if (!shaderResourceLayout)
             {
-                pipelineLayout[i].m_constantBuffers.resize(maxSlot);
+                continue;
             }
 
-            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_shaderResourceViews);
-                maxSlot > 0)
+            for (uint32_t i = 0; i < shaderResourceLayout->m_shaderRWResourceViews.size(); ++i)
             {
-                pipelineLayout[i].m_shaderResourceViews.resize(maxSlot);
-            }
-
-            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_shaderRWResourceViews);
-                maxSlot > 0)
-            {
-                pipelineLayout[i].m_shaderRWResourceViews.resize(maxSlot);
-            }
-
-            if (uint32_t maxSlot = FindMaxSlot(shaderResourceLayout->m_samplers);
-                maxSlot > 0)
-            {
-                pipelineLayout[i].m_samplers.resize(maxSlot);
+                const ShaderResourceInfo& resource = shaderResourceLayout->m_shaderRWResourceViews[i];
+                for (uint32_t slot = resource.m_startSlot; slot < resource.m_startSlot + resource.m_slotCount; ++slot)
+                {
+                    if (verifyViews[slot].m_name.empty())
+                    {
+                        verifyViews[slot] = resource;
+                    }
+                    else
+                    {
+                        // Resource was already assigned to slot, verify it's the same resource.
+                        if (verifyViews[slot].m_name != resource.m_name ||
+                            verifyViews[slot].m_bufferSubType != resource.m_bufferSubType ||
+                            verifyViews[slot].m_textureType != resource.m_textureType ||
+                            verifyViews[slot].m_textureSubTypeFlags != resource.m_textureSubTypeFlags)
+                        {
+                            DX_LOG(Fatal, "Pipeline", 
+                                "Different shaders have different read-write buffers or textures assigned to same slot (%u).", slot);
+                        }
+                    }
+                }
             }
         }
+#endif
 
         m_resourceBindings = PipelineResourceBindings(this, std::move(pipelineLayout));
         return true;
-    }
-
-    uint32_t Pipeline::FindMaxSlot(const std::vector<ShaderResourceInfo>& resources) const
-    {
-        return std::reduce(resources.begin(), resources.end(), 0u,
-            [](uint32_t maxSlot, const auto& resource)
-            {
-                return std::max<uint32_t>(maxSlot, resource.m_startSlot + resource.m_slotCount);
-            });
     }
 
     std::shared_ptr<Shader> Pipeline::GetPipelineShader(ShaderType shaderType)

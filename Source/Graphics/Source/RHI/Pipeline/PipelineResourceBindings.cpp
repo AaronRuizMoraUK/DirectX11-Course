@@ -11,6 +11,8 @@
 
 namespace DX
 {
+    static const ShaderType SrwrvShaderType = ShaderType_Pixel;
+
     PipelineResourceBindings::PipelineResourceBindings(
         Pipeline* pipeline, PipelineResourceBindingData&& bindingData)
         : m_pipeline(pipeline)
@@ -48,17 +50,15 @@ namespace DX
         }
     }
     void PipelineResourceBindings::SetShaderRWResourceView(
-        ShaderType shaderType, uint32_t slot, std::shared_ptr<ShaderRWResourceView> srwrv)
+        uint32_t slot, std::shared_ptr<ShaderRWResourceView> srwrv)
     {
-        if (slot < m_bindingData[shaderType].m_shaderRWResourceViews.size())
+        if (slot < m_bindingData[SrwrvShaderType].m_shaderRWResourceViews.size())
         {
-            m_bindingData[shaderType].m_shaderRWResourceViews[slot] = srwrv;
+            m_bindingData[SrwrvShaderType].m_shaderRWResourceViews[slot] = srwrv;
         }
         else
         {
-            DX_LOG(Warning, "PipelineResourceBindings",
-                "No read-write Texture or Buffer in %s Shader use register(u%d)",
-                ShaderTypeStr(shaderType), slot);
+            DX_LOG(Warning, "PipelineResourceBindings", "No read-write Texture or Buffer use register(u%d)", slot);
         }
     }
 
@@ -130,12 +130,12 @@ namespace DX
     }
 
     void PipelineResourceBindings::SetShaderRWResourceView(
-        ShaderType shaderType, const std::string& name, std::shared_ptr<ShaderRWResourceView> srwrv)
+        const std::string& name, std::shared_ptr<ShaderRWResourceView> srwrv)
     {
-        const ShaderResourceLayout* shaderResourceLayout = m_pipeline->GetShaderResourceLayout(shaderType);
+        const ShaderResourceLayout* shaderResourceLayout = m_pipeline->GetShaderResourceLayout(SrwrvShaderType);
         if (!shaderResourceLayout)
         {
-            DX_LOG(Warning, "PipelineResourceBindings", "Pipeline doesn't use %s Shader", ShaderTypeStr(shaderType));
+            DX_LOG(Warning, "PipelineResourceBindings", "Pipeline doesn't use %s Shader", ShaderTypeStr(SrwrvShaderType));
             return;
         }
 
@@ -147,12 +147,12 @@ namespace DX
 
         if (it == shaderResourceLayout->m_shaderRWResourceViews.end())
         {
-            DX_LOG(Warning, "PipelineResourceBindings", "Texture or Buffer '%s' not found in %s Shader",
-                name.c_str(), ShaderTypeStr(shaderType));
+            DX_LOG(Warning, "PipelineResourceBindings", "Read-write Texture or Buffer '%s' not found.",
+                name.c_str());
             return;
         }
 
-        SetShaderRWResourceView(shaderType, it->m_startSlot, srwrv);
+        SetShaderRWResourceView(it->m_startSlot, srwrv);
     }
 
     void PipelineResourceBindings::SetSampler(

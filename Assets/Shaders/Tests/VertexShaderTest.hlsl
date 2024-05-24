@@ -34,11 +34,11 @@ Texture3D tex3D : register(t3);
 Texture1DArray tex1DArray : register(t5);
 Texture2DArray tex2DArray : register(t6);
 
-RWTexture1D<float4> texRW1D : register(u0);
-RWTexture2D<float4> texRW2D : register(u1);
-RWTexture3D<float4> texRW3D : register(u2);
-RWTexture1DArray<float4> texRW1DArray : register(u3);
-RWTexture2DArray<float4> texRW2DArray : register(u4);
+RWTexture1D<float4> texRW1D : register(u1);
+RWTexture2D<float4> texRW2D : register(u2);
+RWTexture3D<float4> texRW3D : register(u3);
+RWTexture1DArray<float4> texRW1DArray : register(u4);
+RWTexture2DArray<float4> texRW2DArray : register(u5);
 
 struct MySB
 {
@@ -51,9 +51,9 @@ Buffer<float4> bufferTyped : register(t8);
 StructuredBuffer<MySB> structuredBuffer : register(t9);
 ByteAddressBuffer rawBuffer : register(t10);
 
-RWBuffer<float4> bufferRWTyped : register(u5);
-RWStructuredBuffer<MySB> structuredRWBuffer : register(u6);
-RWByteAddressBuffer rawRWBuffer : register(u7);
+RWBuffer<float4> bufferRWTyped : register(u6);
+RWStructuredBuffer<MySB> structuredRWBuffer : register(u7);
+RWByteAddressBuffer rawRWBuffer : register(u8);
 
 // ---------------------------------------------------------------------
 // Samplers, Textures and Buffers can also be declared as arrays,
