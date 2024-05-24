@@ -50,7 +50,7 @@ namespace DX
             return nullptr;
         }
 
-        const aiMesh* mesh = scene->mMeshes[0]; // TODO: Support multiple meshes
+        const aiMesh* mesh = scene->mMeshes[0]; // TODO: Support multiple meshes and sorted by material (sub-mesh)
 
         auto meshData = std::make_unique<MeshData>();
 
