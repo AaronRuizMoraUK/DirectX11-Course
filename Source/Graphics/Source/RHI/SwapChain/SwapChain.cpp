@@ -92,6 +92,13 @@ namespace DX
 
     SwapChain::~SwapChain()
     {
+        // SwapChain will cause a crash when destroyed in full screen.
+        // This is because the swap chain is still in use.
+        if (m_dx11SwapChain && m_desc.m_fullScreen)
+        {
+            m_dx11SwapChain->SetFullscreenState(false, nullptr);
+        }
+
         DX_LOG(Info, "SwapChain", "Graphics swap chain destroyed.");
     }
 
