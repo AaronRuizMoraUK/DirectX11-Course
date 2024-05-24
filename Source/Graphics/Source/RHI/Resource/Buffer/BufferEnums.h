@@ -17,18 +17,18 @@ namespace DX
     // - As StreamOutput: format is always 32-bit values coming from the output declarations of the shader stages.
     //------------------------------------------------------------------------
 
-    // Type of buffer when used in a shader or render target.
-    enum class BufferType
+    // Subtype of buffer when used in a shader or render target.
+    enum class BufferSubType
     {
         None = 0, // Not a buffer for a shader or render target.
-        Typed, // Buffer where each element is a basic types: float, int or unsigned int
-        Structured, // Buffer where each element is a struct. Format must be Unknown.
-        Raw, // Buffer where each element is 4 bytes. Format must R32_TYPELESS.
+        Typed, // Buffer where each element is a basic types: floatX, intX or uintX.
+        Structured, // Buffer where each element is a struct. Format must be Unknown. Not supported with render targets.
+        Raw, // Buffer where each element is 4 bytes. Format must R32_TYPELESS. Not supported with render targets.
 
         Total
     };
 
-    const char* BufferTypeStr(BufferType bufferType);
+    const char* BufferSubTypeStr(BufferSubType bufferSubType);
 
     // Bitwise operations on ResourceBindFlag are allowed.
     enum BufferBindFlag

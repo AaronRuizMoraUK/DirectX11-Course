@@ -125,16 +125,16 @@ namespace DX
 
     static D3D11_SHADER_RESOURCE_VIEW_DESC ToDX11ShaderResourceViewDesc(const Buffer& buffer, const ShaderResourceViewDesc& desc)
     {
-        if (buffer.GetBufferDesc().m_bufferType == BufferType::None)
+        if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::None)
         {
-            DX_LOG(Error, "ShaderResourceView", "Unexpected Buffer type None in Shader Resource View.");
+            DX_LOG(Error, "ShaderResourceView", "Unexpected Buffer subtype None in Shader Resource View.");
         }
-        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Structured &&
+        else if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::Structured &&
             desc.m_viewFormat != ResourceFormat::Unknown)
         {
             DX_LOG(Error, "ShaderResourceView", "Structured buffer only supports Unknown view format in Shader Resource View.");
         }
-        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw &&
+        else if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::Raw &&
             desc.m_viewFormat != ResourceFormat::R32_TYPELESS)
         {
             DX_LOG(Error, "ShaderResourceView", "Raw buffer only supports R32_TYPELESS view format in Shader Resource View.");
@@ -143,12 +143,12 @@ namespace DX
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = ToDX11ResourceFormat(desc.m_viewFormat);
 
-        switch (buffer.GetBufferDesc().m_bufferType)
+        switch (buffer.GetBufferDesc().m_bufferSubType)
         {
-        case BufferType::None:
+        case BufferSubType::None:
             break;
 
-        case BufferType::Typed:
+        case BufferSubType::Typed:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 
             // View boundaries to the buffer
@@ -156,7 +156,7 @@ namespace DX
             srvDesc.Buffer.NumElements = desc.m_elementCount;
             break;
 
-        case BufferType::Structured:
+        case BufferSubType::Structured:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
             // View boundaries to the buffer
@@ -165,7 +165,7 @@ namespace DX
             srvDesc.BufferEx.Flags = 0;
             break;
 
-        case BufferType::Raw:
+        case BufferSubType::Raw:
             srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
 
             // View boundaries to the buffer
@@ -175,7 +175,7 @@ namespace DX
             break;
 
         default:
-            DX_LOG(Error, "ShaderResourceView", "Unknown buffer type %d", buffer.GetBufferDesc().m_bufferType);
+            DX_LOG(Error, "ShaderResourceView", "Unknown buffer subtype %d", buffer.GetBufferDesc().m_bufferSubType);
             break;
         }
 
@@ -192,6 +192,12 @@ namespace DX
             if (texture->get() == nullptr)
             {
                 DX_LOG(Fatal, "ShaderResourceView", "Shader Resource View description with invalid texture resource.");
+                return;
+            }
+
+            if (!(texture->get()->GetTextureDesc().m_bindFlags & TextureBind_ShaderResource))
+            {
+                DX_LOG(Fatal, "ShaderResourceView", "Shader Resource View description with texture that doesn't have the shader resource flag.");
                 return;
             }
 
@@ -215,6 +221,12 @@ namespace DX
             if (buffer->get() == nullptr)
             {
                 DX_LOG(Fatal, "ShaderResourceView", "Shader Resource View description with invalid buffer resource.");
+                return;
+            }
+
+            if (!(buffer->get()->GetBufferDesc().m_bindFlags & BufferBind_ShaderResource))
+            {
+                DX_LOG(Fatal, "ShaderResourceView", "Shader Resource View description with buffer that doesn't have the shader resource flag.");
                 return;
             }
 

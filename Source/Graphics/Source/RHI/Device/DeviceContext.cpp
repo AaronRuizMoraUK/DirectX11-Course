@@ -76,13 +76,26 @@ namespace DX
 
     void DeviceContext::BindFrameBuffer(FrameBuffer& frameBuffer)
     {
-        m_dx11DeviceContext->OMSetRenderTargets(1,
-            frameBuffer.GetColorRenderTargetView() 
-                ? frameBuffer.GetColorRenderTargetView()->GetDX11RenderTargetView().GetAddressOf() 
-                : nullptr,
-            frameBuffer.GetDepthStencilView() 
-                ? frameBuffer.GetDepthStencilView()->GetDX11DepthStencilView().Get() 
-                : nullptr);
+        std::vector<ID3D11RenderTargetView*> dx11Rtvs;
+        if (!frameBuffer.GetRenderTargetViews().empty())
+        {
+            dx11Rtvs.resize(frameBuffer.GetRenderTargetViews().size());
+            std::transform(frameBuffer.GetRenderTargetViews().begin(), frameBuffer.GetRenderTargetViews().end(), dx11Rtvs.begin(),
+                [](const auto& rtv)
+                {
+                    return rtv->GetDX11RenderTargetView().Get();
+                });
+        }
+
+        ID3D11DepthStencilView* dx11Dsv = frameBuffer.GetDepthStencilView()
+            ? frameBuffer.GetDepthStencilView()->GetDX11DepthStencilView().Get()
+            : nullptr;
+
+        m_dx11DeviceContext->OMSetRenderTargets(dx11Rtvs.size(),
+            dx11Rtvs.empty()
+                ? nullptr
+                : dx11Rtvs.data(),
+            dx11Dsv);
     }
 
     void DeviceContext::BindPipeline(Pipeline& pipeline)
@@ -371,16 +384,18 @@ namespace DX
         std::optional<float> depth,
         std::optional<uint8_t> stencil)
     {
-        if (auto rtv = frameBuffer.GetColorRenderTargetView();
-            rtv && color.has_value())
+        if (color.has_value())
         {
-            m_dx11DeviceContext->ClearRenderTargetView(
-                rtv->GetDX11RenderTargetView().Get(), Math::ColorPacked(*color).data_);
+            for (auto& rtv : frameBuffer.GetRenderTargetViews())
+            {
+                m_dx11DeviceContext->ClearRenderTargetView(
+                    rtv->GetDX11RenderTargetView().Get(), Math::ColorPacked(*color).data_);
+            }
         }
 
-        if (auto dsv = frameBuffer.GetDepthStencilView())
+        if (depth.has_value() || stencil.has_value())
         {
-            if (depth.has_value() || stencil.has_value())
+            if (auto dsv = frameBuffer.GetDepthStencilView())
             {
                 uint32_t flags = (depth.has_value() ? D3D11_CLEAR_DEPTH : 0) | (stencil.has_value() ? D3D11_CLEAR_STENCIL : 0);
 

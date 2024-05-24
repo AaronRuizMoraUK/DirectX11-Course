@@ -2,17 +2,17 @@
 
 namespace DX
 {
-    const char* BufferTypeStr(BufferType bufferType)
+    const char* BufferSubTypeStr(BufferSubType bufferSubType)
     {
-        switch (bufferType)
+        switch (bufferSubType)
         {
-        case BufferType::None:
+        case BufferSubType::None:
             return "";
-        case BufferType::Typed:
+        case BufferSubType::Typed:
             return "Typed";
-        case BufferType::Structured:
+        case BufferSubType::Structured:
             return "Structured";
-        case BufferType::Raw:
+        case BufferSubType::Raw:
             return "Raw";
         default:
             return "Unknown";

@@ -63,18 +63,18 @@ namespace DX
                 }
 
                 // Is the View holding a buffer?
-                if (srvInfo.m_bufferType != BufferType::None)
+                if (srvInfo.m_bufferSubType != BufferSubType::None)
                 {
                     // Buffer types from layout and set int binding data must match
                     if (auto* buffer = std::get_if<std::shared_ptr<Buffer>>(&srv->GetShaderResourceViewDesc().m_resource))
                     {
                         const BufferDesc& bufferDesc = buffer->get()->GetBufferDesc();
-                        if (srvInfo.m_bufferType != bufferDesc.m_bufferType)
+                        if (srvInfo.m_bufferSubType != bufferDesc.m_bufferSubType)
                         {
                             DX_LOG(Error, "PipelineResourceValidations",
-                                "Shader Resource View set in slot %d (name '%s') for %s Shader %s does not point to the expected Buffer type. Expected: %d Set: %d.",
+                                "Shader Resource View set in slot %d (name '%s') for %s Shader %s does not point to the expected Buffer subtype. Expected: %d Set: %d.",
                                 slot, srvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str(),
-                                srvInfo.m_bufferType, bufferDesc.m_bufferType);
+                                srvInfo.m_bufferSubType, bufferDesc.m_bufferSubType);
                         }
                     }
                     else
@@ -150,18 +150,18 @@ namespace DX
                 }
 
                 // Is the View holding a buffer?
-                if (srwrvInfo.m_bufferType != BufferType::None)
+                if (srwrvInfo.m_bufferSubType != BufferSubType::None)
                 {
                     // Buffer types from layout and set int binding data must match
                     if (auto* buffer = std::get_if<std::shared_ptr<Buffer>>(&srwrv->GetShaderRWResourceViewDesc().m_resource))
                     {
                         const BufferDesc& bufferDesc = buffer->get()->GetBufferDesc();
-                        if (srwrvInfo.m_bufferType != bufferDesc.m_bufferType)
+                        if (srwrvInfo.m_bufferSubType != bufferDesc.m_bufferSubType)
                         {
                             DX_LOG(Error, "PipelineResourceValidations",
-                                "Shader RW Resource View set in slot %d (name '%s') for %s Shader %s does not point to the expected Buffer type. Expected: %d Set: %d.",
+                                "Shader RW Resource View set in slot %d (name '%s') for %s Shader %s does not point to the expected Buffer subtype. Expected: %d Set: %d.",
                                 slot, srwrvInfo.m_name.c_str(), ShaderTypeStr(shaderInfo.m_shaderType), shaderInfo.m_name.c_str(),
-                                srwrvInfo.m_bufferType, bufferDesc.m_bufferType);
+                                srwrvInfo.m_bufferSubType, bufferDesc.m_bufferSubType);
                         }
                     }
                     else

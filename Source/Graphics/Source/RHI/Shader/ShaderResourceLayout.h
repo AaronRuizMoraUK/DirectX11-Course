@@ -19,11 +19,11 @@ namespace DX
         }
 
         ShaderResourceInfo(
-            const std::string& name, uint32_t startSlot, uint32_t slotCount, BufferType bufferType)
+            const std::string& name, uint32_t startSlot, uint32_t slotCount, BufferSubType bufferSubType)
             : m_name(name)
             , m_startSlot(startSlot)
             , m_slotCount(slotCount)
-            , m_bufferType(bufferType)
+            , m_bufferSubType(bufferSubType)
         {
         }
 
@@ -43,7 +43,7 @@ namespace DX
         uint32_t m_slotCount = 0;
 
         // For Buffer View only
-        BufferType m_bufferType = BufferType::None;
+        BufferSubType m_bufferSubType = BufferSubType::None;
 
         // For Texture View only
         TextureType m_textureType = TextureType::Unknown;

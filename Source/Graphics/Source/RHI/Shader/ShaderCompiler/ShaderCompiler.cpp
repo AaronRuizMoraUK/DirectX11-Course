@@ -146,7 +146,7 @@ namespace DX
                 break;
             case D3D11_SRV_DIMENSION_BUFFER:
                 shaderResourceLayout.m_shaderResourceViews.emplace_back(
-                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Typed);
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Typed);
                 break;
             default:
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
@@ -156,12 +156,12 @@ namespace DX
 
         case D3D_SIT_STRUCTURED:
             shaderResourceLayout.m_shaderResourceViews.emplace_back(
-                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Structured);
             break;
 
         case D3D_SIT_BYTEADDRESS:
             shaderResourceLayout.m_shaderResourceViews.emplace_back(
-                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Raw);
             break;
 
         // Shader RW Resource View
@@ -195,7 +195,7 @@ namespace DX
                 break;
             case D3D11_SRV_DIMENSION_BUFFER:
                 shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
-                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Typed);
+                    dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Typed);
                 break;
             default:
                 DX_ASSERT(false, "ShaderCompiler", "Unexpected Shader dimension %d.", dx11ResourceDesc.Dimension);
@@ -205,12 +205,12 @@ namespace DX
 
         case D3D_SIT_UAV_RWSTRUCTURED:
             shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
-                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Structured);
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Structured);
             break;
 
         case D3D_SIT_UAV_RWBYTEADDRESS:
             shaderResourceLayout.m_shaderRWResourceViews.emplace_back(
-                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferType::Raw);
+                dx11ResourceDesc.Name, dx11ResourceDesc.BindPoint, dx11ResourceDesc.BindCount, BufferSubType::Raw);
             break;
 
         // Sampler

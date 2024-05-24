@@ -19,7 +19,7 @@ namespace DX
         // Format used by the view to read the resource.
         // Needs to be compatible with resource's underneath format,
         // explicitly set in textures and implicit in case of buffers.
-        // For more details see TextureDesc.h and BufferDesc.h files.
+        // For more details see TextureEnums.h and BufferEnums.h files.
         ResourceFormat m_viewFormat;
 
         // Only for textures

@@ -104,7 +104,7 @@ namespace DX
 
     static D3D11_RENDER_TARGET_VIEW_DESC ToDX11RenderTargetViewDesc(const Buffer& buffer, const RenderTargetViewDesc& desc)
     {
-        if (buffer.GetBufferDesc().m_bufferType != BufferType::Typed)
+        if (buffer.GetBufferDesc().m_bufferSubType != BufferSubType::Typed)
         {
             DX_LOG(Error, "RenderTargetView", "Only Typed Buffer is supported in Render Target View.");
         }
@@ -133,6 +133,12 @@ namespace DX
                 return;
             }
 
+            if (!(texture->get()->GetTextureDesc().m_bindFlags & TextureBind_RenderTarget))
+            {
+                DX_LOG(Fatal, "RenderTargetView", "Render Target View description with texture that doesn't have the render target flag.");
+                return;
+            }
+
             D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = ToDX11RenderTargetViewDesc(*texture->get(), desc);
 
             auto result = m_ownerDevice->GetDX11Device()->CreateRenderTargetView(
@@ -153,6 +159,12 @@ namespace DX
             if (buffer->get() == nullptr)
             {
                 DX_LOG(Fatal, "RenderTargetView", "Render Target View description with invalid buffer resource.");
+                return;
+            }
+
+            if (!(buffer->get()->GetBufferDesc().m_bindFlags & BufferBind_RenderTarget))
+            {
+                DX_LOG(Fatal, "RenderTargetView", "Render Target View description with buffer that doesn't have the render target flag.");
                 return;
             }
 

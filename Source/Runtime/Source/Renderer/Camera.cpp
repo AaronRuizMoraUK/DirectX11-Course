@@ -54,7 +54,7 @@ namespace DX
             constantBufferDesc.m_usage = ResourceUsage::Dynamic;
             constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
             constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
-            constantBufferDesc.m_bufferType = BufferType::None;
+            constantBufferDesc.m_bufferSubType = BufferSubType::None;
             constantBufferDesc.m_initialData = &viewProjBuffer;
 
             m_viewProjMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);

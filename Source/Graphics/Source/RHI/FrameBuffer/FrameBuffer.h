@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <memory>
+#include <vector>
 
 namespace DX
 {
@@ -25,14 +26,15 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::FrameBuffer; }
 
-        std::shared_ptr<RenderTargetView> GetColorRenderTargetView();
+        const FrameBufferDesc& GetDesc() const { return m_desc; }
+
+        const std::vector<std::shared_ptr<RenderTargetView>>& GetRenderTargetViews();
         std::shared_ptr<DepthStencilView> GetDepthStencilView();
 
     private:
-        std::shared_ptr<Texture> m_colorTexture;
-        std::shared_ptr<RenderTargetView> m_colorRenderTargetView;
+        FrameBufferDesc m_desc;
 
-        std::shared_ptr<Texture> m_depthStencilTexture;
+        std::vector<std::shared_ptr<RenderTargetView>> m_renderTargetViews;
         std::shared_ptr<DepthStencilView> m_depthStencilView;
     };
 } // namespace DX

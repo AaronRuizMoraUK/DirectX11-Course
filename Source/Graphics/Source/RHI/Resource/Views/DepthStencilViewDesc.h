@@ -15,7 +15,7 @@ namespace DX
 
         // Format used by the view to read the resource.
         // Needs to be compatible with texture's format.
-        // For more details see TextureDesc.h file.
+        // For more details see TextureEnums.h file.
         ResourceFormat m_viewFormat;
 
         // Index of the first mipmap level to use.

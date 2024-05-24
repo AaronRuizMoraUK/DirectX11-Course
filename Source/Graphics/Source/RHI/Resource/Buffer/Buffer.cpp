@@ -22,9 +22,9 @@ namespace DX
             (m_desc.m_bindFlags & BufferBind_ShaderRWResource) ||
             (m_desc.m_bindFlags & BufferBind_RenderTarget))
         {
-            if (m_desc.m_bufferType == BufferType::None)
+            if (m_desc.m_bufferSubType == BufferSubType::None)
             {
-                DX_LOG(Fatal, "Buffer", "Buffer description with binding flags ShaderResource, ShaderRWResource or RenderTarget cannot have type None.");
+                DX_LOG(Fatal, "Buffer", "Buffer description with binding flags ShaderResource, ShaderRWResource or RenderTarget cannot have subtype None.");
                 return;
             }
         }
@@ -45,12 +45,12 @@ namespace DX
         bufferDesc.BindFlags = ToDX11BufferBindFlags(m_desc.m_bindFlags);
         bufferDesc.CPUAccessFlags = ToDX11ResourceCPUAccess(m_desc.m_cpuAccess);
         bufferDesc.MiscFlags = 0;
-        switch (m_desc.m_bufferType)
+        switch (m_desc.m_bufferSubType)
         {
-        case BufferType::Structured:
+        case BufferSubType::Structured:
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
             break;
-        case BufferType::Raw:
+        case BufferSubType::Raw:
             bufferDesc.MiscFlags |= D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS;
         }
         bufferDesc.StructureByteStride = m_desc.m_elementSizeInBytes;

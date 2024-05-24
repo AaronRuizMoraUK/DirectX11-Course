@@ -40,7 +40,7 @@ namespace DX
             vertexBufferDesc.m_usage = ResourceUsage::Immutable;
             vertexBufferDesc.m_bindFlags = BufferBind_VertexBuffer;
             vertexBufferDesc.m_cpuAccess = ResourceCPUAccess::None;
-            vertexBufferDesc.m_bufferType = BufferType::None;
+            vertexBufferDesc.m_bufferSubType = BufferSubType::None;
             vertexBufferDesc.m_initialData = m_vertexData.data();
 
             m_vertexBuffer = renderer->GetDevice()->CreateBuffer(vertexBufferDesc);
@@ -54,7 +54,7 @@ namespace DX
             indexBufferDesc.m_usage = ResourceUsage::Immutable;
             indexBufferDesc.m_bindFlags = BufferBind_IndexBuffer;
             indexBufferDesc.m_cpuAccess = ResourceCPUAccess::None;
-            indexBufferDesc.m_bufferType = BufferType::None;
+            indexBufferDesc.m_bufferSubType = BufferSubType::None;
             indexBufferDesc.m_initialData = m_indexData.data();
 
             m_indexBuffer = renderer->GetDevice()->CreateBuffer(indexBufferDesc);
@@ -70,7 +70,7 @@ namespace DX
             constantBufferDesc.m_usage = ResourceUsage::Dynamic;
             constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
             constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
-            constantBufferDesc.m_bufferType = BufferType::None;
+            constantBufferDesc.m_bufferSubType = BufferSubType::None;
             constantBufferDesc.m_initialData = &worldMatrix;
 
             m_worldMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);

@@ -88,16 +88,16 @@ namespace DX
 
     static D3D11_UNORDERED_ACCESS_VIEW_DESC ToDX11UnorderedAccessViewDesc(const Buffer& buffer, const ShaderRWResourceViewDesc& desc)
     {
-        if (buffer.GetBufferDesc().m_bufferType == BufferType::None)
+        if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::None)
         {
-            DX_LOG(Error, "ShaderRWResourceView", "Unexpected Buffer type None in Shader RW Resource View.");
+            DX_LOG(Error, "ShaderRWResourceView", "Unexpected Buffer subtype None in Shader RW Resource View.");
         }
-        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Structured &&
+        else if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::Structured &&
             desc.m_viewFormat != ResourceFormat::Unknown)
         {
             DX_LOG(Error, "ShaderRWResourceView", "Structured buffer only supports Unknown view format in Shader RW Resource View.");
         }
-        else if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw &&
+        else if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::Raw &&
             desc.m_viewFormat != ResourceFormat::R32_TYPELESS)
         {
             DX_LOG(Error, "ShaderRWResourceView", "Raw buffer only supports R32_TYPELESS view format in Shader RW Resource View.");
@@ -111,7 +111,7 @@ namespace DX
         uavDesc.Buffer.FirstElement = desc.m_firstElement;
         uavDesc.Buffer.NumElements = desc.m_elementCount;
         uavDesc.Buffer.Flags = 0;
-        if (buffer.GetBufferDesc().m_bufferType == BufferType::Raw)
+        if (buffer.GetBufferDesc().m_bufferSubType == BufferSubType::Raw)
         {
             uavDesc.Buffer.Flags |= D3D11_BUFFER_UAV_FLAG_RAW;
         }
@@ -129,6 +129,12 @@ namespace DX
             if (texture->get() == nullptr)
             {
                 DX_LOG(Fatal, "ShaderRWResourceView", "Shader RW Resource View description with invalid texture resource.");
+                return;
+            }
+
+            if (!(texture->get()->GetTextureDesc().m_bindFlags & TextureBind_ShaderRWResource))
+            {
+                DX_LOG(Fatal, "ShaderRWResourceView", "Shader RW Resource View description with texture that doesn't have the shader RW resource flag.");
                 return;
             }
 
@@ -152,6 +158,12 @@ namespace DX
             if (buffer->get() == nullptr)
             {
                 DX_LOG(Fatal, "ShaderRWResourceView", "Shader RW Resource View description with invalid buffer resource.");
+                return;
+            }
+
+            if (!(buffer->get()->GetBufferDesc().m_bindFlags & BufferBind_ShaderRWResource))
+            {
+                DX_LOG(Fatal, "ShaderRWResourceView", "Shader RW Resource View description with buffer that doesn't have the shader RW resource flag.");
                 return;
             }
 

@@ -6,7 +6,6 @@
 #include <RHI/Pipeline/BlendState/BlendState.h>
 #include <RHI/Pipeline/DepthStencilState/DepthStencilState.h>
 
-#include <array>
 #include <memory>
 
 namespace DX

@@ -81,26 +81,52 @@ namespace UnitTest
     {
         DX_LOG(Info, "Test", " ----- Testing FrameBuffer -----");
 
-        DX::TextureDesc textureDesc = {};
-        textureDesc.m_textureType = DX::TextureType::Texture2D;
-        textureDesc.m_dimensions = Math::Vector3Int(1280, 720, 0);
-        textureDesc.m_mipCount = 1;
-        textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
-        textureDesc.m_usage = DX::ResourceUsage::Default;
-        textureDesc.m_bindFlags = DX::TextureBind_RenderTarget;
-        textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
-        textureDesc.m_arrayCount = 1;
-        textureDesc.m_sampleCount = 1;
-        textureDesc.m_sampleQuality = 0;
-        textureDesc.m_initialData = nullptr;
+        // Using a texture and auto creating the depth stencil attachment
+        {
+            DX::TextureDesc textureDesc = {};
+            textureDesc.m_textureType = DX::TextureType::Texture2D;
+            textureDesc.m_dimensions = Math::Vector3Int(1280, 720, 0);
+            textureDesc.m_mipCount = 1;
+            textureDesc.m_format = DX::ResourceFormat::R8G8B8A8_UNORM;
+            textureDesc.m_usage = DX::ResourceUsage::Default;
+            textureDesc.m_bindFlags = DX::TextureBind_RenderTarget;
+            textureDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+            textureDesc.m_arrayCount = 1;
+            textureDesc.m_sampleCount = 1;
+            textureDesc.m_sampleQuality = 0;
+            textureDesc.m_initialData = nullptr;
 
-        auto texture = m_device->CreateTexture(textureDesc);
+            auto texture = m_device->CreateTexture(textureDesc);
 
-        DX::FrameBufferDesc frameBufferDesc = {};
-        frameBufferDesc.m_colorAttachment = texture;
-        frameBufferDesc.m_createDepthStencilAttachment = true;
+            DX::FrameBufferDesc frameBufferDesc = {};
+            frameBufferDesc.m_renderTargetAttachments = DX::FrameBufferDesc::TextureAttachments{ 
+                {texture, textureDesc.m_format}
+            };
+            frameBufferDesc.m_createDepthStencilAttachment = true;
 
-        auto frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);
+            auto frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);
+        }
+
+        // Using a typed buffer and no depth stencil attachment
+        {
+            DX::BufferDesc bufferDesc = {};
+            bufferDesc.m_elementSizeInBytes = 4 * sizeof(float);
+            bufferDesc.m_elementCount = 256;
+            bufferDesc.m_usage = DX::ResourceUsage::Default;
+            bufferDesc.m_bindFlags = DX::BufferBind_RenderTarget;
+            bufferDesc.m_cpuAccess = DX::ResourceCPUAccess::None;
+            bufferDesc.m_bufferSubType = DX::BufferSubType::Typed;
+            bufferDesc.m_initialData = nullptr;
+
+            auto buffer = m_device->CreateBuffer(bufferDesc);
+
+            DX::FrameBufferDesc frameBufferDesc = {};
+            frameBufferDesc.m_renderTargetAttachments = DX::FrameBufferDesc::BufferAttachments{
+                {buffer, DX::ResourceFormat::R32G32B32A32_FLOAT}
+            };
+
+            auto frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);
+        }
     }
 
     void DeviceObjectTests::TestShader()
@@ -446,7 +472,7 @@ namespace UnitTest
         std::iota(bufferData.begin(), bufferData.end(), 1.0f);
 
         DX::BufferDesc bufferDesc = {};
-        bufferDesc.m_bufferType = DX::BufferType::Typed;
+        bufferDesc.m_bufferSubType = DX::BufferSubType::Typed;
         bufferDesc.m_elementSizeInBytes = sizeof(float);
         bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -497,7 +523,7 @@ namespace UnitTest
         }
 
         DX::BufferDesc bufferDesc = {};
-        bufferDesc.m_bufferType = DX::BufferType::Structured;
+        bufferDesc.m_bufferSubType = DX::BufferSubType::Structured;
         bufferDesc.m_elementSizeInBytes = sizeof(MyBuffer);
         bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;
@@ -542,7 +568,7 @@ namespace UnitTest
         }
 
         DX::BufferDesc bufferDesc = {};
-        bufferDesc.m_bufferType = DX::BufferType::Raw;
+        bufferDesc.m_bufferSubType = DX::BufferSubType::Raw;
         bufferDesc.m_elementSizeInBytes = sizeof(uint32_t);
         bufferDesc.m_elementCount = bufferData.size();
         bufferDesc.m_usage = DX::ResourceUsage::Default; // DX::ResourceUsage::Immutable;

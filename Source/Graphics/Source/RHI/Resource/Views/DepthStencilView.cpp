@@ -103,7 +103,13 @@ namespace DX
     {
         if (!desc.m_texture)
         {
-            DX_LOG(Fatal, "SwapChain", "Swap chain description with invalid texture.");
+            DX_LOG(Fatal, "DepthStencilView", "Depth Stencil View description with invalid texture.");
+            return;
+        }
+
+        if (!(desc.m_texture->GetTextureDesc().m_bindFlags & TextureBind_DepthStencil))
+        {
+            DX_LOG(Fatal, "DepthStencilView", "Depth Stencil View description with texture that doesn't have the depth stencil flag.");
             return;
         }
 

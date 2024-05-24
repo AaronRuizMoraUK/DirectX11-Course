@@ -21,10 +21,10 @@ namespace DX
         swapChainDesc.BufferDesc.Format = DX::ToDX11ResourceFormat(m_desc.m_bufferFormat);
         swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
         swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-        swapChainDesc.SampleDesc.Count = m_desc.m_bufferCount;
+        swapChainDesc.SampleDesc.Count = 1;
         swapChainDesc.SampleDesc.Quality = 0;
         swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        swapChainDesc.BufferCount = 1;
+        swapChainDesc.BufferCount = m_desc.m_bufferCount;
         swapChainDesc.OutputWindow = static_cast<HWND>(m_desc.m_nativeWindowHandler);
         swapChainDesc.Windowed = !m_desc.m_fullScreen;
         // Blt vs Flip:

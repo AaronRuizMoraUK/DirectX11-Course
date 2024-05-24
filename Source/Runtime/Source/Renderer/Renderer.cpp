@@ -5,6 +5,7 @@
 #include <RHI/SwapChain/SwapChain.h>
 #include <RHI/FrameBuffer/FrameBuffer.h>
 #include <RHI/Pipeline/Pipeline.h>
+#include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Shader/Shader.h>
 #include <RHI/Shader/ShaderCompiler/ShaderCompiler.h>
 #include <RHI/Pipeline/PipelineResourceBindings.h>
@@ -123,7 +124,9 @@ namespace DX
     bool Renderer::CreateFrameBuffer()
     {
         FrameBufferDesc frameBufferDesc = {};
-        frameBufferDesc.m_colorAttachment = m_swapChain->GetBackBufferTexture();
+        frameBufferDesc.m_renderTargetAttachments = FrameBufferDesc::TextureAttachments{ 
+            {m_swapChain->GetBackBufferTexture(), m_swapChain->GetBackBufferTexture()->GetTextureDesc().m_format}
+        };
         frameBufferDesc.m_createDepthStencilAttachment = true;
 
         m_frameBuffer = m_device->CreateFrameBuffer(frameBufferDesc);

@@ -13,11 +13,11 @@ namespace DX
         BufferBindFlags m_bindFlags; // Bitwise operation of BufferBindFlag
         ResourceCPUAccess m_cpuAccess;
 
-        // Type needs to be different than None when using any of the following bindings:
+        // Subtype needs to be different than None when using any of the following bindings:
         // - BufferBind_ShaderResource
         // - BufferBind_ShaderRWResource
         // - BufferBind_RenderTarget
-        BufferType m_bufferType;
+        BufferSubType m_bufferSubType;
 
         const void* m_initialData;
     };
