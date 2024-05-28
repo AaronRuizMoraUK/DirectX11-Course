@@ -1,10 +1,10 @@
 #include <Renderer/Renderer.h>
+#include <Renderer/Scene.h>
 
 #include <RHI/Device/Device.h>
 #include <RHI/Device/DeviceContext.h>
 #include <RHI/SwapChain/SwapChain.h>
 #include <RHI/FrameBuffer/FrameBuffer.h>
-#include <RHI/Resource/Texture/Texture.h>
 
 #include <Window/Window.h>
 #include <Log/Log.h>
@@ -37,13 +37,13 @@ namespace DX
             return false;
         }
 
-        if (!CreateSwapChain())
+        if (!CreateSwapChainAndFrameBuffer())
         {
             Terminate();
             return false;
         }
 
-        if (!CreateFrameBuffer())
+        if (!CreateScene())
         {
             Terminate();
             return false;
@@ -56,6 +56,7 @@ namespace DX
     {
         DX_LOG(Info, "Renderer", "Terminating Renderer...");
 
+        m_scene.reset();
         m_frameBuffer.reset();
         m_swapChain.reset();
         m_device.reset();
@@ -76,6 +77,11 @@ namespace DX
         return m_frameBuffer.get();
     }
 
+    Scene* Renderer::GetScene()
+    {
+        return m_scene.get();
+    }
+
     bool Renderer::CreateDevice()
     {
         m_device = std::make_unique<Device>();
@@ -89,7 +95,7 @@ namespace DX
         return true;
     }
 
-    bool Renderer::CreateSwapChain()
+    bool Renderer::CreateSwapChainAndFrameBuffer()
     {
         const uint32_t frameBufferCount = 2;
 
@@ -110,16 +116,24 @@ namespace DX
             return false;
         }
 
-        return true;
-    }
-
-    bool Renderer::CreateFrameBuffer()
-    {
         m_frameBuffer = m_swapChain->CreateFrameBuffer();
 
         if (!m_frameBuffer)
         {
             DX_LOG(Error, "Renderer", "Failed to create frame buffer.");
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Renderer::CreateScene()
+    {
+        m_scene = std::make_unique<Scene>(this);
+
+        if (!m_scene)
+        {
+            DX_LOG(Error, "Renderer", "Failed to create scene");
             return false;
         }
 
@@ -134,16 +148,5 @@ namespace DX
     void Renderer::Present()
     {
         m_swapChain->Present(*m_frameBuffer);
-    }
-
-    void Renderer::BindFramebuffer()
-    {
-        m_device->GetImmediateContext().BindFrameBuffer(*m_frameBuffer);
-        m_device->GetImmediateContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{m_window->GetSize()}} });
-    }
-
-    void Renderer::Draw(int indexCount)
-    {
-        m_device->GetImmediateContext().DrawIndexed(indexCount);
     }
 } // namespace DX

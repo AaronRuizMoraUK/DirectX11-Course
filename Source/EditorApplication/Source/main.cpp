@@ -1,13 +1,7 @@
 #include <Renderer/RendererManager.h>
+#include <Renderer/Scene.h>
 #include <Renderer/Object.h>
-#include <Renderer/Camera.h>
-
-// TODO: Try to remove and make it abstract in Runtime project
-#include <RHI/Device/Device.h>
-#include <RHI/Device/DeviceContext.h>
-#include <RHI/CommandList/CommandList.h>
-#include <RHI/Pipeline/Pipeline.h>
-#include <RHI/Shader/ShaderCompiler/ShaderCompiler.h>
+#include <Camera/Camera.h>
 
 #include <Window/WindowManager.h>
 #include <Assets/AssetManager.h>
@@ -20,47 +14,6 @@
 #include <thread>
 #include <future>
 
-std::shared_ptr<DX::Pipeline> CreatePipeline()
-{
-    DX::RendererManager& rendererManager = DX::RendererManager::Get();
-    DX::Renderer* renderer = rendererManager.GetRenderer();
-
-    const DX::ShaderInfo vertexShaderInfo{ DX::ShaderType_Vertex, "Shaders/VertexShader.hlsl", "main" };
-    const DX::ShaderInfo pixelShaderInfo{ DX::ShaderType_Pixel, "Shaders/PixelShader.hlsl", "main" };
-    auto vertexShaderByteCode = DX::ShaderCompiler::Compile(vertexShaderInfo);
-    auto pixelShaderByteCode = DX::ShaderCompiler::Compile(pixelShaderInfo);
-    auto vertexShader = renderer->GetDevice()->CreateShader({vertexShaderInfo, vertexShaderByteCode});
-    auto pixelShader = renderer->GetDevice()->CreateShader({ pixelShaderInfo, pixelShaderByteCode });
-
-    DX::PipelineDesc pipelineDesc = {};
-    pipelineDesc.m_shaders[DX::ShaderType_Vertex] = vertexShader;
-    pipelineDesc.m_shaders[DX::ShaderType_Pixel] = pixelShader;
-    pipelineDesc.m_inputLayout.m_inputElements =
-    {
-        DX::InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
-        //InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
-        DX::InputElement{ DX::InputSemantic::TexCoord, 0, DX::ResourceFormat::R32G32_FLOAT, 0, 12 },
-    };
-    pipelineDesc.m_inputLayout.m_primitiveTopology = DX::PrimitiveTopology::TriangleList;
-    pipelineDesc.m_rasterizerState = {
-        .m_faceFrontOrder = DX::FaceFrontOrder::Clockwise,
-        .m_faceCullMode = DX::FaceCullMode::BackFace,
-        .m_faceFillMode = DX::FaceFillMode::Solid,
-    };
-    pipelineDesc.m_blendState.renderTargetBlends[0] = {
-        .m_blendEnabled = false,
-        .m_colorWriteMask = DX::ColorWrite_All
-    };
-    pipelineDesc.m_depthStencilState = {
-        .m_depthEnabled = true,
-        .m_depthTestFunc = DX::ComparisonFunction::Less,
-        .m_depthWriteEnabled = true,
-        .m_stencilEnabled = false
-    };
-
-    return renderer->GetDevice()->CreatePipeline(pipelineDesc);
-}
-
 int main()
 {
     //const Math::Vector2Int windowSize{ 3440, 1440 };
@@ -69,7 +22,7 @@ int main()
     //const bool vSync = true;
 
     const Math::Vector2Int windowSize{ 1280, 720 };
-    const int refreshRate = 144;
+    const int refreshRate = 60;
     const bool fullScreen = false;
     const bool vSync = true;
 
@@ -93,14 +46,14 @@ int main()
     }
 
     {
-        auto pipeline = CreatePipeline();
-        auto perViewResources = pipeline->CreateResourceBindingsObject();
-        auto perObjectResources = pipeline->CreateResourceBindingsObject();
+        DX::Scene* scene = renderer->GetScene();
 
         // Camera
         auto camera = std::make_unique<DX::Camera>(Math::Vector3(2.0f, 1.0f, -2.0f), Math::Vector3(0.0f));
 
-        // Rendering objects initialization
+        scene->SetCamera(camera.get());
+
+        // Rendering objects
         std::vector<std::unique_ptr<DX::Object>> objects;
         objects.push_back(std::make_unique<DX::Triangle>());
         objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
@@ -111,8 +64,7 @@ int main()
         objects[2]->SetTransform({ Math::Vector3(3.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ 0.0f, 3.14f, 0.0f }) });
         objects[3]->SetTransform({ Math::Vector3(1.5f, -1.0f, 0.0f), Math::Quaternion::FromEulerAngles({0.0f, 3.14f, 0.0f}), Math::Vector3(0.01f) });
 
-        // Command List
-        auto commandList = renderer->GetDevice()->CreateCommandList();
+        std::ranges::for_each(objects, [scene](auto& object) { scene->AddObject(object.get()); });
 
         auto t0 = std::chrono::system_clock::now();
 
@@ -142,30 +94,9 @@ int main()
             const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
             renderer->Clear(clearColor, 1.0f, 0);
 
-            std::future drawObjects = std::async(std::launch::async, [&]()
-                {
-                    commandList->GetDeferredContext().BindFrameBuffer(*renderer->GetFrameBuffer());
-                    commandList->GetDeferredContext().BindViewports({ Math::Rectangle{{0.0f, 0.0f}, Math::Vector2{window->GetSize()}} });
+            scene->Render();
 
-                    commandList->GetDeferredContext().BindPipeline(*pipeline);
-
-                    camera->SetBuffers(*commandList, *perViewResources);
-                    commandList->GetDeferredContext().BindResources(*perViewResources);
-
-                    for (auto& object : objects)
-                    {
-                        object->SetBuffers(*commandList, *perObjectResources);
-                        commandList->GetDeferredContext().BindResources(*perObjectResources);
-
-                        commandList->GetDeferredContext().DrawIndexed(object->GetIndexCount());
-                    }
-
-                    commandList->FinishCommandList();
-                });
-
-            drawObjects.wait();
-
-            renderer->GetDevice()->ExecuteCommandLists({ commandList.get() });
+            scene->WaitAndExecute();
 
             renderer->Present();
         }

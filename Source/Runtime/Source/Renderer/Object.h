@@ -22,13 +22,17 @@ namespace DX
         Object();
         virtual ~Object();
 
-        void SetBuffers(CommandList& commandList, PipelineResourceBindings& resources);
-
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
 
         Math::Transform& GetTransform() { return m_transform; }
         const Math::Transform& GetTransform() const { return m_transform; }
         void SetTransform(const Math::Transform& transform) { m_transform = transform; }
+
+        std::shared_ptr<ShaderResourceView> GetTextureView() const;
+        std::shared_ptr<Sampler> GetSampler() const;
+
+        std::shared_ptr<Buffer> GetVertexBuffer() const;
+        std::shared_ptr<Buffer> GetIndexBuffer() const;
 
     protected:
         void CreateBuffers();
@@ -42,8 +46,6 @@ namespace DX
         std::vector<Index> m_indexData;
 
     private:
-        std::shared_ptr<Buffer> m_worldMatrixConstantBuffer;
-
         std::shared_ptr<Buffer> m_vertexBuffer;
         std::shared_ptr<Buffer> m_indexBuffer;
 

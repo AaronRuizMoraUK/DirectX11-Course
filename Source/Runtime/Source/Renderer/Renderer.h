@@ -11,8 +11,7 @@ namespace DX
     class Device;
     class SwapChain;
     class FrameBuffer;
-    class Pipeline;
-    class PipelineResourceBindings;
+    class Scene;
 
     using RendererId = GenericId<struct RendererIdTag>;
 
@@ -33,23 +32,21 @@ namespace DX
         Window* GetWindow();
         Device* GetDevice();
         FrameBuffer* GetFrameBuffer();
+        Scene* GetScene();
 
         void Clear(const Math::Color& color, float depth, uint8_t stencil);
         void Present();
 
-        void BindFramebuffer();
-
-        void Draw(int indexCount);
-
     private:
         bool CreateDevice();
-        bool CreateSwapChain();
-        bool CreateFrameBuffer();
+        bool CreateSwapChainAndFrameBuffer();
+        bool CreateScene();
 
         RendererId m_rendererId;
         Window* m_window = nullptr;
         std::unique_ptr<Device> m_device;
         std::shared_ptr<SwapChain> m_swapChain;
         std::shared_ptr<FrameBuffer> m_frameBuffer;
+        std::unique_ptr<Scene> m_scene;
     };
 } // namespace DX

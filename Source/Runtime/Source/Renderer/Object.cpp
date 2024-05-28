@@ -4,15 +4,11 @@
 #include <Assets/MeshAsset.h>
 
 #include <RHI/Device/Device.h>
-#include <RHI/Device/DeviceContext.h>
-#include <RHI/CommandList/CommandList.h>
 #include <RHI/Resource/Buffer/Buffer.h>
 #include <RHI/Resource/Texture/Texture.h>
 #include <RHI/Resource/Views/ShaderResourceView.h>
 #include <RHI/Sampler/Sampler.h>
-#include <RHI/Pipeline/PipelineResourceBindings.h>
 
-#include <File/FileUtils.h>
 #include <Log/Log.h>
 #include <Debug/Debug.h>
 
@@ -27,6 +23,26 @@ namespace DX
     Object::Object() = default;
 
     Object::~Object() = default;
+
+    std::shared_ptr<ShaderResourceView> Object::GetTextureView() const
+    {
+        return m_textureView;
+    }
+
+    std::shared_ptr<Sampler> Object::GetSampler() const
+    {
+        return m_sampler;
+    }
+
+    std::shared_ptr<Buffer> Object::GetVertexBuffer() const
+    {
+        return m_vertexBuffer;
+    }
+
+    std::shared_ptr<Buffer> Object::GetIndexBuffer() const
+    {
+        return m_indexBuffer;
+    }
 
     void Object::CreateBuffers()
     {
@@ -59,22 +75,6 @@ namespace DX
             indexBufferDesc.m_initialData = m_indexData.data();
 
             m_indexBuffer = renderer->GetDevice()->CreateBuffer(indexBufferDesc);
-        }
-
-        // Constant Buffer
-        {
-            const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
-
-            BufferDesc constantBufferDesc = {};
-            constantBufferDesc.m_elementSizeInBytes = sizeof(Math::Matrix4x4Packed);
-            constantBufferDesc.m_elementCount = 1;
-            constantBufferDesc.m_usage = ResourceUsage::Dynamic;
-            constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
-            constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
-            constantBufferDesc.m_bufferSubType = BufferSubType::None;
-            constantBufferDesc.m_initialData = &worldMatrix;
-
-            m_worldMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
 
         // Texture
@@ -124,26 +124,6 @@ namespace DX
 
             m_sampler = renderer->GetDevice()->CreateSampler(samplerDesc);
         }
-    }
-
-    void Object::SetBuffers(CommandList& commandList, PipelineResourceBindings& resources)
-    {
-        auto* renderer = RendererManager::Get().GetRenderer();
-        DX_ASSERT(renderer, "Object", "Default renderer not found");
-
-        // Update constant buffer with the latest world matrix.
-        {
-            const Math::Matrix4x4Packed worldMatrix = m_transform.ToMatrix();
-
-            commandList.GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldMatrix, sizeof(worldMatrix));
-        }
-
-        commandList.GetDeferredContext().BindVertexBuffers({m_vertexBuffer.get()});
-        commandList.GetDeferredContext().BindIndexBuffer(*m_indexBuffer);
-
-        resources.SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
-        resources.SetShaderResourceView(ShaderType_Pixel, 0, m_textureView);
-        resources.SetSampler(ShaderType_Pixel, 0, m_sampler);
     }
 
     Triangle::Triangle()

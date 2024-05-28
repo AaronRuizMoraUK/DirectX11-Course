@@ -6,10 +6,6 @@
 
 namespace DX
 {
-    class Buffer;
-    class CommandList;
-    class PipelineResourceBindings;
-
     // 3D perspective camera
     class Camera
     {
@@ -26,24 +22,11 @@ namespace DX
         Math::Matrix4x4 GetViewMatrix() const;
         Math::Matrix4x4 GetProjectionMatrix() const;
 
-        void SetBuffers(CommandList& commandList, PipelineResourceBindings& resources);
-
     private:
         bool m_firstUpdate = true;
         float m_moveSpeed = 4.0f;
         float m_rotationSensitivity = 3.0f;
 
         Math::Transform m_transform = Math::Transform::CreateIdentity();
-
-    private:
-        void CreateBuffers();
-
-        struct ViewProjBuffer
-        {
-            Math::Matrix4x4Packed m_viewMatrix;
-            Math::Matrix4x4Packed m_projMatrix;
-        };
-
-        std::shared_ptr<Buffer> m_viewProjMatrixConstantBuffer;
     };
 } // namespace DX

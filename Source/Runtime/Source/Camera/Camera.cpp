@@ -1,11 +1,5 @@
-#include <Renderer/Camera.h>
-#include <Renderer/RendererManager.h>
+#include <Camera/Camera.h>
 
-#include <RHI/Device/Device.h>
-#include <RHI/Device/DeviceContext.h>
-#include <RHI/CommandList/CommandList.h>
-#include <RHI/Resource/Buffer/Buffer.h>
-#include <RHI/Pipeline/PipelineResourceBindings.h>
 #include <Window/WindowManager.h>
 #include <Debug/Debug.h>
 
@@ -19,10 +13,7 @@
 
 namespace DX
 {
-    Camera::Camera()
-    {
-        CreateBuffers();
-    }
+    Camera::Camera() = default;
 
     Camera::Camera(const Math::Vector3& position, const Math::Vector3& lookAtPosition)
     {
@@ -32,35 +23,11 @@ namespace DX
         {
             m_transform.m_rotation = Math::CreateQuatFromBasisZ(basisZ.Normalized());
         }
-
-        CreateBuffers();
     }
 
     Camera::Camera(const Math::Transform& transform)
         : m_transform(transform)
     {
-        CreateBuffers();
-    }
-
-    void Camera::CreateBuffers()
-    {
-        auto* renderer = RendererManager::Get().GetRenderer();
-        DX_ASSERT(renderer, "Camera", "Default renderer not found");
-
-        {
-            const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
-
-            BufferDesc constantBufferDesc = {};
-            constantBufferDesc.m_elementSizeInBytes = sizeof(ViewProjBuffer);
-            constantBufferDesc.m_elementCount = 1;
-            constantBufferDesc.m_usage = ResourceUsage::Dynamic;
-            constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
-            constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
-            constantBufferDesc.m_bufferSubType = BufferSubType::None;
-            constantBufferDesc.m_initialData = &viewProjBuffer;
-
-            m_viewProjMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
-        }
     }
 
     Camera::~Camera() = default;
@@ -194,20 +161,5 @@ namespace DX
             nearPlane,
             farPlane,
             Math::CoordinateSystem::Default);
-    }
-
-    void Camera::SetBuffers(CommandList& commandList, PipelineResourceBindings& resources)
-    {
-        auto* renderer = RendererManager::Get().GetRenderer();
-        DX_ASSERT(renderer, "Camera", "Default renderer not found");
-
-        // Update constant buffer with the latest view and projection matrices.
-        {
-            const ViewProjBuffer viewProjBuffer = { GetViewMatrix() , GetProjectionMatrix() };
-
-            commandList.GetDeferredContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
-        }
-
-        resources.SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
     }
 } // namespace DX
