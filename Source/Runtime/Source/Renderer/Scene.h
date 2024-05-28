@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Math/Matrix4x4.h>
+#include <Math/Vector3.h>
 
 #include <memory>
 #include <unordered_set>
@@ -46,10 +47,16 @@ namespace DX
         {
             Math::Matrix4x4Packed m_viewMatrix;
             Math::Matrix4x4Packed m_projMatrix;
+            Math::Vector4Packed m_camPos;
         };
         std::shared_ptr<Buffer> m_viewProjMatrixConstantBuffer;
 
         // Per Object Resources
+        struct WorldBuffer
+        {
+            Math::Matrix4x4Packed m_worldMatrix;
+            Math::Matrix4x4Packed m_inverseTransposeWorldMatrix;
+        };
         std::shared_ptr<Buffer> m_worldMatrixConstantBuffer;
     };
 } // namespace DX

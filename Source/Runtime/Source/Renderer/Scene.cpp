@@ -25,8 +25,10 @@ namespace DX
             pipelineObjectDesc.m_shaderFilenames[ShaderType_Pixel] = "Shaders/PixelShader.hlsl";
             pipelineObjectDesc.m_inputElements = {
                 DX::InputElement{ DX::InputSemantic::Position, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 0 },
-                //InputElement{ DX::InputSemantic::Color, 0, DX::ResourceFormat::R32G32B32A32_FLOAT, 0, 12 },
-                DX::InputElement{ DX::InputSemantic::TexCoord, 0, DX::ResourceFormat::R32G32_FLOAT, 0, 12 },
+                DX::InputElement{ DX::InputSemantic::Normal, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 12 },
+                DX::InputElement{ DX::InputSemantic::Tangent, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 24 },
+                DX::InputElement{ DX::InputSemantic::Binormal, 0, DX::ResourceFormat::R32G32B32_FLOAT, 0, 36 },
+                DX::InputElement{ DX::InputSemantic::TexCoord, 0, DX::ResourceFormat::R32G32_FLOAT, 0, 48 },
             };
             pipelineObjectDesc.m_blendState = {
                 .m_blendEnabled = false,
@@ -60,16 +62,16 @@ namespace DX
 
         // Per Object Resources
         {
-            const Math::Matrix4x4Packed worldMatrix;
+            const WorldBuffer worldBuffer;
 
             BufferDesc constantBufferDesc = {};
-            constantBufferDesc.m_elementSizeInBytes = sizeof(Math::Matrix4x4Packed);
+            constantBufferDesc.m_elementSizeInBytes = sizeof(WorldBuffer);
             constantBufferDesc.m_elementCount = 1;
             constantBufferDesc.m_usage = ResourceUsage::Dynamic;
             constantBufferDesc.m_bindFlags = BufferBind_ConstantBuffer;
             constantBufferDesc.m_cpuAccess = ResourceCPUAccess::Write;
             constantBufferDesc.m_bufferSubType = BufferSubType::None;
-            constantBufferDesc.m_initialData = &worldMatrix;
+            constantBufferDesc.m_initialData = &worldBuffer;
 
             m_worldMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
@@ -99,7 +101,11 @@ namespace DX
     {
         // Update constant buffer with the latest view and projection matrices.
         {
-            const ViewProjBuffer viewProjBuffer = { m_camera->GetViewMatrix(), m_camera->GetProjectionMatrix() };
+            const ViewProjBuffer viewProjBuffer = { 
+                m_camera->GetViewMatrix(), 
+                m_camera->GetProjectionMatrix(),
+                Math::Vector4Packed{Math::Vector4{m_camera->GetTransform().m_position, 1.0f}}
+            };
 
             m_renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
         }
@@ -139,9 +145,12 @@ namespace DX
                         // Update constant buffer with the object's world matrix.
                         // If there were multiple command lists, then it would require multiple m_worldMatrixConstantBuffer.
                         {
-                            const Math::Matrix4x4Packed worldMatrix = object->GetTransform().ToMatrix();
+                            const WorldBuffer worldBuffer = { 
+                                object->GetTransform().ToMatrix(), 
+                                object->GetTransform().ToMatrix().Inverse().Transpose()
+                            };
 
-                            m_commandList->GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldMatrix, sizeof(worldMatrix));
+                            m_commandList->GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldBuffer, sizeof(worldBuffer));
                         }
                         m_pipelineObject->GetObjectResourceBindings()->SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
 
