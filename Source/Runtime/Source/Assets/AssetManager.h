@@ -13,12 +13,10 @@ namespace DX
 {
     template<typename T>
     using LoadDataFunc = std::function<std::unique_ptr<typename T::DataType>(const std::filesystem::path& fileNamePath)>;
-
-    // TODO: Improve so types can be registered with the AssetManager and
-    //       the manager can create the Asset.
-    // TODO: Handle loading the asset asynchronously
-    // TODO: Handle reloading assets
-
+    
+    // Manager for all assets. It stores all assets in a map and provides methods to get them.
+    // Each specific asset type will use AssetManager to load and store assets.
+    // Do not use AssetManager directly, use the specific Asset class instead.
     class AssetManager : public Singleton<AssetManager>
     {
         friend class Singleton<AssetManager>;

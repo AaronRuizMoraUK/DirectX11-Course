@@ -10,6 +10,7 @@ namespace DX
 
     using AssetType = uint32_t;
 
+    // Base asset class with asset id and type.
     class AssetBase
     {
     public:
@@ -40,6 +41,8 @@ namespace DX
         AssetId m_assetId;
     };
 
+    // Templated asset class with data.
+    // All specific assets must derive from this.
     template<typename T>
     class Asset : public AssetBase
     {

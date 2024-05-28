@@ -1,9 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.28)
 
-# TODO: Separate Include and Source files in this library, making public only Include folder.
-
 file(GLOB_RECURSE GRAPHICS_SOURCE_FILES
-    #"${CMAKE_SOURCE_DIR}/Source/Graphics/Include/*.*"
     "${CMAKE_SOURCE_DIR}/Source/Graphics/Source/*.*")
 
 source_group(TREE "${CMAKE_SOURCE_DIR}/Source/Graphics" FILES ${GRAPHICS_SOURCE_FILES})
@@ -13,7 +10,6 @@ add_library(Graphics STATIC ${GRAPHICS_SOURCE_FILES})
 set_target_properties(Graphics PROPERTIES FOLDER "Engine")
 
 # Includes
-#target_include_directories(Graphics PUBLIC "${CMAKE_SOURCE_DIR}/Source/Graphics/Include")
 target_include_directories(Graphics PUBLIC "${CMAKE_SOURCE_DIR}/Source/Graphics/Source")
 
 # Libraries

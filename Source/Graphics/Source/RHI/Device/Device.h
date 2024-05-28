@@ -35,6 +35,8 @@ namespace DX
     struct DepthStencilViewDesc;
     struct PipelineDesc;
 
+    // Render device that allows to create all the objects needed for rendering.
+    // It also provides the immediate context that can be used to execute rendering commands.
     class Device
     {
     public:
@@ -43,9 +45,6 @@ namespace DX
 
         Device(const Device&) = delete;
         Device& operator=(const Device&) = delete;
-
-        // TODO: How to destroy device objects? Once created they are always kept inside m_deviceObjects.
-        // TODO: Move initialization of all objects out of constructor
 
         std::shared_ptr<SwapChain> CreateSwapChain(const SwapChainDesc& desc);
         std::shared_ptr<FrameBuffer> CreateFrameBuffer(const FrameBufferDesc& desc);

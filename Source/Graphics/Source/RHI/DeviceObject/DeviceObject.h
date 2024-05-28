@@ -6,6 +6,7 @@ namespace DX
 {
     class Device;
 
+    // Base class for all device objects.
     class DeviceObject
     {
     public:

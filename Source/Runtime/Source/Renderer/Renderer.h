@@ -15,6 +15,7 @@ namespace DX
 
     using RendererId = GenericId<struct RendererIdTag>;
 
+    // Manages the render device, swap chain, frame buffer and scene.
     class Renderer
     {
     public:

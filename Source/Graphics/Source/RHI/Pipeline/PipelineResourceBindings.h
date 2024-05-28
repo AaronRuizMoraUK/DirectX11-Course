@@ -24,6 +24,8 @@ namespace DX
 
     using PipelineResourceBindingData = std::array<ShaderResourceBindingData, ShaderType_Count>;
 
+    // Provides an API to set resources using slot or shader variable name.
+    // It stores the list of resource bindings for a pipeline.
     class PipelineResourceBindings
     {
     public:

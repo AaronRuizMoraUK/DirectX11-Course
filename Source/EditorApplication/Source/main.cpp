@@ -46,14 +46,10 @@ int main()
     }
 
     {
-        DX::Scene* scene = renderer->GetScene();
-
         // Camera
         auto camera = std::make_unique<DX::Camera>(Math::Vector3(2.0f, 1.0f, -2.0f), Math::Vector3(0.0f));
 
-        scene->SetCamera(camera.get());
-
-        // Rendering objects
+        // Render objects
         std::vector<std::unique_ptr<DX::Object>> objects;
         objects.push_back(std::make_unique<DX::Triangle>());
         objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
@@ -64,6 +60,9 @@ int main()
         objects[2]->SetTransform({ Math::Vector3(3.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ 0.0f, 3.14f, 0.0f }) });
         objects[3]->SetTransform({ Math::Vector3(1.5f, -1.0f, 0.0f), Math::Quaternion::FromEulerAngles({0.0f, 3.14f, 0.0f}), Math::Vector3(0.01f) });
 
+        // Render Scene
+        DX::Scene* scene = renderer->GetScene();
+        scene->SetCamera(camera.get());
         std::ranges::for_each(objects, [scene](auto& object) { scene->AddObject(object.get()); });
 
         auto t0 = std::chrono::system_clock::now();

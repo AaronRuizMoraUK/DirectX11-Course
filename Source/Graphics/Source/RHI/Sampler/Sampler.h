@@ -8,6 +8,7 @@ struct ID3D11SamplerState;
 
 namespace DX
 {
+    // A sampler object that determines how a texture is sampled.
     class Sampler : public DeviceObject
     {
     public:

@@ -16,6 +16,7 @@ namespace DX
         uint8_t* m_data;
     };
 
+    // Texture formats supported: jpeg, png, bmp, psd, tga, gif, hdr, pic, and pnm
     class TextureAsset : public Asset<TextureData>
     {
     public:

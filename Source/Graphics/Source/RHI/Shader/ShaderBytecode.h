@@ -6,6 +6,8 @@
 
 namespace DX
 {
+    // Compiled bytecode for a shader.
+    // It also has the list of resources that are used by the shader.
     class ShaderBytecode
     {
     public:

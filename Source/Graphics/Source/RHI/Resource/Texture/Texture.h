@@ -8,6 +8,14 @@ struct ID3D11Resource;
 
 namespace DX
 {
+    //------------------------------------------------------------------------
+    // Texture Format
+    // 
+    // Texture format is set explicitly inside the resource.
+    // All its usages are views where the format must is specified too.
+    // The texture format and the view format must be compatible.
+    //------------------------------------------------------------------------
+
     class Texture : public DeviceObject
     {
     public:

@@ -10,7 +10,7 @@ namespace DX
     class Texture;
     class Buffer;
 
-    // This view only supports texture and buffer resources.
+    // This view supports texture and typed buffer resources.
     struct RenderTargetViewDesc
     {
         using Resource = std::variant<std::shared_ptr<Texture>, std::shared_ptr<Buffer>>;
@@ -19,7 +19,7 @@ namespace DX
         // Format used by the view to read the resource.
         // Needs to be compatible with resource's underneath format,
         // explicitly set in textures and implicit in case of buffers.
-        // For more details see TextureEnums.h and BufferEnums.h files.
+        // For more details see Texture.h and Buffer.h files.
         ResourceFormat m_viewFormat;
 
         // Only for textures

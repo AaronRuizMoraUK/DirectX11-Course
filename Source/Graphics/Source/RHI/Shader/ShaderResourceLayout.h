@@ -52,6 +52,7 @@ namespace DX
         TextureSubTypeFlags m_textureSubTypeFlags = 0;
     };
 
+    // Defines what resources are used by a shader and the slots they are expected to be bound to.
     struct ShaderResourceLayout
     {
         std::vector<ShaderResourceInfo> m_constantBuffers;

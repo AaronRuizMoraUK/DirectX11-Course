@@ -15,6 +15,7 @@ struct ID3D11ComputeShader;
 
 namespace DX
 {
+    // Represents a shader object of any type.
     class Shader : public DeviceObject
     {
     public:

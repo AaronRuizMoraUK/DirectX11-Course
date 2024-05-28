@@ -14,6 +14,9 @@ namespace DX
     class Texture;
     class FrameBuffer;
 
+    // A swap chain provides the mechanism to present the rendered image to the window.
+    // A Frame Buffer is created from the swap chain internal buffer so it can be used
+    // as the destination of the rendering.
     class SwapChain : public DeviceObject
     {
     public:

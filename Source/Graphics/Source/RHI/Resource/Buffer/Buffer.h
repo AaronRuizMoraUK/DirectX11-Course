@@ -8,6 +8,19 @@ struct ID3D11Buffer;
 
 namespace DX
 {
+    //------------------------------------------------------------------------
+    // Buffer Format
+    // 
+    // Buffer format is implicit and not set inside the description.
+    // The format of the buffer is set later depending on what's used for (binding):
+    // 
+    // - As VertexBuffer: format is specified with an InputLayout, which is set with DeviceContext->IASetInputLayout() call.
+    // - As IndexBuffer: format is specified in DeviceContext->IASetIndexBuffer() call.
+    // - As ConstantBuffer: format is expected to match the structure of the constant buffer in the shader.
+    // - As ShaderResource, ShaderRWResource or RenderTarget: format is specified in their respective view description.
+    // - As StreamOutput: format is always 32-bit values coming from the output declarations of the shader stages.
+    //------------------------------------------------------------------------
+
     class Buffer : public DeviceObject
     {
     public:

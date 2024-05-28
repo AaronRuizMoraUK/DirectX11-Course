@@ -25,6 +25,10 @@ namespace DX
         std::vector<Index> m_indices;
     };
 
+    // Mesh asset with the list of vertices, indices and other
+    // data needed to create a mesh.
+    // 
+    // Mesh asset formats supported: fbx and gltf
     class MeshAsset : public Asset<MeshData>
     {
     public:

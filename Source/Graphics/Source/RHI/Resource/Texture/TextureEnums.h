@@ -27,14 +27,6 @@ namespace DX
 
     using TextureSubTypeFlags = uint32_t;
 
-    //------------------------------------------------------------------------
-    // Texture Format
-    // 
-    // Texture format is set explicitly inside the resource.
-    // All its usages are views where the format must is specified too.
-    // The texture format and the view format must be compatible.
-    //------------------------------------------------------------------------
-
     enum TextureBindFlag
     {
         TextureBind_ShaderResource = 1 << 0,

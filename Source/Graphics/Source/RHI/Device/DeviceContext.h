@@ -27,6 +27,7 @@ namespace DX
         Count
     };
 
+    // The device context is used to perform all the render operations.
     class DeviceContext : public DeviceObject
     {
     public:

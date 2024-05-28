@@ -16,6 +16,15 @@ namespace DX
     class Shader;
     struct ShaderResourceLayout;
 
+    // Pipeline is the configuration of all graphics stages:
+    // - Shaders used in each stage
+    // - Input layout
+    // - Rasterizer state
+    // - Blend state
+    // - Depth stencil state
+    //
+    // It also creates the resource bindings object, that can be used to bind resources
+    // to the pipeline using Device Context.
     class Pipeline : public DeviceObject
     {
     public:

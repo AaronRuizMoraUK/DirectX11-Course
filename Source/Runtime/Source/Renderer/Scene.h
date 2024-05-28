@@ -15,6 +15,8 @@ namespace DX
     class CommandList;
     class Buffer;
 
+    // A scene is a collection of objects and a camera.
+    // It is responsible for rendering all the objects added to the scene.
     class Scene
     {
     public:

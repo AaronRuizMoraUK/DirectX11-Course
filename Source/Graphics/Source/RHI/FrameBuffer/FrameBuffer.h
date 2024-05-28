@@ -15,6 +15,9 @@ namespace DX
     class RenderTargetView;
     class DepthStencilView;
 
+    // Collection of render target views and depth stencil view.
+    // A frame buffer is bound with device context to be the
+    // destination of all rendering operations.
     class FrameBuffer : public DeviceObject
     {
     public:

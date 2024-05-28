@@ -24,6 +24,7 @@ namespace DX
         DepthStencilState m_depthStencilState;
     };
 
+    // Holds a render pipeline and its resource bindings
     class PipelineObject
     {
     public:
