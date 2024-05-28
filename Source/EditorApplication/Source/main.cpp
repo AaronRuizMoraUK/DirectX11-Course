@@ -52,10 +52,16 @@ int main()
         // Render objects
         std::vector<std::unique_ptr<DX::Object>> objects;
         objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
-        objects.push_back(std::make_unique<DX::Mesh>("Models/DamagedHelmet/DamagedHelmet.gltf"));
-        objects.push_back(std::make_unique<DX::Mesh>("Models/Jack/Jack.fbx"));
+        objects.push_back(std::make_unique<DX::Mesh>(
+            "Models/DamagedHelmet/DamagedHelmet.gltf", 
+            "Models/DamagedHelmet/Default_albedo.jpg",
+            "Models/DamagedHelmet/Default_normal.jpg"));
+        objects.push_back(std::make_unique<DX::Mesh>(
+            "Models/Jack/Jack.fbx", 
+            "Textures/Wall_Stone_Albedo.png",
+            "Textures/Wall_Stone_Normal.png"));
         objects[0]->SetTransform(Math::Vector3(-1.5f, 0.0f, 0.0f));
-        objects[1]->SetTransform({ Math::Vector3(2.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ 0.0f, 3.14f, 0.0f }) });
+        objects[1]->SetTransform({ Math::Vector3(2.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ -1.57f, 0.0f, 0.0f }) });
         objects[2]->SetTransform({ Math::Vector3(0.0f, -1.0f, 0.0f), Math::Quaternion::FromEulerAngles({0.0f, 3.14f, 0.0f}), Math::Vector3(0.01f) });
 
         // Render Scene
@@ -82,7 +88,7 @@ int main()
             for (auto& object : objects)
             {
                 Math::Transform& transform = object->GetTransform();
-                transform.m_rotation = transform.m_rotation * Math::Quaternion::FromEulerAngles(Math::Vector3(0.0f, 0.3f * deltaTime, 0.0f));
+                transform.m_rotation = Math::Quaternion::FromEulerAngles(Math::Vector3(0.0f, 0.3f * deltaTime, 0.0f)) * transform.m_rotation;
             }
 
             // ------

@@ -135,7 +135,9 @@ namespace DX
                     // Bind per Material resources
                     {
                         m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 0, object->GetTextureView());
+                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 1, object->GetNormalTextureView());
                         m_pipelineObject->GetMaterialResourceBindings()->SetSampler(ShaderType_Pixel, 0, object->GetSampler());
+                        m_pipelineObject->GetMaterialResourceBindings()->SetSampler(ShaderType_Pixel, 1, object->GetNormalSampler());
 
                         m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetMaterialResourceBindings());
                     }
@@ -153,6 +155,7 @@ namespace DX
                             m_commandList->GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldBuffer, sizeof(worldBuffer));
                         }
                         m_pipelineObject->GetObjectResourceBindings()->SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
+                        m_pipelineObject->GetObjectResourceBindings()->SetConstantBuffer(ShaderType_Pixel, 1, m_worldMatrixConstantBuffer);
 
                         m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetObjectResourceBindings());
                     }

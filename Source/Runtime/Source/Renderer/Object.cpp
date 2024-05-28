@@ -21,7 +21,11 @@
 
 namespace DX
 {
-    Object::Object() = default;
+    Object::Object(const std::string& diffuseFilename, const std::string& normalFilename)
+        : m_diffuseFilename(diffuseFilename)
+        , m_normalFilename(normalFilename)
+    {
+    }
 
     Object::~Object() = default;
 
@@ -30,9 +34,19 @@ namespace DX
         return m_textureView;
     }
 
+    std::shared_ptr<ShaderResourceView> Object::GetNormalTextureView() const
+    {
+        return m_normalTextureView;
+    }
+
     std::shared_ptr<Sampler> Object::GetSampler() const
     {
-        return m_sampler;
+        return m_textureSampler;
+    }
+
+    std::shared_ptr<Sampler> Object::GetNormalSampler() const
+    {
+        return m_normalSampler;
     }
 
     std::shared_ptr<Buffer> Object::GetVertexBuffer() const
@@ -78,9 +92,9 @@ namespace DX
             m_indexBuffer = renderer->GetDevice()->CreateBuffer(indexBufferDesc);
         }
 
-        // Texture
+        // Diffuse Texture
         {
-            auto textureAsset = TextureAsset::LoadTextureAsset("Textures/Wall_Stone_Albedo.png");
+            auto textureAsset = TextureAsset::LoadTextureAsset(m_diffuseFilename);
             DX_ASSERT(textureAsset.get(), "Object", "Failed to load texture");
 
             TextureDesc textureDesc = {};
@@ -123,11 +137,60 @@ namespace DX
             samplerDesc.m_borderColor = Math::Color(0.0f);
             samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
 
-            m_sampler = renderer->GetDevice()->CreateSampler(samplerDesc);
+            m_textureSampler = renderer->GetDevice()->CreateSampler(samplerDesc);
+        }
+
+        // Normal Texture
+        {
+            auto textureAsset = TextureAsset::LoadTextureAsset(m_normalFilename);
+            DX_ASSERT(textureAsset.get(), "Object", "Failed to load texture");
+
+            TextureDesc textureDesc = {};
+            textureDesc.m_textureType = TextureType::Texture2D;
+            textureDesc.m_dimensions = Math::Vector3Int(textureAsset->GetData()->m_size, 0);
+            textureDesc.m_mipCount = 1;
+            textureDesc.m_format = ResourceFormat::R8G8B8A8_UNORM;
+            textureDesc.m_usage = ResourceUsage::Immutable;
+            textureDesc.m_bindFlags = TextureBind_ShaderResource;
+            textureDesc.m_cpuAccess = ResourceCPUAccess::None;
+            textureDesc.m_arrayCount = 1;
+            textureDesc.m_sampleCount = 1;
+            textureDesc.m_sampleQuality = 0;
+            textureDesc.m_initialData = textureAsset->GetData()->m_data;
+
+            m_normalTexture = renderer->GetDevice()->CreateTexture(textureDesc);
+
+            ShaderResourceViewDesc srvDesc = {};
+            srvDesc.m_resource = m_normalTexture;
+            srvDesc.m_viewFormat = textureDesc.m_format;
+            srvDesc.m_firstMip = 0;
+            srvDesc.m_mipCount = -1;
+
+            m_normalTextureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
+        }
+
+        // Normal Sampler State
+        {
+            SamplerDesc samplerDesc = {};
+            samplerDesc.m_minFilter = FilterSampling::Point;
+            samplerDesc.m_magFilter = FilterSampling::Point;
+            samplerDesc.m_mipFilter = FilterSampling::Point;
+            samplerDesc.m_filterMode = FilterMode::Normal;
+            samplerDesc.m_addressU = AddressMode::Wrap;
+            samplerDesc.m_addressV = AddressMode::Wrap;
+            samplerDesc.m_addressW = AddressMode::Wrap;
+            samplerDesc.m_mipBias = 0;
+            samplerDesc.m_mipClamp = NoMipClamping;
+            samplerDesc.m_maxAnisotropy = 1;
+            samplerDesc.m_borderColor = Math::Color(0.0f);
+            samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
+
+            m_normalSampler = renderer->GetDevice()->CreateSampler(samplerDesc);
         }
     }
 
     Cube::Cube(const Math::Vector3& extends)
+        : Object("Textures/Wall_Stone_Albedo.png", "Textures/Wall_Stone_Normal.png")
     {
         const Math::Vector3 half = 0.5f * extends;
 
@@ -161,16 +224,16 @@ namespace DX
             { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector3Packed(-mathfu::kAxisX3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Top face
-            { Math::Vector3Packed({-half.x,  half.y, -half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({0.0f, 0.0f}) },
-            { Math::Vector3Packed({-half.x,  half.y,  half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({0.0f, 1.0f}) },
-            { Math::Vector3Packed({ half.x,  half.y,  half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({1.0f, 1.0f}) },
-            { Math::Vector3Packed({ half.x,  half.y, -half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y, -half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({-half.x,  half.y,  half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y,  half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({ half.x,  half.y, -half.z}), Math::Vector3Packed(mathfu::kAxisY3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector2Packed({1.0f, 0.0f}) },
 
             // Bottom face
-            { Math::Vector3Packed({ half.x, -half.y,  half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({0.0f, 0.0f}) },
-            { Math::Vector3Packed({ half.x, -half.y, -half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({0.0f, 1.0f}) },
-            { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({1.0f, 1.0f}) },
-            { Math::Vector3Packed({-half.x, -half.y,  half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisZ3f), Math::Vector3Packed(mathfu::kAxisX3f), Math::Vector2Packed({1.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y,  half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisX3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector2Packed({0.0f, 0.0f}) },
+            { Math::Vector3Packed({ half.x, -half.y, -half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisX3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector2Packed({0.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y, -half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisX3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector2Packed({1.0f, 1.0f}) },
+            { Math::Vector3Packed({-half.x, -half.y,  half.z}), Math::Vector3Packed(-mathfu::kAxisY3f), Math::Vector3Packed(-mathfu::kAxisX3f), Math::Vector3Packed(mathfu::kAxisZ3f), Math::Vector2Packed({1.0f, 0.0f}) },
         };
 
         m_indexData =
@@ -204,12 +267,13 @@ namespace DX
     }
 
 
-    Mesh::Mesh(const std::string& filename)
+    Mesh::Mesh(const std::string& meshFilename, const std::string& diffuseFilename, const std::string& normalFilename)
+        : Object(diffuseFilename, normalFilename)
     {
-        auto meshAsset = MeshAsset::LoadMeshAsset(filename);
+        auto meshAsset = MeshAsset::LoadMeshAsset(meshFilename);
         if (!meshAsset)
         {
-            DX_LOG(Fatal, "Mesh", "Failed to load mesh asset %s", filename.c_str());
+            DX_LOG(Fatal, "Mesh", "Failed to load mesh asset %s", meshFilename.c_str());
             return;
         }
 

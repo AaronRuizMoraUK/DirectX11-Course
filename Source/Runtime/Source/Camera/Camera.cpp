@@ -152,8 +152,8 @@ namespace DX
 
         const float fovY = 74.0f * mathfu::kDegreesToRadians;
         const float aspectRatio = static_cast<float>(window->GetSize().x) / static_cast<float>(window->GetSize().y);
-        const float nearPlane = 0.1f;
-        const float farPlane = 1000.0f;
+        const float nearPlane = 0.01f;
+        const float farPlane = 100.0f;
 
         return Math::Matrix4x4::Perspective(
             fovY,

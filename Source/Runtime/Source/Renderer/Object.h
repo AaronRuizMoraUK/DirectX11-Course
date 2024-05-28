@@ -19,7 +19,7 @@ namespace DX
     class Object
     {
     public:
-        Object();
+        Object(const std::string& diffuseFilename, const std::string& normalFilename);
         virtual ~Object();
 
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
@@ -29,7 +29,9 @@ namespace DX
         void SetTransform(const Math::Transform& transform) { m_transform = transform; }
 
         std::shared_ptr<ShaderResourceView> GetTextureView() const;
+        std::shared_ptr<ShaderResourceView> GetNormalTextureView() const;
         std::shared_ptr<Sampler> GetSampler() const;
+        std::shared_ptr<Sampler> GetNormalSampler() const;
 
         std::shared_ptr<Buffer> GetVertexBuffer() const;
         std::shared_ptr<Buffer> GetIndexBuffer() const;
@@ -49,9 +51,14 @@ namespace DX
         std::shared_ptr<Buffer> m_vertexBuffer;
         std::shared_ptr<Buffer> m_indexBuffer;
 
+        std::string m_diffuseFilename;
+        std::string m_normalFilename;
         std::shared_ptr<Texture> m_texture;
+        std::shared_ptr<Texture> m_normalTexture;
         std::shared_ptr<ShaderResourceView> m_textureView;
-        std::shared_ptr<Sampler> m_sampler;
+        std::shared_ptr<ShaderResourceView> m_normalTextureView;
+        std::shared_ptr<Sampler> m_textureSampler;
+        std::shared_ptr<Sampler> m_normalSampler;
     };
 
     class Cube : public Object
@@ -63,6 +70,6 @@ namespace DX
     class Mesh : public Object
     {
     public:
-        Mesh(const std::string& filename);
+        Mesh(const std::string& meshFilename, const std::string& diffuseFilename, const std::string& normalFilename);
     };
 } // namespace DX

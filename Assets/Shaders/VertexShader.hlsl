@@ -12,7 +12,9 @@ struct VertexOut
     float4 position : SV_Position;
     float2 uv : TEXCOORD0;
     float3 normal : TEXCOORD1;
-    float3 viewDir : TEXCOORD2;
+    float3 tangent : TEXCOORD2;
+    float3 binormal : TEXCOORD3;
+    float3 viewDir : TEXCOORD4;
 };
 
 cbuffer ViewProjMatrixConstantBuffer : register(b0)
@@ -35,7 +37,9 @@ VertexOut main(VertexIn vertexIn)
     vertexOut.viewDir = camPos.xyz - vertexOut.position.xyz;
     vertexOut.position = mul(viewMatrix, vertexOut.position);
     vertexOut.position = mul(projMatrix, vertexOut.position);
-    vertexOut.normal = mul((float3x3)inverseTransposeWorldMatrix, vertexIn.normal);
+    vertexOut.normal = vertexIn.normal;
+    vertexOut.tangent = vertexIn.tangent;
+    vertexOut.binormal = vertexIn.binormal;
     vertexOut.uv = vertexIn.uv;
 
     return vertexOut;

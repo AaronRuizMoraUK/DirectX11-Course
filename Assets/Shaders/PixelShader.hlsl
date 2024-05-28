@@ -3,7 +3,9 @@ struct PixelIn
     float4 position : SV_Position;
     float2 uv : TEXCOORD0;
     float3 normal : TEXCOORD1;
-    float3 viewDir : TEXCOORD2;
+    float3 tangent : TEXCOORD2;
+    float3 binormal : TEXCOORD3;
+    float3 viewDir : TEXCOORD4;
 };
 
 struct PixelOut
@@ -11,8 +13,16 @@ struct PixelOut
     float4 color : SV_Target;
 };
 
-Texture2D tex2D : register(t0);
-SamplerState tex2DSamplerState : register(s0);
+cbuffer WorldMatrixConstantBuffer : register(b1)
+{
+    float4x4 worldMatrix;
+    float4x4 inverseTransposeWorldMatrix;
+};
+
+Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture : register(t1);
+SamplerState diffuseSampler : register(s0);
+SamplerState normalSampler : register(s1);
 
 static const float3 LightDir = normalize(float3(0, -1, 1));
 static const float3 LightColor = float3(0.8, 1.0, 1.0);
@@ -28,9 +38,18 @@ PixelOut main(PixelIn pixelIn)
 {
     PixelOut pixelOut;
     
-    float3 normal = normalize(pixelIn.normal);
     float3 halfDir = normalize(normalize(pixelIn.viewDir) - LightDir);
-    float4 diffuleColor = tex2D.Sample(tex2DSamplerState, pixelIn.uv);
+    float4 diffuleColor = diffuseTexture.Sample(diffuseSampler, pixelIn.uv);
+    float4 normalColor = normalTexture.Sample(normalSampler, pixelIn.uv);
+    
+    // Normal map
+    float3x3 tangentToLocal = transpose(float3x3(
+        normalize(pixelIn.tangent), 
+        normalize(pixelIn.binormal),
+        normalize(pixelIn.normal)));
+    float3 normalTangentSpace = normalize(normalColor.xyz * 2.0f - 1.0f);
+    float3 normal = mul(tangentToLocal, normalTangentSpace);
+    normal = normalize(mul((float3x3) inverseTransposeWorldMatrix, normal));
     
     // Diffuse Color
     float3 diffuleColorLinear = pow(diffuleColor.rgb, Gamma);
