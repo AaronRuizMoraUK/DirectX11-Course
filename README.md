@@ -88,7 +88,7 @@ Unfortunately the course was taken down in Udemy while I was doing the last sect
 - A `Scene` is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene. It uses a `CommandList` to record all the commands asynchronously.
 - `main.cpp` will create the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Then in a loop it'll update the camera, render the scene and present.
 - Implemented [Blinn-Phong illumination model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model) in Pixel Shader.
-- Implemented [Normal mapping](https://en.wikipedia.org/wiki/Normal_mapping) to provide more details surfaces to objects.
+- Implemented [Normal mapping](https://en.wikipedia.org/wiki/Normal_mapping) to provide more detailed surfaces to objects.
 
 ## 3rdParty Libraries
 
