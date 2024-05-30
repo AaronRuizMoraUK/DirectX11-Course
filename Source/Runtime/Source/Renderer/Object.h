@@ -19,7 +19,9 @@ namespace DX
     class Object
     {
     public:
-        Object(const std::string& diffuseFilename, const std::string& normalFilename);
+        Object(const std::string& diffuseFilename, 
+            const std::string& normalFilename, 
+            const std::string& emissiveFilename = "");
         virtual ~Object();
 
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
@@ -28,10 +30,10 @@ namespace DX
         const Math::Transform& GetTransform() const { return m_transform; }
         void SetTransform(const Math::Transform& transform) { m_transform = transform; }
 
-        std::shared_ptr<ShaderResourceView> GetTextureView() const;
+        std::shared_ptr<ShaderResourceView> GetDiffuseTextureView() const;
+        std::shared_ptr<ShaderResourceView> GetEmissiveTextureView() const;
         std::shared_ptr<ShaderResourceView> GetNormalTextureView() const;
         std::shared_ptr<Sampler> GetSampler() const;
-        std::shared_ptr<Sampler> GetNormalSampler() const;
 
         std::shared_ptr<Buffer> GetVertexBuffer() const;
         std::shared_ptr<Buffer> GetIndexBuffer() const;
@@ -52,13 +54,15 @@ namespace DX
         std::shared_ptr<Buffer> m_indexBuffer;
 
         std::string m_diffuseFilename;
+        std::string m_emissiveFilename;
         std::string m_normalFilename;
-        std::shared_ptr<Texture> m_texture;
+        std::shared_ptr<Texture> m_diffuseTexture;
+        std::shared_ptr<Texture> m_emissiveTexture;
         std::shared_ptr<Texture> m_normalTexture;
-        std::shared_ptr<ShaderResourceView> m_textureView;
+        std::shared_ptr<ShaderResourceView> m_diffuseTextureView;
+        std::shared_ptr<ShaderResourceView> m_emissiveTextureView;
         std::shared_ptr<ShaderResourceView> m_normalTextureView;
         std::shared_ptr<Sampler> m_textureSampler;
-        std::shared_ptr<Sampler> m_normalSampler;
     };
 
     class Cube : public Object
@@ -70,6 +74,9 @@ namespace DX
     class Mesh : public Object
     {
     public:
-        Mesh(const std::string& meshFilename, const std::string& diffuseFilename, const std::string& normalFilename);
+        Mesh(const std::string& meshFilename, 
+            const std::string& diffuseFilename, 
+            const std::string& normalFilename,
+            const std::string& emissiveFilename = "");
     };
 } // namespace DX

@@ -134,10 +134,10 @@ namespace DX
                 {
                     // Bind per Material resources
                     {
-                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 0, object->GetTextureView());
-                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 1, object->GetNormalTextureView());
+                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 0, object->GetDiffuseTextureView());
+                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 1, object->GetEmissiveTextureView());
+                        m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 2, object->GetNormalTextureView());
                         m_pipelineObject->GetMaterialResourceBindings()->SetSampler(ShaderType_Pixel, 0, object->GetSampler());
-                        m_pipelineObject->GetMaterialResourceBindings()->SetSampler(ShaderType_Pixel, 1, object->GetNormalSampler());
 
                         m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetMaterialResourceBindings());
                     }

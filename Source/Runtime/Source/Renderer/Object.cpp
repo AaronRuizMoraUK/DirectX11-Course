@@ -21,17 +21,25 @@
 
 namespace DX
 {
-    Object::Object(const std::string& diffuseFilename, const std::string& normalFilename)
+    Object::Object(const std::string& diffuseFilename, 
+        const std::string& normalFilename, 
+        const std::string& emissiveFilename)
         : m_diffuseFilename(diffuseFilename)
+        , m_emissiveFilename(emissiveFilename)
         , m_normalFilename(normalFilename)
     {
     }
 
     Object::~Object() = default;
 
-    std::shared_ptr<ShaderResourceView> Object::GetTextureView() const
+    std::shared_ptr<ShaderResourceView> Object::GetDiffuseTextureView() const
     {
-        return m_textureView;
+        return m_diffuseTextureView;
+    }
+
+    std::shared_ptr<ShaderResourceView> Object::GetEmissiveTextureView() const
+    {
+        return m_emissiveTextureView;
     }
 
     std::shared_ptr<ShaderResourceView> Object::GetNormalTextureView() const
@@ -42,11 +50,6 @@ namespace DX
     std::shared_ptr<Sampler> Object::GetSampler() const
     {
         return m_textureSampler;
-    }
-
-    std::shared_ptr<Sampler> Object::GetNormalSampler() const
-    {
-        return m_normalSampler;
     }
 
     std::shared_ptr<Buffer> Object::GetVertexBuffer() const
@@ -110,34 +113,68 @@ namespace DX
             textureDesc.m_sampleQuality = 0;
             textureDesc.m_initialData = textureAsset->GetData()->m_data;
 
-            m_texture = renderer->GetDevice()->CreateTexture(textureDesc);
+            m_diffuseTexture = renderer->GetDevice()->CreateTexture(textureDesc);
 
             ShaderResourceViewDesc srvDesc = {};
-            srvDesc.m_resource = m_texture;
+            srvDesc.m_resource = m_diffuseTexture;
             srvDesc.m_viewFormat = textureDesc.m_format;
             srvDesc.m_firstMip = 0;
             srvDesc.m_mipCount = -1;
 
-            m_textureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
+            m_diffuseTextureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
         }
 
-        // Sampler State
+        // Emissive Texture
         {
-            SamplerDesc samplerDesc = {};
-            samplerDesc.m_minFilter = FilterSampling::Linear;
-            samplerDesc.m_magFilter = FilterSampling::Linear;
-            samplerDesc.m_mipFilter = FilterSampling::Linear;
-            samplerDesc.m_filterMode = FilterMode::Normal;
-            samplerDesc.m_addressU = AddressMode::Wrap;
-            samplerDesc.m_addressV = AddressMode::Wrap;
-            samplerDesc.m_addressW = AddressMode::Wrap;
-            samplerDesc.m_mipBias = 0;
-            samplerDesc.m_mipClamp = NoMipClamping;
-            samplerDesc.m_maxAnisotropy = 1;
-            samplerDesc.m_borderColor = Math::Color(0.0f);
-            samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
+            const ResourceFormat format = ResourceFormat::R8G8B8A8_UNORM;
 
-            m_textureSampler = renderer->GetDevice()->CreateSampler(samplerDesc);
+            if (m_emissiveFilename.empty())
+            {
+                uint32_t textureData = 0; // 1 texel with all RGBA set to zero
+
+                TextureDesc textureDesc = {};
+                textureDesc.m_textureType = TextureType::Texture2D;
+                textureDesc.m_dimensions = Math::Vector3Int(1, 1, 0); // 1x1 dimensions
+                textureDesc.m_mipCount = 1;
+                textureDesc.m_format = format;
+                textureDesc.m_usage = ResourceUsage::Immutable;
+                textureDesc.m_bindFlags = TextureBind_ShaderResource;
+                textureDesc.m_cpuAccess = ResourceCPUAccess::None;
+                textureDesc.m_arrayCount = 1;
+                textureDesc.m_sampleCount = 1;
+                textureDesc.m_sampleQuality = 0;
+                textureDesc.m_initialData = &textureData;
+
+                m_emissiveTexture = renderer->GetDevice()->CreateTexture(textureDesc);
+            }
+            else
+            {
+                auto textureAsset = TextureAsset::LoadTextureAsset(m_emissiveFilename);
+                DX_ASSERT(textureAsset.get(), "Object", "Failed to load texture");
+
+                TextureDesc textureDesc = {};
+                textureDesc.m_textureType = TextureType::Texture2D;
+                textureDesc.m_dimensions = Math::Vector3Int(textureAsset->GetData()->m_size, 0);
+                textureDesc.m_mipCount = 1;
+                textureDesc.m_format = format;
+                textureDesc.m_usage = ResourceUsage::Immutable;
+                textureDesc.m_bindFlags = TextureBind_ShaderResource;
+                textureDesc.m_cpuAccess = ResourceCPUAccess::None;
+                textureDesc.m_arrayCount = 1;
+                textureDesc.m_sampleCount = 1;
+                textureDesc.m_sampleQuality = 0;
+                textureDesc.m_initialData = textureAsset->GetData()->m_data;
+
+                m_emissiveTexture = renderer->GetDevice()->CreateTexture(textureDesc);
+            }
+
+            ShaderResourceViewDesc srvDesc = {};
+            srvDesc.m_resource = m_emissiveTexture;
+            srvDesc.m_viewFormat = format;
+            srvDesc.m_firstMip = 0;
+            srvDesc.m_mipCount = -1;
+
+            m_emissiveTextureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
         }
 
         // Normal Texture
@@ -169,12 +206,12 @@ namespace DX
             m_normalTextureView = renderer->GetDevice()->CreateShaderResourceView(srvDesc);
         }
 
-        // Normal Sampler State
+        // Sampler State
         {
             SamplerDesc samplerDesc = {};
-            samplerDesc.m_minFilter = FilterSampling::Point;
-            samplerDesc.m_magFilter = FilterSampling::Point;
-            samplerDesc.m_mipFilter = FilterSampling::Point;
+            samplerDesc.m_minFilter = FilterSampling::Linear;
+            samplerDesc.m_magFilter = FilterSampling::Linear;
+            samplerDesc.m_mipFilter = FilterSampling::Linear;
             samplerDesc.m_filterMode = FilterMode::Normal;
             samplerDesc.m_addressU = AddressMode::Wrap;
             samplerDesc.m_addressV = AddressMode::Wrap;
@@ -185,7 +222,7 @@ namespace DX
             samplerDesc.m_borderColor = Math::Color(0.0f);
             samplerDesc.m_comparisonFunction = ComparisonFunction::Always;
 
-            m_normalSampler = renderer->GetDevice()->CreateSampler(samplerDesc);
+            m_textureSampler = renderer->GetDevice()->CreateSampler(samplerDesc);
         }
     }
 
@@ -267,8 +304,11 @@ namespace DX
     }
 
 
-    Mesh::Mesh(const std::string& meshFilename, const std::string& diffuseFilename, const std::string& normalFilename)
-        : Object(diffuseFilename, normalFilename)
+    Mesh::Mesh(const std::string& meshFilename, 
+        const std::string& diffuseFilename, 
+        const std::string& normalFilename,
+        const std::string& emissiveFilename)
+        : Object(diffuseFilename, normalFilename, emissiveFilename)
     {
         auto meshAsset = MeshAsset::LoadMeshAsset(meshFilename);
         if (!meshAsset)

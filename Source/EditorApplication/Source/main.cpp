@@ -55,7 +55,8 @@ int main()
         objects.push_back(std::make_unique<DX::Mesh>(
             "Models/DamagedHelmet/DamagedHelmet.gltf", 
             "Models/DamagedHelmet/Default_albedo.jpg",
-            "Models/DamagedHelmet/Default_normal.jpg"));
+            "Models/DamagedHelmet/Default_normal.jpg",
+            "Models/DamagedHelmet/Default_emissive.jpg"));
         objects.push_back(std::make_unique<DX::Mesh>(
             "Models/Jack/Jack.fbx", 
             "Textures/Wall_Stone_Albedo.png",
@@ -94,8 +95,7 @@ int main()
             // ------
             // Render
             // ------
-            const Math::Color clearColor(0.2f, 0.0f, 0.3f, 1.0f);
-            renderer->Clear(clearColor, 1.0f, 0);
+            renderer->Clear(Math::CreateColor(Math::Colors::SteelBlue.xyz() * 0.7f), 1.0f, 0);
 
             scene->Render();
 
