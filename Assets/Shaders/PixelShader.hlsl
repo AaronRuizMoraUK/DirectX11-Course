@@ -33,7 +33,8 @@ static const float3 BaseDiffuseAmount = float3(0.05f, 0.05f, 0.05f);
 static const float3 SpecularColor = float3(1.0, 1.0, 1.0);
 static const float SpecularPower = 70.0f;
 
-static const float Gamma = 2.2; // Assume the monitor is calibrated to the sRGB color space
+static const float Gamma = 2.2;
+static const float InvGamma = 1.0 / Gamma;
 
 PixelOut main(PixelIn pixelIn)
 {
@@ -68,7 +69,7 @@ PixelOut main(PixelIn pixelIn)
     
     // Final Color and Gamma
     float3 colorLinear = LightColor * (specular + diffuse) + AmbientColor + emissiveColorLinear;
-    float3 colorGammaCorrected = saturate(pow(colorLinear, 1.0 / Gamma));
+    float3 colorGammaCorrected = saturate(pow(colorLinear, InvGamma));
     
     pixelOut.color = float4(colorGammaCorrected, diffuleColor.a);
     return pixelOut;

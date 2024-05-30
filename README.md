@@ -81,8 +81,9 @@ I did the following improvements on top of the content provided in the DirectX 1
 - `MeshAsset` imports all meshes from the file and not just the first one.
 - `Camera` just handles view/projection matrices and camera updates, it doesn't include any DirectX or Graphics structure. This decouples the camera from graphics. Instead, the renderer's scene will get the view/projection matrices from the camera and it's the scene's responsibility to update the constant buffers for the shaders.
 - The main loop calculates the delta time of each frame and uses it to update the camera and the objects. This makes the application behave the same independently of the frame rate that it runs.
-- Implemented [Blinn-Phong illumination model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model) in Pixel Shader.
-- Implemented [Normal mapping](https://en.wikipedia.org/wiki/Normal_mapping) to provide more detailed surfaces to objects.
+- Implemented [Blinn-Phong illumination model](https://learnopengl.com/Advanced-Lighting/Advanced-Lighting) in Pixel Shader.
+- Implemented [Normal mapping](https://learnopengl.com/Advanced-Lighting/Normal-Mapping) to provide more detailed surfaces to objects.
+- Implemented [Directional lighting](https://learnopengl.com/Lighting/Multiple-lights) in Pixel Shader.
 - Applied [Gamma Correction](https://learnopengl.com/Advanced-Lighting/Gamma-Correction) in Pixel Shader for a better quality image due to more accurate lighting calculations in linear space.
 
 In the last section of the course, where everything is coming together, I made a slightly different design:
