@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GenericId/GenericId.h>
+#include <Event/Event.h>
 #include <Math/Vector2.h>
 
 #include <string>
@@ -11,6 +12,10 @@ typedef struct HWND__* HWND;
 namespace DX
 {
     using WindowId = GenericId<struct WindowIdTag>;
+
+    using WindowResizeCallback = std::function<void(const Math::Vector2Int& size)>;
+
+    using WindowResizeEvent = Event<WindowResizeCallback>;
 
     class Window
     {
@@ -40,6 +45,9 @@ namespace DX
         // Called by WindowManager::PollEvents
         void PollEvents();
 
+        void RegisterWindowResizeEvent(WindowResizeEvent::Handler& handler) { handler.Connect(m_resizeEvent); }
+        void UnregisterWindowResizeEvent(WindowResizeEvent::Handler& handler) { handler.Disconnect(m_resizeEvent); }
+
     private:
         const WindowId m_windowId;
         std::string m_title;
@@ -49,6 +57,8 @@ namespace DX
         bool m_vSync = true;
 
         GLFWwindow* m_window = nullptr;
+
+        WindowResizeEvent m_resizeEvent;
 
         // Mouse scroll
         float m_scrollOffset = 0.0f;

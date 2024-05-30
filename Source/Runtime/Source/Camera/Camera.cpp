@@ -96,13 +96,15 @@ namespace DX
 
         // Rotation
         {
-            const Math::Vector2 windowSize(
-                static_cast<float>(window->GetSize().x),
-                static_cast<float>(window->GetSize().y));
+            // Division by 2 done with integers to lose the decimals, necessary to avoid issues
+            // calculating delta when width is not multiple of 2 as glfwGetCursorPos doesn't return decimals.
+            const Math::Vector2 windowHalfSize(
+                static_cast<float>(window->GetSize().x / 2), 
+                static_cast<float>(window->GetSize().y / 2));
 
             if (m_firstUpdate)
             {
-                glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
+                glfwSetCursorPos(windowHandler, windowHalfSize.x, windowHalfSize.y);
                 m_firstUpdate = false;
             }
 
@@ -114,7 +116,7 @@ namespace DX
                 static_cast<float>(mouseX),
                 static_cast<float>(mouseY));
 
-            Math::Vector2 delta = m_rotationSensitivity * (mousePosition - 0.5f * windowSize) / windowSize;
+            Math::Vector2 delta = m_rotationSensitivity * (mousePosition - windowHalfSize) / (2.0f * windowHalfSize);
 
             // Clamp pitch to avoid camera looking straight up or down.
             // Negative pitch delta makes camera look higher.
@@ -132,7 +134,7 @@ namespace DX
                 Math::Quaternion::FromAngleAxis(delta.y, mathfu::kAxisX3f); // Apply pitch in local space
 
             // Reset cursor position to the center of the window
-            glfwSetCursorPos(windowHandler, 0.5f * windowSize.x, 0.5f * windowSize.y);
+            glfwSetCursorPos(windowHandler, windowHalfSize.x, windowHalfSize.y);
         }
     }
 

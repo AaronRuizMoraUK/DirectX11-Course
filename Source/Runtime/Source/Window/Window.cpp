@@ -34,9 +34,12 @@ namespace DX
             return true; // Already initialized
         }
 
-        // Do not use any client API and make it not resizable.
+        // Window is resizable if it's not full screen
+        const bool resizeable = !m_fullScreen;
+
+        // Do not use any client API
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, (resizeable) ? GLFW_TRUE : GLFW_FALSE);
 
         DX_LOG(Info, "Window", "Creating window %u with size %dx%d...", m_windowId, m_size.x, m_size.y);
         m_window = glfwCreateWindow(m_size.x, m_size.y, m_title.c_str(), (m_fullScreen) ? glfwGetPrimaryMonitor() : nullptr, nullptr);
@@ -46,8 +49,27 @@ namespace DX
             return false;
         }
 
-        // Accumulate mouse scroll offset
+        // Callbacks are called for all the windows. To identify the callbacks of this window
+        // we set the window's user pointer to this class.
         glfwSetWindowUserPointer(m_window, this);
+
+        // Window resize callback
+        if (resizeable)
+        {
+            glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
+                {
+                    if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)))
+                    {
+                        DX_LOG(Info, "Window", "Resizing window %u to %dx%d...", self->m_windowId, width, height);
+
+                        self->m_size.x = width;
+                        self->m_size.y = height;
+                        self->m_resizeEvent.Signal(self->m_size);
+                    }
+                });
+        }
+
+        // Accumulate mouse scroll offset
         glfwSetScrollCallback(m_window, [](GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset)
             {
                 if (auto* self = static_cast<Window*>(glfwGetWindowUserPointer(window)))

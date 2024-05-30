@@ -30,16 +30,21 @@ namespace DX
 
         const SwapChainDesc& GetSwapChainDesc() const { return m_desc; }
 
-        std::shared_ptr<FrameBuffer> CreateFrameBuffer();
+        FrameBuffer* GetFrameBuffer();
 
-        void Present(FrameBuffer& frameBuffer);
+        void Present();
+
+        void OnResize(Math::Vector2Int size);
 
     private:
-        void ObtainBackBufferFromSwapChain();
+        bool CreateFrameBuffer();
+        std::shared_ptr<Texture> CreateBackBufferTextureFromSwapChain();
 
         SwapChainDesc m_desc;
 
-        std::shared_ptr<Texture> m_backBufferTexture;
+        // Swap chain creates and owns the main frame buffer.
+        // This simplifies the process when having to flip or resize the swap chain.
+        std::unique_ptr<FrameBuffer> m_frameBuffer;
 
     private:
         ComPtr<IDXGISwapChain> m_dx11SwapChain;

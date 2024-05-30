@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Window/Window.h>
 #include <GenericId/GenericId.h>
 #include <Math/Color.h>
 
@@ -7,7 +8,6 @@
 
 namespace DX
 {
-    class Window;
     class Device;
     class SwapChain;
     class FrameBuffer;
@@ -40,14 +40,14 @@ namespace DX
 
     private:
         bool CreateDevice();
-        bool CreateSwapChainAndFrameBuffer();
+        bool CreateSwapChain();
         bool CreateScene();
 
         RendererId m_rendererId;
         Window* m_window = nullptr;
+        WindowResizeEvent::Handler m_windowResizeHandler;
         std::unique_ptr<Device> m_device;
         std::shared_ptr<SwapChain> m_swapChain;
-        std::shared_ptr<FrameBuffer> m_frameBuffer;
         std::unique_ptr<Scene> m_scene;
     };
 } // namespace DX

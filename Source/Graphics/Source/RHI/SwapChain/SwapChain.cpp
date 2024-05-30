@@ -4,6 +4,7 @@
 #include <RHI/FrameBuffer/FrameBuffer.h>
 #include <RHI/Resource/Texture/Texture.h>
 #include <Log/Log.h>
+#include <Debug/Debug.h>
 
 #include <d3d11.h>
 #include <RHI/DirectX/Utils.h>
@@ -54,7 +55,11 @@ namespace DX
             return;
         }
 
-        ObtainBackBufferFromSwapChain();
+        if (!CreateFrameBuffer())
+        {
+            DX_LOG(Fatal, "SwapChain", "Failed to create frame buffer for swap chain.");
+            return;
+        }
 
         DX_LOG(Info, "SwapChain", "Graphics swap chain created.");
     }
@@ -71,18 +76,12 @@ namespace DX
         DX_LOG(Info, "SwapChain", "Graphics swap chain destroyed.");
     }
 
-    std::shared_ptr<FrameBuffer> SwapChain::CreateFrameBuffer()
+    FrameBuffer* SwapChain::GetFrameBuffer()
     {
-        FrameBufferDesc frameBufferDesc = {};
-        frameBufferDesc.m_renderTargetAttachments = FrameBufferDesc::TextureAttachments{
-            {m_backBufferTexture, m_backBufferTexture->GetTextureDesc().m_format}
-        };
-        frameBufferDesc.m_createDepthStencilAttachment = true;
-
-        return m_ownerDevice->CreateFrameBuffer(frameBufferDesc);
+        return m_frameBuffer.get();
     }
 
-    void SwapChain::Present(FrameBuffer& frameBuffer)
+    void SwapChain::Present()
     {
         m_dx11SwapChain->Present(
             m_desc.m_vSyncEnabled ? 1 : 0, // VSync
@@ -91,13 +90,59 @@ namespace DX
 
         if (m_desc.m_bufferCount > 1)
         {
-            ObtainBackBufferFromSwapChain();
+            auto backBufferTexture = CreateBackBufferTextureFromSwapChain();
 
-            frameBuffer.FlipSwapChainBackBuffer(m_backBufferTexture);
+            m_frameBuffer->FlipSwapChainBackBuffer(backBufferTexture);
         }
     }
 
-    void SwapChain::ObtainBackBufferFromSwapChain()
+    void SwapChain::OnResize(Math::Vector2Int size)
+    {
+        // Release usage of back buffer texture by destroying the frame buffer
+        m_frameBuffer.reset();
+
+        {
+            DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+            m_dx11SwapChain->GetDesc(&swapChainDesc);
+
+            auto result = m_dx11SwapChain->ResizeBuffers(
+                swapChainDesc.BufferCount,
+                size.x,
+                size.y,
+                swapChainDesc.BufferDesc.Format,
+                swapChainDesc.Flags
+            );
+            DX_ASSERT(SUCCEEDED(result), "SwapChain", "Failed to resize swap chain buffers.");
+        }
+
+        m_desc.m_size = size;
+
+        // Re-create frame buffer
+        CreateFrameBuffer();
+    }
+
+    bool SwapChain::CreateFrameBuffer()
+    {
+        auto backBufferTexture = CreateBackBufferTextureFromSwapChain();
+        if (!backBufferTexture)
+        {
+            return false;
+        }
+
+        FrameBufferDesc frameBufferDesc = {};
+        frameBufferDesc.m_renderTargetAttachments = FrameBufferDesc::TextureAttachments{
+            {backBufferTexture, backBufferTexture->GetTextureDesc().m_format}
+        };
+        frameBufferDesc.m_createDepthStencilAttachment = true;
+
+        // NOTE: Not created through owner device API to avoid having a
+        // reference in the device as this is a sub-object of SwapChain.
+        m_frameBuffer = std::make_unique<FrameBuffer>(m_ownerDevice, frameBufferDesc);
+
+        return true;
+    }
+
+    std::shared_ptr<Texture> SwapChain::CreateBackBufferTextureFromSwapChain()
     {
         // Create texture with the first back buffer of the swap chain.
 
@@ -107,7 +152,7 @@ namespace DX
         if (FAILED(result))
         {
             DX_LOG(Fatal, "SwapChain", "Failed to get back buffer from D3D11 swap chain.");
-            return;
+            return {};
         }
 
         D3D11_TEXTURE2D_DESC dx11BackBufferDesc;
@@ -129,6 +174,6 @@ namespace DX
 
         // NOTE: Not created through owner device API to avoid having a
         // reference in the device as this is a sub-object of SwapChain.
-        m_backBufferTexture = std::make_shared<Texture>(m_ownerDevice, backBufferTextureDesc);
+        return std::make_shared<Texture>(m_ownerDevice, backBufferTextureDesc);
     }
 } // namespace DX

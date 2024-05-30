@@ -69,6 +69,7 @@ I did the following improvements on top of the content provided in the DirectX 1
 - Enabled **DirectX 11 Debug layer** when running in Debug configuration. Very useful to detect errors in DirectX and potential performance issues.
 - Graphics device checks on destruction if there are device objects still being referenced and therefore leaking (missing to be destroyed).
 - `SwapChain` supports ***Flip Discard*** technique with double buffering. This provides faster presentations since it flips between front and back buffer instead making a copy. The implementation allows any number of back buffers, default is 2.
+- Support `Window` resizing when not in full screen mode. `SwapChain` and `FrameBuffer` are correctly resized as well.
 - `FrameBuffer` supports both textures and typed buffers as render targets.
 - Implemented the complete set of **Resource Views** (see **[DirectX 11 Resource table](https://github.com/AaronRuizMoraUK/DirectX12-Resources-Cheatsheet/blob/main/DirectX11.md)**)
     - `ShaderResourceView` supports multiple types of Textures (1D, 2D, 2DMS, 3D, Cube, Array) and Buffers (Typed, Structured, Raw).

@@ -6,7 +6,6 @@
 #include <RHI/SwapChain/SwapChain.h>
 #include <RHI/FrameBuffer/FrameBuffer.h>
 
-#include <Window/Window.h>
 #include <Log/Log.h>
 
 namespace DX
@@ -37,7 +36,7 @@ namespace DX
             return false;
         }
 
-        if (!CreateSwapChainAndFrameBuffer())
+        if (!CreateSwapChain())
         {
             Terminate();
             return false;
@@ -56,8 +55,9 @@ namespace DX
     {
         DX_LOG(Info, "Renderer", "Terminating Renderer...");
 
+        m_window->UnregisterWindowResizeEvent(m_windowResizeHandler);
+
         m_scene.reset();
-        m_frameBuffer.reset();
         m_swapChain.reset();
         m_device.reset();
     }
@@ -74,7 +74,7 @@ namespace DX
 
     FrameBuffer* Renderer::GetFrameBuffer()
     {
-        return m_frameBuffer.get();
+        return m_swapChain->GetFrameBuffer();
     }
 
     Scene* Renderer::GetScene()
@@ -95,7 +95,7 @@ namespace DX
         return true;
     }
 
-    bool Renderer::CreateSwapChainAndFrameBuffer()
+    bool Renderer::CreateSwapChain()
     {
         const uint32_t frameBufferCount = 2;
 
@@ -116,13 +116,12 @@ namespace DX
             return false;
         }
 
-        m_frameBuffer = m_swapChain->CreateFrameBuffer();
-
-        if (!m_frameBuffer)
+        m_windowResizeHandler.SetCallback([this](const Math::Vector2Int& size)
         {
-            DX_LOG(Error, "Renderer", "Failed to create frame buffer.");
-            return false;
-        }
+            m_swapChain->OnResize(size);
+        });
+
+        m_window->RegisterWindowResizeEvent(m_windowResizeHandler);
 
         return true;
     }
@@ -142,11 +141,11 @@ namespace DX
 
     void Renderer::Clear(const Math::Color& color, float depth, uint8_t stencil)
     {
-        m_device->GetImmediateContext().ClearFrameBuffer(*m_frameBuffer, color, depth, stencil);
+        m_device->GetImmediateContext().ClearFrameBuffer(*GetFrameBuffer(), color, depth, stencil);
     }
 
     void Renderer::Present()
     {
-        m_swapChain->Present(*m_frameBuffer);
+        m_swapChain->Present();
     }
 } // namespace DX
