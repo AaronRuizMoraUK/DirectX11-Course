@@ -21,14 +21,7 @@
 
 namespace DX
 {
-    Object::Object(const std::string& diffuseFilename, 
-        const std::string& normalFilename, 
-        const std::string& emissiveFilename)
-        : m_diffuseFilename(diffuseFilename)
-        , m_emissiveFilename(emissiveFilename)
-        , m_normalFilename(normalFilename)
-    {
-    }
+    Object::Object() = default;
 
     Object::~Object() = default;
 
@@ -226,9 +219,13 @@ namespace DX
         }
     }
 
-    Cube::Cube(const Math::Vector3& extends)
-        : Object("Textures/Wall_Stone_Albedo.png", "Textures/Wall_Stone_Normal.png")
+    Cube::Cube(const Math::Transform transform,
+        const Math::Vector3& extends)
     {
+        m_transform = transform;
+        m_diffuseFilename = "Textures/Wall_Stone_Albedo.png";
+        m_normalFilename = "Textures/Wall_Stone_Normal.png";
+
         const Math::Vector3 half = 0.5f * extends;
 
         // 6 faces, 2 triangles each face, 3 vertices each triangle.
@@ -304,12 +301,17 @@ namespace DX
     }
 
 
-    Mesh::Mesh(const std::string& meshFilename, 
-        const std::string& diffuseFilename, 
+    Mesh::Mesh(const Math::Transform transform,
+        const std::string& meshFilename,
+        const std::string& diffuseFilename,
         const std::string& normalFilename,
         const std::string& emissiveFilename)
-        : Object(diffuseFilename, normalFilename, emissiveFilename)
     {
+        m_transform = transform;
+        m_diffuseFilename = diffuseFilename;
+        m_normalFilename = normalFilename;
+        m_emissiveFilename = emissiveFilename;
+
         auto meshAsset = MeshAsset::LoadMeshAsset(meshFilename);
         if (!meshAsset)
         {

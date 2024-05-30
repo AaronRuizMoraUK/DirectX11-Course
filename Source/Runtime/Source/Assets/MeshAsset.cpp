@@ -9,6 +9,157 @@
 
 namespace DX
 {
+    namespace Internal
+    {
+        bool ProcessAssimpMesh(MeshData* meshData, const aiMesh* mesh, const aiMatrix4x4& transform)
+        {
+            uint32_t vertexBaseCount = static_cast<uint32_t>(meshData->m_positions.size());
+            uint32_t indexBaseCount = static_cast<uint32_t>(meshData->m_indices.size());
+
+            const aiMatrix3x3 transform3x3(transform);
+
+            if (mesh->HasPositions())
+            {
+                meshData->m_positions.resize(vertexBaseCount + mesh->mNumVertices);
+                std::transform(mesh->mVertices, mesh->mVertices + mesh->mNumVertices,
+                    meshData->m_positions.begin() + vertexBaseCount,
+                    [&transform](const aiVector3D& lhs)
+                    {
+                        const aiVector3D lhsTransformed = transform * lhs;
+
+                        Math::Vector3Packed rhs;
+                        rhs.x = lhsTransformed.x;
+                        rhs.y = lhsTransformed.y;
+                        rhs.z = lhsTransformed.z;
+                        return rhs;
+                    });
+
+                meshData->m_indices.resize(indexBaseCount + mesh->mNumFaces * 3);
+                for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex)
+                {
+                    DX_ASSERT(mesh->mFaces[faceIndex].mNumIndices == 3, "MeshAsset", "Mesh face must have 3 indices");
+
+                    const uint32_t index = indexBaseCount + faceIndex * 3;
+                    meshData->m_indices[index + 0] = vertexBaseCount + mesh->mFaces[faceIndex].mIndices[0];
+                    meshData->m_indices[index + 1] = vertexBaseCount + mesh->mFaces[faceIndex].mIndices[1];
+                    meshData->m_indices[index + 2] = vertexBaseCount + mesh->mFaces[faceIndex].mIndices[2];
+                }
+            }
+            else
+            {
+                DX_LOG(Error, "MeshAsset", "Mesh %s has no positions\n", mesh->mName.C_Str());
+                return false;
+            }
+
+            // Use first set of texture coordinates
+            if (mesh->HasTextureCoords(0))
+            {
+                meshData->m_textCoords.resize(vertexBaseCount + mesh->mNumVertices);
+                std::transform(mesh->mTextureCoords[0], mesh->mTextureCoords[0] + mesh->mNumVertices,
+                    meshData->m_textCoords.begin() + vertexBaseCount,
+                    [](const aiVector3D& lhs)
+                    {
+                        Math::Vector2Packed rhs;
+                        rhs.x = lhs.x;
+                        rhs.y = lhs.y;
+                        return rhs;
+                    });
+            }
+            else
+            {
+                DX_LOG(Error, "MeshAsset", "Mesh %s has no texture coordinates\n", mesh->mName.C_Str());
+                return false;
+            }
+
+            if (mesh->HasNormals())
+            {
+                meshData->m_normals.resize(vertexBaseCount + mesh->mNumVertices);
+                std::transform(mesh->mNormals, mesh->mNormals + mesh->mNumVertices,
+                    meshData->m_normals.begin() + vertexBaseCount,
+                    [&transform3x3](const aiVector3D& lhs)
+                    {
+                        const aiVector3D lhsTransformed = transform3x3 * lhs;
+
+                        Math::Vector3Packed rhs;
+                        rhs.x = lhsTransformed.x;
+                        rhs.y = lhsTransformed.y;
+                        rhs.z = lhsTransformed.z;
+                        return rhs;
+                    });
+            }
+            else
+            {
+                DX_LOG(Error, "MeshAsset", "Mesh %s has no normals\n", mesh->mName.C_Str());
+                return false;
+            }
+
+            if (mesh->HasTangentsAndBitangents())
+            {
+                meshData->m_tangents.resize(vertexBaseCount + mesh->mNumVertices);
+                std::transform(mesh->mTangents, mesh->mTangents + mesh->mNumVertices,
+                    meshData->m_tangents.begin() + vertexBaseCount,
+                    [&transform3x3](const aiVector3D& lhs)
+                    {
+                        const aiVector3D lhsTransformed = transform3x3 * lhs;
+
+                        Math::Vector3Packed rhs;
+                        rhs.x = lhsTransformed.x;
+                        rhs.y = lhsTransformed.y;
+                        rhs.z = lhsTransformed.z;
+                        return rhs;
+                    });
+
+                meshData->m_binormals.resize(vertexBaseCount + mesh->mNumVertices);
+                std::transform(mesh->mBitangents, mesh->mBitangents + mesh->mNumVertices,
+                    meshData->m_binormals.begin() + vertexBaseCount,
+                    [&transform3x3](const aiVector3D& lhs)
+                    {
+                        const aiVector3D lhsTransformed = transform3x3 * lhs;
+
+                        Math::Vector3Packed rhs;
+                        rhs.x = lhsTransformed.x;
+                        rhs.y = lhsTransformed.y;
+                        rhs.z = lhsTransformed.z;
+                        return rhs;
+                    });
+            }
+            else
+            {
+                DX_LOG(Error, "MeshAsset", "Mesh %s has no tangents and binormals\n", mesh->mName.C_Str());
+                return false;
+            }
+
+            return true;
+        }
+
+        bool ProcessAssimpNode(MeshData* meshData, const aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform)
+        {
+            // Calculate the node's model transformation
+            const aiMatrix4x4 nodeModelTransform = parentTransform * node->mTransformation;
+
+            // Process each mesh located at this node
+            for (uint32_t i = 0; i < node->mNumMeshes; i++)
+            {
+                aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+                if (!ProcessAssimpMesh(meshData, mesh, nodeModelTransform))
+                {
+                    return false;
+                }
+            }
+
+            // Recursively process each child node
+            for (unsigned int i = 0; i < node->mNumChildren; i++)
+            {
+                if (!ProcessAssimpNode(meshData, node->mChildren[i], scene, nodeModelTransform))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
     MeshAsset::MeshAsset(AssetId assetId, std::unique_ptr<MeshData> data)
         : Super(assetId, std::move(data))
     {
@@ -50,108 +201,16 @@ namespace DX
             return nullptr;
         }
 
-        const aiMesh* mesh = scene->mMeshes[0]; // TODO: Support multiple meshes and sorted by material (sub-mesh)
-
         auto meshData = std::make_unique<MeshData>();
 
-        if (mesh->HasPositions())
-        {
-            meshData->m_positions.resize(mesh->mNumVertices);
-            std::transform(mesh->mVertices, mesh->mVertices + mesh->mNumVertices,
-                meshData->m_positions.begin(),
-                [](const aiVector3D& lhs)
-                {
-                    Math::Vector3Packed rhs;
-                    rhs.x = lhs.x;
-                    rhs.y = lhs.y;
-                    rhs.z = lhs.z;
-                    return rhs;
-                });
+        // TODO: Import AABBs and separate sort mesh data in sub-meshes.
 
-            meshData->m_indices.resize(mesh->mNumFaces * 3);
-            for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex)
-            {
-                DX_ASSERT(mesh->mFaces[faceIndex].mNumIndices == 3, "MeshAsset", "Mesh face must have 3 indices");
-
-                const uint32_t index = faceIndex * 3;
-                meshData->m_indices[index + 0] = mesh->mFaces[faceIndex].mIndices[0];
-                meshData->m_indices[index + 1] = mesh->mFaces[faceIndex].mIndices[1];
-                meshData->m_indices[index + 2] = mesh->mFaces[faceIndex].mIndices[2];
-            }
-        }
-        else
+        if (aiMatrix4x4 identityMatrix;
+            !Internal::ProcessAssimpNode(meshData.get(), scene->mRootNode, scene, identityMatrix))
         {
-            DX_LOG(Error, "MeshAsset", "Mesh %s has no positions\n", fileNamePath.generic_string().c_str());
+            DX_LOG(Error, "MeshAsset", "Assimp failed to process mesh: %s",
+                fileNamePath.generic_string().c_str());
             return nullptr;
-        }
-
-        // Use first set of texture coordinates
-        if (mesh->HasTextureCoords(0))
-        {
-            meshData->m_textCoords.resize(mesh->mNumVertices);
-            std::transform(mesh->mTextureCoords[0], mesh->mTextureCoords[0] + mesh->mNumVertices,
-                meshData->m_textCoords.begin(),
-                [](const aiVector3D& lhs)
-                {
-                    Math::Vector2Packed rhs;
-                    rhs.x = lhs.x;
-                    rhs.y = lhs.y;
-                    return rhs;
-                });
-        }
-        else
-        {
-            DX_LOG(Warning, "MeshAsset", "Mesh %s has no texture coordinates\n", fileNamePath.generic_string().c_str());
-        }
-
-        if (mesh->HasNormals())
-        {
-            meshData->m_normals.resize(mesh->mNumVertices);
-            std::transform(mesh->mNormals, mesh->mNormals + mesh->mNumVertices,
-                meshData->m_normals.begin(),
-                [](const aiVector3D& lhs)
-                {
-                    Math::Vector3Packed rhs;
-                    rhs.x = lhs.x;
-                    rhs.y = lhs.y;
-                    rhs.z = lhs.z;
-                    return rhs;
-                });
-        }
-        else
-        {
-            DX_LOG(Warning, "MeshAsset", "Mesh %s has no normals\n", fileNamePath.generic_string().c_str());
-        }
-
-        if (mesh->HasTangentsAndBitangents())
-        {
-            meshData->m_tangents.resize(mesh->mNumVertices);
-            std::transform(mesh->mTangents, mesh->mTangents + mesh->mNumVertices,
-                meshData->m_tangents.begin(),
-                [](const aiVector3D& lhs)
-                {
-                    Math::Vector3Packed rhs;
-                    rhs.x = lhs.x;
-                    rhs.y = lhs.y;
-                    rhs.z = lhs.z;
-                    return rhs;
-                });
-
-            meshData->m_binormals.resize(mesh->mNumVertices);
-            std::transform(mesh->mBitangents, mesh->mBitangents + mesh->mNumVertices,
-                meshData->m_binormals.begin(),
-                [](const aiVector3D& lhs)
-                {
-                    Math::Vector3Packed rhs;
-                    rhs.x = lhs.x;
-                    rhs.y = lhs.y;
-                    rhs.z = lhs.z;
-                    return rhs;
-                });
-        }
-        else
-        {
-            DX_LOG(Warning, "MeshAsset", "Mesh %s has no tangents and binormals\n", fileNamePath.generic_string().c_str());
         }
 
         return meshData;

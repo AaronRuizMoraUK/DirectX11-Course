@@ -24,7 +24,7 @@ namespace DX
 
     private:
         bool m_firstUpdate = true;
-        float m_moveSpeed = 4.0f;
+        float m_moveSpeed = 2.0f;
         float m_rotationSensitivity = 3.0f;
 
         Math::Transform m_transform = Math::Transform::CreateIdentity();

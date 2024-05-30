@@ -19,9 +19,7 @@ namespace DX
     class Object
     {
     public:
-        Object(const std::string& diffuseFilename, 
-            const std::string& normalFilename, 
-            const std::string& emissiveFilename = "");
+        Object();
         virtual ~Object();
 
         uint32_t GetIndexCount() const { return static_cast<uint32_t>(m_indexData.size()); }
@@ -46,16 +44,19 @@ namespace DX
 
         Math::Transform m_transform = Math::Transform::CreateIdentity();
 
+        // Filled by subclass
         std::vector<VertexPNTBUv> m_vertexData;
         std::vector<Index> m_indexData;
+
+        // Filled by subclass
+        std::string m_diffuseFilename;
+        std::string m_emissiveFilename;
+        std::string m_normalFilename;
 
     private:
         std::shared_ptr<Buffer> m_vertexBuffer;
         std::shared_ptr<Buffer> m_indexBuffer;
 
-        std::string m_diffuseFilename;
-        std::string m_emissiveFilename;
-        std::string m_normalFilename;
         std::shared_ptr<Texture> m_diffuseTexture;
         std::shared_ptr<Texture> m_emissiveTexture;
         std::shared_ptr<Texture> m_normalTexture;
@@ -68,13 +69,15 @@ namespace DX
     class Cube : public Object
     {
     public:
-        Cube(const Math::Vector3& extends);
+        Cube(const Math::Transform transform, 
+            const Math::Vector3& extends);
     };
 
     class Mesh : public Object
     {
     public:
-        Mesh(const std::string& meshFilename, 
+        Mesh(const Math::Transform transform,
+            const std::string& meshFilename, 
             const std::string& diffuseFilename, 
             const std::string& normalFilename,
             const std::string& emissiveFilename = "");

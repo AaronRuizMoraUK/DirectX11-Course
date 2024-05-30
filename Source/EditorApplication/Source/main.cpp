@@ -47,23 +47,30 @@ int main()
 
     {
         // Camera
-        auto camera = std::make_unique<DX::Camera>(Math::Vector3(0.0f, 1.0f, -2.0f), Math::Vector3(0.0f));
+        auto camera = std::make_unique<DX::Camera>(Math::Vector3(0.0f, 2.0f, -2.0f), Math::Vector3(0.0f, 1.0f, 0.0f));
 
         // Render objects
         std::vector<std::unique_ptr<DX::Object>> objects;
-        objects.push_back(std::make_unique<DX::Cube>(Math::Vector3(1.0f)));
+        objects.push_back(std::make_unique<DX::Cube>(
+            Math::Transform{ {-3.0f, 0.5f, 0.0f} },
+            Math::Vector3(1.0f)));
         objects.push_back(std::make_unique<DX::Mesh>(
+            Math::Transform{ {0.0f, 0.0f, 0.0f}, Math::Quaternion::FromEulerAngles({ 0.0f, 3.14f, 0.0f }), Math::Vector3(0.01f) },
+            "Models/Jack/Jack.fbx",
+            "Textures/Wall_Stone_Albedo.png",
+            "Textures/Wall_Stone_Normal.png"));
+        objects.push_back(std::make_unique<DX::Mesh>(
+            Math::Transform{ {2.0f, 1.0f, 0.0f} },
             "Models/DamagedHelmet/DamagedHelmet.gltf", 
             "Models/DamagedHelmet/Default_albedo.jpg",
             "Models/DamagedHelmet/Default_normal.jpg",
             "Models/DamagedHelmet/Default_emissive.jpg"));
         objects.push_back(std::make_unique<DX::Mesh>(
-            "Models/Jack/Jack.fbx", 
-            "Textures/Wall_Stone_Albedo.png",
-            "Textures/Wall_Stone_Normal.png"));
-        objects[0]->SetTransform(Math::Vector3(-1.5f, 0.0f, 0.0f));
-        objects[1]->SetTransform({ Math::Vector3(2.0f, 0.0f, 0.0f), Math::Quaternion::FromEulerAngles({ -1.57f, 0.0f, 0.0f }) });
-        objects[2]->SetTransform({ Math::Vector3(0.0f, -1.0f, 0.0f), Math::Quaternion::FromEulerAngles({0.0f, 3.14f, 0.0f}), Math::Vector3(0.01f) });
+            Math::Transform{ {-1.5f, 0.0f, 0.0f}, Math::Quaternion::identity, Math::Vector3(0.1f) },
+            "Models/Lantern/Lantern.gltf",
+            "Models/Lantern/Lantern_baseColor.png",
+            "Models/Lantern/Lantern_normal.png",
+            "Models/Lantern/Lantern_emissive.png"));
 
         // Render Scene
         DX::Scene* scene = renderer->GetScene();
@@ -89,7 +96,7 @@ int main()
             for (auto& object : objects)
             {
                 Math::Transform& transform = object->GetTransform();
-                transform.m_rotation = Math::Quaternion::FromEulerAngles(Math::Vector3(0.0f, 0.3f * deltaTime, 0.0f)) * transform.m_rotation;
+                transform.m_rotation = Math::Quaternion::FromEulerAngles(Math::Vector3(0.0f, 0.5f * deltaTime, 0.0f)) * transform.m_rotation;
             }
 
             // ------
