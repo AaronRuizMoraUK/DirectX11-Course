@@ -80,10 +80,12 @@ I did the following improvements on top of the content provided in the DirectX 1
 - Assets only have generic data imported from the files in the Assets folder, they do not include DirectX or Graphics structures. For example, `TextureAsset` has a buffer (bytes) with the image imported from file, but it doesn't include a graphics' Texture. Another example is `MeshAsset`, it has the list of positions, indices, etc. imported from FBX or GLTF files, but it doesn't include a graphics' Buffer. This keeps the assets system nicely decoupled from graphics structures. Other classes (for example Renderer's `Object`) will use the assets, load their data and then construct their necessary structures from them.
 - `MeshAsset` imports all meshes from the file and not just the first one.
 - `Camera` just handles view/projection matrices and camera updates, it doesn't include any DirectX or Graphics structure. This decouples the camera from graphics. Instead, the renderer's scene will get the view/projection matrices from the camera and it's the scene's responsibility to update the constant buffers for the shaders.
+- The main loop calculates the delta time of each frame and uses it to update the camera and the objects. This makes the application behave the same independently of the frame rate that it runs.
 - Implemented [Blinn-Phong illumination model](https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model) in Pixel Shader.
 - Implemented [Normal mapping](https://en.wikipedia.org/wiki/Normal_mapping) to provide more detailed surfaces to objects.
+- Applied [Gamma Correction](https://learnopengl.com/Advanced-Lighting/Gamma-Correction) in Pixel Shader for a better quality image due to more accurate lighting calculations in linear space.
 
-In the last section of the course, when everything is coming together, I made a slightly different design:
+In the last section of the course, where everything is coming together, I made a slightly different design:
 
 - In order to know what resources the shaders expect and in what slots they should be bound to, the shader compiler gathers reflection data from the shader to provide a `ShaderResourceLayout`.
 - The `Pipeline` class (which has the shaders for each stage: vertex, pixel, etc.) uses the `ShaderResourceLayout` from each shader to create a `PipelineResourceBindings` object. The pipeline produces `PipelineResourceBindings` objects which can be filled with resources by slot or by the variable name in the shader.
