@@ -33,6 +33,8 @@ namespace DX
         void WaitAndExecute();
 
     private:
+        void UpdateLightInfo();
+
         Renderer* m_renderer = nullptr;
         Camera* m_camera = nullptr;
         std::unique_ptr<PipelineObject> m_pipelineObject;
@@ -50,6 +52,14 @@ namespace DX
             Math::Vector4Packed m_camPos;
         };
         std::shared_ptr<Buffer> m_viewProjMatrixConstantBuffer;
+
+        struct LightBuffer
+        {
+            Math::Vector4Packed m_lightDir;
+            Math::Vector4Packed m_lightColor;
+        };
+        LightBuffer m_lightInfo;
+        std::shared_ptr<Buffer> m_lightConstantBuffer;
 
         // Per Object Resources
         struct WorldBuffer

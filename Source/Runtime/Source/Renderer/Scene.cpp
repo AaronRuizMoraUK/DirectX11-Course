@@ -2,7 +2,7 @@
 #include <Renderer/Renderer.h>
 #include <Renderer/PipelineObject.h>
 #include <Renderer/Object.h>
-#include <Window/Window.h>
+#include <Window/WindowManager.h>
 #include <Camera/Camera.h>
 
 #include <RHI/Device/Device.h>
@@ -12,6 +12,11 @@
 #include <RHI/Resource/Buffer/Buffer.h>
 
 #include <Math/Vector2.h>
+#include <Debug/Debug.h>
+
+// GLFW uses Vulkan by default, so we need to indicate to not use it.
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 namespace DX
 {
@@ -58,6 +63,16 @@ namespace DX
             constantBufferDesc.m_initialData = &viewProjBuffer;
 
             m_viewProjMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
+
+            m_lightInfo = LightBuffer{
+                Math::Vector4Packed({0.0f, -1.0f, 1.0f, 0.0f}), // Direction
+                Math::Vector4Packed(Math::Colors::White) // Color
+            };
+
+            constantBufferDesc.m_elementSizeInBytes = sizeof(LightBuffer);
+            constantBufferDesc.m_initialData = &m_lightInfo;
+
+            m_lightConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
 
         // Per Object Resources
@@ -99,7 +114,7 @@ namespace DX
 
     void Scene::Render()
     {
-        // Update constant buffer with the latest view and projection matrices.
+        // Update scene constant buffers
         {
             const ViewProjBuffer viewProjBuffer = { 
                 m_camera->GetViewMatrix(), 
@@ -108,6 +123,10 @@ namespace DX
             };
 
             m_renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
+
+            UpdateLightInfo();
+
+            m_renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_lightConstantBuffer, &m_lightInfo, sizeof(LightBuffer));
         }
 
         // Draw all objects that use the same pipeline asynchronously
@@ -126,6 +145,7 @@ namespace DX
                 // Bind per Scene resources
                 {
                     m_pipelineObject->GetSceneResourceBindings()->SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
+                    m_pipelineObject->GetSceneResourceBindings()->SetConstantBuffer(ShaderType_Pixel, 0, m_lightConstantBuffer);
 
                     m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetSceneResourceBindings());
                 }
@@ -179,6 +199,42 @@ namespace DX
             drawObjects.wait();
 
             m_renderer->GetDevice()->ExecuteCommandLists({ m_commandList.get() });
+        }
+    }
+
+    void Scene::UpdateLightInfo()
+    {
+        Window* window = WindowManager::Get().GetWindow();
+        DX_ASSERT(window, "Camera", "Default window not found");
+
+        auto* windowHandler = window->GetWindowHandler();
+
+        // Set light direction to the front of the camera
+        if (glfwGetKey(windowHandler, GLFW_KEY_R) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightDir = { m_camera->GetTransform().GetBasisZ(), 0.0f };
+        }
+
+        // Light color switching
+        if (glfwGetKey(windowHandler, GLFW_KEY_1) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightColor = Math::Colors::RebeccaPurple;
+        }
+        if (glfwGetKey(windowHandler, GLFW_KEY_2) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightColor = Math::Colors::DarkCyan;
+        }
+        if (glfwGetKey(windowHandler, GLFW_KEY_3) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightColor = Math::Colors::Violet;
+        }
+        if (glfwGetKey(windowHandler, GLFW_KEY_4) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightColor = Math::Colors::Chocolate;
+        }
+        if (glfwGetKey(windowHandler, GLFW_KEY_5) == GLFW_PRESS)
+        {
+            m_lightInfo.m_lightColor = Math::Colors::White;
         }
     }
 } // namespace DX

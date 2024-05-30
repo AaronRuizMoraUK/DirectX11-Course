@@ -43,6 +43,11 @@ Camera can be controlled while pressing the **right mouse button**:
 - Use mouse to rotate and pitch the camera.
 - Use mouse wheel to speed up/down camera movement.
 
+Lighting controls:
+
+- Use `1` to `5` to change the color of the light.
+- Use `R` to set the lighting direction to the current look-at direction of the camera.
+
 ## Engine Architecture
 
 The engine is divided in multiple projects.
