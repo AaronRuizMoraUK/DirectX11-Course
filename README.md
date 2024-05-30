@@ -107,10 +107,11 @@ I did the following improvements on top of the content provided in the DirectX 1
 
 - The main loop calculates the delta time of each frame and uses it to update the camera and the objects. This makes the application behave the same way independently of the frame rate that it runs.
 - `Camera` just handles view/projection matrices and camera updates, it doesn't include any DirectX or Graphics structure. This decouples the camera from graphics. The renderer's scene will get the view/projection matrices from the camera and it's the scene's responsibility to update the constant buffers for the shaders.
-- A `Renderer` class handles the device, swap chain, main frame buffer and a scene.
-- A `PipelineObject` class has the `Pipeline` and the binding of resources via several `PipelineResourceBindings` objects (per Scene, per Material, per Object).
-- The `Scene` class is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene. It uses a `CommandList` to record all the commands asynchronously.
-- `main.cpp` will instantiate an `Application`, which has the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Finally, `Application` runs the main loop where it'll update the camera, render the scene and present it.
+- In the last section of the course, where everything is coming together, I went for a slightly different design:
+    - A `Renderer` class handles the device, swap chain, main frame buffer and a scene.
+    - A `PipelineObject` class has the `Pipeline` and the binding of resources via several `PipelineResourceBindings` objects (per Scene, per Material, per Object).
+    - The `Scene` class is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene. It uses a `CommandList` to record all the commands asynchronously.
+    - `main.cpp` will instantiate an `Application`, which has the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Finally, `Application` runs the main loop where it'll update the camera, render the scene and present it.
 
 ## 3rdParty Libraries
 
