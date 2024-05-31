@@ -48,7 +48,7 @@ Lighting controls:
 - Use `1` to `5` to change the color of the light.
 - Use `R` to set the lighting direction to the current look-at direction of the camera.
 
-## Engine Architecture
+## Rendering Engine Architecture
 
 The engine is divided in multiple projects.
 
@@ -60,6 +60,16 @@ The engine is divided in multiple projects.
 | **Runtime** | This library contains more general constructs to build graphics applications, such as Window, Renderer, Camera or Assets. The renderer has an Scene with objects to render. |
 | **EditorApplication** | Project with `main.cpp` that generates the executable. It creates an `Application`, which has a Window, a Renderer and a Camera. `Application` also creates objects and adds them to the renderer's scene. Finally, `Application` also runs the main loop, updating the camera and rendering the scene. |
 | **Content** | This project contains the Assets folder, the main and 3rdParty CMake files and this *readme* file. |
+
+In the last section of the course, where everything is coming together, I went for a slightly different design:
+
+- In order to know what resources the shaders expect and in what slots they should be bound to, the shader compiler gathers reflection data from the shader to provide a `ShaderResourceLayout`.
+- The `Pipeline` class (which has the shaders for each stage: vertex, pixel, etc.) uses the `ShaderResourceLayout` from each shader to create a `PipelineResourceBindings` object. The pipeline produces `PipelineResourceBindings` objects which can be filled with resources by slot or by the variable name in the shader.
+- A `PipelineObject` class has the `Pipeline` and the binding of resources using several `PipelineResourceBindings` objects (per Scene, per Material, per Object).
+- A `Renderer` class handles the device, swap chain, main frame buffer and a scene.
+- The `Scene` is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene.
+- The `Scene` uses two `CommandList`, one to clear the frame buffer and update the scene buffers, and another to draw all objects. Commands are recorded into the command lists in parallel in different threads, then the scene waits and queues them for execution.
+- `main.cpp` will instantiate an `Application`, which has the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Finally, `Application` runs the main loop where it'll update the camera, render the scene and present it.
 
 ## DirectX Course Improvements
 
@@ -73,6 +83,11 @@ I did the following improvements on top of the content provided in the DirectX 1
   - **Debug**: No optimizations and debug information enabled. Asserts, logs and full debugging available.
   - **Development**: Optimizations and debug information enabled. Asserts, logs and partial debugging available with fast execution.
   - **Release**: Optimizations enabled and no debug information. Asserts, logs and debugging not available. Fastest execution.
+
+#### Application
+
+- The main loop calculates the delta time of each frame and uses it to update the camera and the objects. This makes the application behave the same way independently of the frame rate that it runs.
+- `Camera` just handles view/projection matrices and camera updates, it doesn't include any DirectX or Graphics structure. This decouples the camera from graphics. The renderer's scene will get the view/projection matrices from the camera and it's the scene's responsibility to update the constant buffers for the shaders.
 
 #### Graphics
 
@@ -88,8 +103,7 @@ I did the following improvements on top of the content provided in the DirectX 1
     - `RenderTargetView` supports multiple types of Textures (1D, 2D, 2DMS, 3D, Array) and Buffers (Typed)
     - `DepthStencilView` supports multiple types of Textures (1D, 2D, 2DMS, Array).
 - `ShaderCompiler` is a separate class that generates shader bytecode and `Shader` will consume shader bytecode. This way `Shader` is not tied to an specific method of shader compilation, simplifying the effort to support *offline* shader compilation in the future.
-- In order to know what resources the shaders expect and in what slots they should be bound to, the shader compiler gathers reflection data from the shader to provide a `ShaderResourceLayout`.
-- The `Pipeline` class (which has the shaders for each stage: vertex, pixel, etc.) uses the `ShaderResourceLayout` from each shader to create a `PipelineResourceBindings` object. The pipeline produces `PipelineResourceBindings` objects which can be filled with resources by slot or by the variable name in the shader.
+
 
 #### Lighting
  
@@ -102,17 +116,6 @@ I did the following improvements on top of the content provided in the DirectX 1
  
 - Assets only have generic data imported from the files in the Assets folder, they do not include DirectX or Graphics structures. For example, `TextureAsset` has a buffer of bytes with the image imported from file, but it doesn't include a graphics' `Texture`. Another example is `MeshAsset`, it has the list of positions, indices, etc. imported from FBX or GLTF files, but it doesn't include a graphics' `Buffer`. This keeps the assets system nicely decoupled from graphics structures. Other classes, such as Renderer's `Object`, will use the assets, load their data and then construct their necessary structures from them.
 - `MeshAsset` imports all meshes from the 3D file and not just the first one.
-
-#### Application
-
-- The main loop calculates the delta time of each frame and uses it to update the camera and the objects. This makes the application behave the same way independently of the frame rate that it runs.
-- `Camera` just handles view/projection matrices and camera updates, it doesn't include any DirectX or Graphics structure. This decouples the camera from graphics. The renderer's scene will get the view/projection matrices from the camera and it's the scene's responsibility to update the constant buffers for the shaders.
-- In the last section of the course, where everything is coming together, I went for a slightly different design:
-    - A `Renderer` class handles the device, swap chain, main frame buffer and a scene.
-    - A `PipelineObject` class has the `Pipeline` and the binding of resources via several `PipelineResourceBindings` objects (per Scene, per Material, per Object).
-    - The `Scene` class is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene.
-    - The `Scene` uses two `CommandList`, one to clear frame buffer and update scene buffers and another to draw all objects. Commands are recorded into the command lists in parallel in different threads, then the scene waits and queues them for execution.
-    - `main.cpp` will instantiate an `Application`, which has the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Finally, `Application` runs the main loop where it'll update the camera, render the scene and present it.
 
 ## 3rdParty Libraries
 
