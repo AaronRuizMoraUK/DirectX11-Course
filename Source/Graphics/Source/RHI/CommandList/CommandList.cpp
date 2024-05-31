@@ -1,7 +1,6 @@
 #include <RHI/CommandList/CommandList.h>
 
 #include <RHI/Device/Device.h>
-#include <RHI/Device/DeviceContext.h>
 #include <Log/Log.h>
 
 #include <d3d11.h>
@@ -9,16 +8,8 @@
 namespace DX
 {
     CommandList::CommandList(Device* device)
-        : DeviceObject(device)
+        : DeviceContext(device, DeviceContextType::Deferred)
     {
-        // Create the deferred context.
-        m_deferredContext = std::make_unique<DeviceContext>(device, DeviceContextType::Deferred);
-        if (!m_deferredContext)
-        {
-            DX_LOG(Fatal, "CommandList", "Failed to create deferred device context.");
-            return;
-        }
-
         DX_LOG(Verbose, "CommandList", "Graphics command list created.");
     }
 
@@ -27,18 +18,13 @@ namespace DX
         DX_LOG(Verbose, "CommandList", "Graphics command list destroyed.");
     }
 
-    DeviceContext& CommandList::GetDeferredContext()
-    {
-        return *m_deferredContext;
-    }
-
-    void CommandList::FinishCommandList()
+    void CommandList::Close()
     {
         const bool restoreDeferredContextState = false;
 
         // This will create the command list from the deferred context and record commands into it.
         // When the method returns, a command list is created containing all the render commands.
-        auto result = m_deferredContext->GetDX11DeviceContext()->FinishCommandList(
+        auto result = GetDX11DeviceContext()->FinishCommandList(
             restoreDeferredContextState, m_dx11CommandList.GetAddressOf());
 
         if (FAILED(result))
@@ -47,7 +33,7 @@ namespace DX
         }
     }
 
-    void CommandList::ClearCommandList()
+    void CommandList::Clear()
     {
         m_dx11CommandList.Reset();
     }

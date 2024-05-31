@@ -96,11 +96,7 @@ namespace DX
             // ------
             // Render
             // ------
-            m_renderer->Clear(Math::CreateColor(Math::Colors::SteelBlue.xyz() * 0.7f), 1.0f, 0);
-
             m_renderer->GetScene()->Render();
-
-            m_renderer->GetScene()->WaitAndExecute();
 
             m_renderer->Present();
         }

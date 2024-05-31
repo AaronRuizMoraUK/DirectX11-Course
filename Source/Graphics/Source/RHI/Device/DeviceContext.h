@@ -64,9 +64,6 @@ namespace DX
         ComPtr<ID3D11DeviceContext> GetDX11DeviceContext();
 
     private:
-        DeviceContextType m_type;
-
-    private:
         ComPtr<ID3D11DeviceContext> m_dx11DeviceContext;
     };
 } // namespace DX

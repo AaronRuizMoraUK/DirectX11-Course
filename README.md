@@ -110,7 +110,8 @@ I did the following improvements on top of the content provided in the DirectX 1
 - In the last section of the course, where everything is coming together, I went for a slightly different design:
     - A `Renderer` class handles the device, swap chain, main frame buffer and a scene.
     - A `PipelineObject` class has the `Pipeline` and the binding of resources via several `PipelineResourceBindings` objects (per Scene, per Material, per Object).
-    - The `Scene` class is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene. It uses a `CommandList` to record all the commands asynchronously.
+    - The `Scene` class is what brings all together, handling a `PipelineObject`, the binding of resources and the drawing of all objects in the scene.
+    - The `Scene` uses two `CommandList`, one to clear frame buffer and update scene buffers and another to draw all objects. Commands are recorded into the command lists in parallel in different threads, then the scene waits and queues them for execution.
     - `main.cpp` will instantiate an `Application`, which has the Window, the Renderer, the Camera and the Objects. It'll get the Scene from the renderer and add the objects and the camera to it. Finally, `Application` runs the main loop where it'll update the camera, render the scene and present it.
 
 ## 3rdParty Libraries

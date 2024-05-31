@@ -61,8 +61,6 @@ namespace DX
 
         void ExecuteCommandLists(std::vector<CommandList*> commandLists);
 
-        DeviceContext& GetImmediateContext();
-
         ComPtr<ID3D11Device> GetDX11Device();
 
     private:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <RHI/DeviceObject/DeviceObject.h>
+#include <RHI/Device/DeviceContext.h>
 
 #include <memory>
 
@@ -9,9 +9,10 @@ struct ID3D11CommandList;
 
 namespace DX
 {
-    class DeviceContext;
-
-    class CommandList : public DeviceObject
+    // Command list to record graphics commands asynchronously.
+    // Implemented to be similar to DirectX 12 command lists.
+    // Internally it uses a DirectX 11 deferred device context.
+    class CommandList : public DeviceContext
     {
     public:
         CommandList(Device* device);
@@ -22,26 +23,22 @@ namespace DX
 
         DeviceObjectType GetType() const override { return DeviceObjectType::CommandList; }
 
-        // --------------------------------------------------------------------
-        // To be called asynchronously from a thread to executed commands
-        // on the deferred context and obtain the command list.
-        // --------------------------------------------------------------------
-        DeviceContext& GetDeferredContext();
+        // -----------------------------------------------------------------------------
+        // Call the following functions asynchronously from a thread to record commands.
+        // -----------------------------------------------------------------------------
+        // All functions from DeviceContext parent class.
 
         // Call this last after all the command calls.
-        // It creates the command list from the deferred context.
-        void FinishCommandList();
+        // Indicates that recording to the command list has finished.
+        void Close();
 
-        // --------------------------------------------------------------------
-        // To be called from the main thread to obtain and clear the command
-        // list.
-        // --------------------------------------------------------------------
-        void ClearCommandList();
+        // -----------------------------------------------------------------------------
+        // Called from the main thread to clear the command list after it's been
+        // submitted for execution via Device::ExecuteCommandLists()
+        // -----------------------------------------------------------------------------
+        void Clear();
 
         ComPtr<ID3D11CommandList> GetDX11CommandList();
-
-    private:
-        std::unique_ptr<DeviceContext> m_deferredContext;
 
     private:
         ComPtr<ID3D11CommandList> m_dx11CommandList;

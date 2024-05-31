@@ -195,13 +195,8 @@ namespace DX
             m_immediateContext->GetDX11DeviceContext()->ExecuteCommandList(
                 commandList->GetDX11CommandList().Get(), restoreContextState);
 
-            commandList->ClearCommandList();
+            commandList->Clear();
         }
-    }
-
-    DeviceContext& Device::GetImmediateContext()
-    {
-        return *m_immediateContext;
     }
 
     ComPtr<ID3D11Device> Device::GetDX11Device()

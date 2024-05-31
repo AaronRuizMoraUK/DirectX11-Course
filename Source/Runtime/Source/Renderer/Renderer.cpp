@@ -139,11 +139,6 @@ namespace DX
         return true;
     }
 
-    void Renderer::Clear(const Math::Color& color, float depth, uint8_t stencil)
-    {
-        m_device->GetImmediateContext().ClearFrameBuffer(*GetFrameBuffer(), color, depth, stencil);
-    }
-
     void Renderer::Present()
     {
         m_swapChain->Present();

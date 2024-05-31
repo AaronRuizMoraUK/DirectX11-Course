@@ -35,7 +35,6 @@ namespace DX
         FrameBuffer* GetFrameBuffer();
         Scene* GetScene();
 
-        void Clear(const Math::Color& color, float depth, uint8_t stencil);
         void Present();
 
     private:

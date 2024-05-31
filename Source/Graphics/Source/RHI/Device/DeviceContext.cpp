@@ -23,9 +23,8 @@ namespace DX
 {
     DeviceContext::DeviceContext(Device* device, DeviceContextType type, void* nativeContext)
         : DeviceObject(device)
-        , m_type(type)
     {
-        switch (m_type)
+        switch (type)
         {
         case DeviceContextType::Immediate:
             // Immediate context must be passed by parameter.

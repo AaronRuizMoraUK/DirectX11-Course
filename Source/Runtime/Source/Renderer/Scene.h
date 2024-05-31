@@ -30,7 +30,6 @@ namespace DX
         void RemoveObject(Object* object);
 
         void Render();
-        void WaitAndExecute();
 
     private:
         void UpdateLightInfo();
@@ -41,8 +40,8 @@ namespace DX
 
         std::unordered_set<Object*> m_objects;
 
-        std::shared_ptr<CommandList> m_commandList;
-        std::future<void> drawObjects;
+        std::shared_ptr<CommandList> m_commandListScene;
+        std::shared_ptr<CommandList> m_commandListObjects;
 
         // Per Scene Resources
         struct ViewProjBuffer

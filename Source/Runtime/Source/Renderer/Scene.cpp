@@ -91,8 +91,9 @@ namespace DX
             m_worldMatrixConstantBuffer = renderer->GetDevice()->CreateBuffer(constantBufferDesc);
         }
 
-        // Command List
-        m_commandList = renderer->GetDevice()->CreateCommandList();
+        // Command Lists
+        m_commandListScene = renderer->GetDevice()->CreateCommandList();
+        m_commandListObjects = renderer->GetDevice()->CreateCommandList();
     }
 
     Scene::~Scene() = default;
@@ -114,40 +115,48 @@ namespace DX
 
     void Scene::Render()
     {
-        // Update scene constant buffers
-        {
-            const ViewProjBuffer viewProjBuffer = { 
-                m_camera->GetViewMatrix(), 
-                m_camera->GetProjectionMatrix(),
-                Math::Vector4Packed{Math::Vector4{m_camera->GetTransform().m_position, 1.0f}}
-            };
+        // Clear and update scene constant buffers
+        std::future updateScene = std::async(std::launch::async, [&]()
+            {
+                m_commandListScene->ClearFrameBuffer(*m_renderer->GetFrameBuffer(),
+                    Math::CreateColor(Math::Colors::SteelBlue.xyz() * 0.7f),
+                    1.0f,
+                    static_cast<uint8_t>(0));
 
-            m_renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
+                const ViewProjBuffer viewProjBuffer = {
+                    m_camera->GetViewMatrix(),
+                    m_camera->GetProjectionMatrix(),
+                    Math::Vector4Packed{Math::Vector4{m_camera->GetTransform().m_position, 1.0f}}
+                };
 
-            UpdateLightInfo();
+                m_commandListScene->UpdateDynamicBuffer(*m_viewProjMatrixConstantBuffer, &viewProjBuffer, sizeof(ViewProjBuffer));
 
-            m_renderer->GetDevice()->GetImmediateContext().UpdateDynamicBuffer(*m_lightConstantBuffer, &m_lightInfo, sizeof(LightBuffer));
-        }
+                UpdateLightInfo();
+
+                m_commandListScene->UpdateDynamicBuffer(*m_lightConstantBuffer, &m_lightInfo, sizeof(LightBuffer));
+
+                m_commandListScene->Close();
+            });
 
         // Draw all objects that use the same pipeline asynchronously
-        drawObjects = std::async(std::launch::async, [&]()
+        std::future drawObjects = std::async(std::launch::async, [&]()
             {
                 // Bind frame buffer and viewport
-                m_commandList->GetDeferredContext().BindFrameBuffer(*m_renderer->GetFrameBuffer());
-                m_commandList->GetDeferredContext().BindViewports({ 
+                m_commandListObjects->BindFrameBuffer(*m_renderer->GetFrameBuffer());
+                m_commandListObjects->BindViewports({
                     Math::Rectangle{{0.0f, 0.0f}, 
                     Math::Vector2{m_renderer->GetWindow()->GetSize()}}
                 });
 
                 // Bind pipeline
-                m_commandList->GetDeferredContext().BindPipeline(*m_pipelineObject->GetPipeline());
+                m_commandListObjects->BindPipeline(*m_pipelineObject->GetPipeline());
 
                 // Bind per Scene resources
                 {
                     m_pipelineObject->GetSceneResourceBindings()->SetConstantBuffer(ShaderType_Vertex, 0, m_viewProjMatrixConstantBuffer);
                     m_pipelineObject->GetSceneResourceBindings()->SetConstantBuffer(ShaderType_Pixel, 0, m_lightConstantBuffer);
 
-                    m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetSceneResourceBindings());
+                    m_commandListObjects->BindResources(*m_pipelineObject->GetSceneResourceBindings());
                 }
 
                 for (auto* object : m_objects)
@@ -159,7 +168,7 @@ namespace DX
                         m_pipelineObject->GetMaterialResourceBindings()->SetShaderResourceView(ShaderType_Pixel, 2, object->GetNormalTextureView());
                         m_pipelineObject->GetMaterialResourceBindings()->SetSampler(ShaderType_Pixel, 0, object->GetSampler());
 
-                        m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetMaterialResourceBindings());
+                        m_commandListObjects->BindResources(*m_pipelineObject->GetMaterialResourceBindings());
                     }
 
                     // Bind per Object resources
@@ -172,34 +181,30 @@ namespace DX
                                 object->GetTransform().ToMatrix().Inverse().Transpose()
                             };
 
-                            m_commandList->GetDeferredContext().UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldBuffer, sizeof(worldBuffer));
+                            m_commandListObjects->UpdateDynamicBuffer(*m_worldMatrixConstantBuffer, &worldBuffer, sizeof(worldBuffer));
                         }
                         m_pipelineObject->GetObjectResourceBindings()->SetConstantBuffer(ShaderType_Vertex, 1, m_worldMatrixConstantBuffer);
                         m_pipelineObject->GetObjectResourceBindings()->SetConstantBuffer(ShaderType_Pixel, 1, m_worldMatrixConstantBuffer);
 
-                        m_commandList->GetDeferredContext().BindResources(*m_pipelineObject->GetObjectResourceBindings());
+                        m_commandListObjects->BindResources(*m_pipelineObject->GetObjectResourceBindings());
                     }
 
                     // Bind Vertex and Index Buffers
-                    m_commandList->GetDeferredContext().BindVertexBuffers({ object->GetVertexBuffer().get() });
-                    m_commandList->GetDeferredContext().BindIndexBuffer(*object->GetIndexBuffer());
+                    m_commandListObjects->BindVertexBuffers({ object->GetVertexBuffer().get() });
+                    m_commandListObjects->BindIndexBuffer(*object->GetIndexBuffer());
 
                     // Draw
-                    m_commandList->GetDeferredContext().DrawIndexed(object->GetIndexCount());
+                    m_commandListObjects->DrawIndexed(object->GetIndexCount());
                 }
 
-                m_commandList->FinishCommandList();
+                m_commandListObjects->Close();
             });
-    }
 
-    void Scene::WaitAndExecute()
-    {
-        if (drawObjects.valid())
-        {
-            drawObjects.wait();
+        updateScene.wait();
+        m_renderer->GetDevice()->ExecuteCommandLists({ m_commandListScene.get() });
 
-            m_renderer->GetDevice()->ExecuteCommandLists({ m_commandList.get() });
-        }
+        drawObjects.wait();
+        m_renderer->GetDevice()->ExecuteCommandLists({ m_commandListObjects.get() });
     }
 
     void Scene::UpdateLightInfo()
