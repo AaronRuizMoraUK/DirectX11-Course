@@ -6,11 +6,11 @@
 namespace DX
 {
     // -------------------------------------------------------
-    // Usage: Class Foo signals a resize event to everybody connected.
+    // Event usage example: Class Foo signals a resize event to everybody connected.
     // 
-    // using ResizeEvent = Event<std::function<void(int width, int height)>>
+    // using ResizeEvent = Event<std::function<void(int width, int height)>>;
     // 
-    // class Foo : public Event<void()>
+    // class Foo
     // {
     // public:
     //     void RegisterResizeEvent(ResizeEvent::Handler& handler) { handler.Connect(m_resizeEvent); }
@@ -28,14 +28,15 @@ namespace DX
     //     ResizeEvent m_resizeEvent;
     // };
     //
-    // Any other code can use an event handler to register to the event and receive the callback
+    // Any other code can define an event handler to register to the event and receive the callback
     // when the event is signaled.
     // 
-    // ResizeEvent::Handler handler([](int width, int height) {
-    //      // Do something with the new size.
-    // });
+    // ResizeEvent::Handler newHandler(
+    //     [](int width, int height) {
+    //         // Do something with the new size.
+    //     });
     // 
-    // foo.RegisterResizeEvent(handler);
+    // foo.RegisterResizeEvent(newHandler);
     // -------------------------------------------------------
 
     template<typename CallbackType>
