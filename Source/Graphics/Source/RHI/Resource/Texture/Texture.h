@@ -12,7 +12,7 @@ namespace DX
     // Texture Format
     // 
     // Texture format is set explicitly inside the resource.
-    // All its usages are views where the format must is specified too.
+    // All its usages are views where the format must be specified too.
     // The texture format and the view format must be compatible.
     //------------------------------------------------------------------------
 

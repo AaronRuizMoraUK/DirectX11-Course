@@ -545,12 +545,6 @@ namespace UnitTest
         bufferSRWRVDesc.m_firstElement = 0;
         bufferSRWRVDesc.m_elementCount = bufferData.size();
 
-        DX::RenderTargetViewDesc bufferRTVDesc = {};
-        bufferRTVDesc.m_resource = buffer;
-        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::Unknown;
-        bufferRTVDesc.m_firstElement = 0;
-        bufferRTVDesc.m_elementCount = bufferData.size();
-
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
         auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);
         // RenderTargetView is not supported for structured buffers
@@ -589,12 +583,6 @@ namespace UnitTest
         bufferSRWRVDesc.m_viewFormat = DX::ResourceFormat::R32_TYPELESS;
         bufferSRWRVDesc.m_firstElement = 0;
         bufferSRWRVDesc.m_elementCount = bufferSize;
-
-        DX::RenderTargetViewDesc bufferRTVDesc = {};
-        bufferRTVDesc.m_resource = buffer;
-        bufferRTVDesc.m_viewFormat = DX::ResourceFormat::R32_TYPELESS;
-        bufferRTVDesc.m_firstElement = 0;
-        bufferRTVDesc.m_elementCount = bufferSize;
 
         auto bufferRSV = m_device->CreateShaderResourceView(bufferSRVDesc);
         auto bufferSRWRSV = m_device->CreateShaderRWResourceView(bufferSRWRVDesc);

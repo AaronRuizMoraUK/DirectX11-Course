@@ -47,7 +47,7 @@ namespace DX
             }
             else
             {
-                // If deferred const is not passed by parameter, create it.
+                // If deferred context is not passed by parameter, create it.
                 auto result = m_ownerDevice->GetDX11Device()->CreateDeferredContext(0, m_dx11DeviceContext.GetAddressOf());
                 if (FAILED(result))
                 {
