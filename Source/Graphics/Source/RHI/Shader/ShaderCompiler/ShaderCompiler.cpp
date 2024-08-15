@@ -187,7 +187,7 @@ namespace DX
 
     std::shared_ptr<ShaderBytecode> ShaderCompiler::Compile(const ShaderInfo& shaderInfo)
     {
-        const auto shaderCode = ReadAssetFile(shaderInfo.m_name);
+        const auto shaderCode = ReadAssetTextFile(shaderInfo.m_name);
         if (!shaderCode.has_value())
         {
             return nullptr;
