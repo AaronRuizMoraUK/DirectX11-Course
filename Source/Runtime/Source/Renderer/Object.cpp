@@ -219,7 +219,7 @@ namespace DX
         }
     }
 
-    Cube::Cube(const Math::Transform transform,
+    Cube::Cube(const Math::Transform& transform,
         const Math::Vector3& extends)
     {
         m_transform = transform;
@@ -301,7 +301,7 @@ namespace DX
     }
 
 
-    Mesh::Mesh(const Math::Transform transform,
+    Mesh::Mesh(const Math::Transform& transform,
         const std::string& meshFilename,
         const std::string& diffuseFilename,
         const std::string& normalFilename,

@@ -69,14 +69,14 @@ namespace DX
     class Cube : public Object
     {
     public:
-        Cube(const Math::Transform transform, 
+        Cube(const Math::Transform& transform, 
             const Math::Vector3& extends);
     };
 
     class Mesh : public Object
     {
     public:
-        Mesh(const Math::Transform transform,
+        Mesh(const Math::Transform& transform,
             const std::string& meshFilename, 
             const std::string& diffuseFilename, 
             const std::string& normalFilename,
