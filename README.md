@@ -32,7 +32,7 @@ Steps
   cmake .. -G "Visual Studio 17 2022"
   ````
 - Open `DirectX11-Course.sln` with Visual Studio
-- Build and run `main` project
+- Build and run `EditorApplication` project
 
 ## Controls
 
