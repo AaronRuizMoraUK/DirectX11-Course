@@ -50,6 +50,8 @@ PixelOut main(PixelIn pixelIn)
     const float3 normalColor = normalTexture.Sample(texSampler, pixelIn.uv).xyz;
     
     // Normal map
+    // NOTE: transpose because in HLSL matrix constructors take rows as input
+    //       and we're working in column-major (as the layout expected by HLSL uniform matrices).
     const float3x3 tangentToLocal = transpose(float3x3(
         normalize(pixelIn.tangent), 
         normalize(pixelIn.binormal),
